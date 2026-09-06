@@ -240,8 +240,11 @@ function ChatPage() {
     return diffMs <= 5 * 60 * 1000;
   };
 
-  const formatMessageTime = (createdAt: string) =>
-    new Date(createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const formatMessageDateTime = (createdAt: string) =>
+    new Date(createdAt).toLocaleString("es-EC", {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
 
   const confirmReceipts = async () => {
     if (!user || !chatId) return;
@@ -471,7 +474,7 @@ function ChatPage() {
                         <p className="whitespace-pre-wrap">{m.contenido}</p>
                         <div className="mt-1 flex items-center justify-end gap-1 text-[10px] opacity-80">
                           {m.editado_en && <span>Editado</span>}
-                          <span>{formatMessageTime(m.created_at)}</span>
+                          <span>{formatMessageDateTime(m.created_at)}</span>
                         </div>
                       </>
                     )}
