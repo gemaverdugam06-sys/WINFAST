@@ -227,6 +227,17 @@ function ProductoPage() {
         return;
       }
       chatId = nuevo.id;
+    } else {
+      const { error: restoreError } = await supabase
+        .from("chat_user_states")
+        .upsert(
+          { chat_id: chatId, user_id: user.id, archived_at: null, deleted_at: null },
+          { onConflict: "chat_id,user_id" },
+        );
+      if (restoreError) {
+        toast.error(toUserMessage(restoreError, "No se pudo abrir el chat."));
+        return;
+      }
     }
     nav({ to: "/chat/$chatId", params: { chatId } });
   };
@@ -485,13 +496,13 @@ function ProductoPage() {
                     </Link>
                   )}
                   {vendorStats && vendorStats.review_count > 0 && (
-                  <Link
-                    to="/vendedor/$vendedorId/reseñas"
-                    params={{ vendedorId: p.user_id }}
-                    className="text-xs text-primary hover:underline"
-                  >
-                    Ver todas ({vendorStats.review_count})
-                  </Link>
+                    <Link
+                      to="/vendedor/$vendedorId/reseñas"
+                      params={{ vendedorId: p.user_id }}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Ver todas ({vendorStats.review_count})
+                    </Link>
                   )}
                   {(!vendorStats || vendorStats.review_count === 0) && (
                     <Link

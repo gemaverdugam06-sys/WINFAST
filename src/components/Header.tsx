@@ -11,7 +11,6 @@ import {
   LogOut,
   Globe,
   ShieldCheck,
-  Bell,
   ShoppingBag,
   Trash2,
 } from "lucide-react";
@@ -71,7 +70,7 @@ export function Header() {
                 aria-label={t("chats")}
               >
                 <Link to="/chats">
-                  <Bell className="h-5 w-5" />
+                  <MessageCircle className="h-5 w-5" />
                   {unread > 0 && (
                     <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
                       {unread > 99 ? "99+" : unread}
