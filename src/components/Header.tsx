@@ -31,7 +31,8 @@ export function Header() {
   const { t, lang, setLang } = useI18n();
   const navigate = useNavigate();
   const { total: unread } = useUnreadChats();
-  const { pendingProducts } = useAdminNotifications();
+  const { pendingProducts, pendingReports, pendingSupportTickets } = useAdminNotifications();
+  const pendingAdminNotifications = pendingProducts + pendingReports + pendingSupportTickets;
   const {
     notifications: purchaseNotifications,
     historyNotifications,
@@ -180,9 +181,9 @@ export function Header() {
                   onClick={() => navigate({ to: "/admin" })}
                 >
                   <ShieldCheck className="h-5 w-5" />
-                  {pendingProducts > 0 && (
+                  {pendingAdminNotifications > 0 && (
                     <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
-                      {pendingProducts > 99 ? "99+" : pendingProducts}
+                      {pendingAdminNotifications > 99 ? "99+" : pendingAdminNotifications}
                     </span>
                   )}
                 </Button>
