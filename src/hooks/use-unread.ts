@@ -33,10 +33,11 @@ export function useUnreadChats() {
         .or(`comprador_id.eq.${user.id},vendedor_id.eq.${user.id}`);
       if (!chats || !alive) return;
 
-      const { data: states } = await supabase
+      const { data: states, error: statesError } = await supabase
         .from("chat_user_states")
         .select("chat_id, deleted_at")
         .eq("user_id", user.id);
+      if (statesError || !alive) return;
       const deletedChatIds = new Set(
         (states ?? []).filter((state) => state.deleted_at).map((state) => state.chat_id),
       );
@@ -72,6 +73,11 @@ export function useUnreadChats() {
     );
     ch.on("postgres_changes", { event: "UPDATE", schema: "public", table: "chats" }, () =>
       compute(),
+    );
+    ch.on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "chat_user_states", filter: `user_id=eq.${user.id}` },
+      () => compute(),
     );
     ch.subscribe();
 
