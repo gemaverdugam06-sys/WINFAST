@@ -33,20 +33,30 @@ export function useUnreadChats() {
         .or(`comprador_id.eq.${user.id},vendedor_id.eq.${user.id}`);
       if (!chats || !alive) return;
 
+      const { data: states } = await supabase
+        .from("chat_user_states")
+        .select("chat_id, deleted_at")
+        .eq("user_id", user.id);
+      const deletedChatIds = new Set(
+        (states ?? []).filter((state) => state.deleted_at).map((state) => state.chat_id),
+      );
+
       const counts: Record<string, number> = {};
       await Promise.all(
-        (chats as ChatUnreadRow[]).map(async (c) => {
-          const after =
-            c.comprador_id === user.id ? c.ultimo_leido_comprador : c.ultimo_leido_vendedor;
-          const { count } = await supabase
-            .from("mensajes")
-            .select("id", { count: "exact", head: true })
-            .eq("chat_id", c.id)
-            .neq("remitente_id", user.id)
-            .is("deleted_at", null)
-            .gt("created_at", after ?? new Date(0).toISOString());
-          counts[c.id] = count ?? 0;
-        }),
+        (chats as ChatUnreadRow[])
+          .filter((chat) => !deletedChatIds.has(chat.id))
+          .map(async (c) => {
+            const after =
+              c.comprador_id === user.id ? c.ultimo_leido_comprador : c.ultimo_leido_vendedor;
+            const { count } = await supabase
+              .from("mensajes")
+              .select("id", { count: "exact", head: true })
+              .eq("chat_id", c.id)
+              .neq("remitente_id", user.id)
+              .is("deleted_at", null)
+              .gt("created_at", after ?? new Date(0).toISOString());
+            counts[c.id] = count ?? 0;
+          }),
       );
       if (!alive) return;
       setUnread(counts);
