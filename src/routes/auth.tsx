@@ -51,6 +51,9 @@ function AuthPage() {
 
   const [loading, setLoading] = useState(false);
   const [signupMessage, setSignupMessage] = useState<string | null>(null);
+  const [signupEmail, setSignupEmail] = useState<string>("");
+  const [signupPendingVerification, setSignupPendingVerification] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -80,6 +83,50 @@ function AuthPage() {
     const tmr = setTimeout(() => setCooldown((c) => c - 1), 1000);
     return () => clearTimeout(tmr);
   }, [cooldown]);
+
+  const resendVerificationEmail = async () => {
+    if (!signupEmail) {
+      const message = "No hay un correo para reenviar.";
+      setSignupMessage(message);
+      return toast.error(message);
+    }
+
+    if (cooldown > 0) {
+      const message = `Espera ${cooldown} segundos antes de reenviar el correo.`;
+      setSignupMessage(message);
+      return toast.error(message);
+    }
+
+    setResendLoading(true);
+
+    try {
+      const resendFn = (supabase.auth as typeof supabase.auth & { resend?: (options: { type: "signup"; email: string }) => Promise<{ error?: { message?: string } | null }> }).resend;
+      if (!resendFn) {
+        const message = "El proveedor de autenticación no soporta el reenvío del correo de verificación.";
+        setSignupMessage(message);
+        throw new Error(message);
+      }
+
+      const { error } = await resendFn({ type: "signup", email: signupEmail });
+      if (error) {
+        const message = toUserMessage(error, "No se pudo reenviar el correo de verificación.");
+        setSignupMessage(message);
+        toast.error(message);
+        return;
+      }
+
+      setCooldown(60);
+      setSignupMessage(t("signup_check_email"));
+      toast.success(t("signup_email_resent"));
+    } catch (error) {
+      console.error("Error al reenviar correo de verificación:", error);
+      const message = toUserMessage(error, "No se pudo reenviar el correo de verificación.");
+      setSignupMessage(message);
+      toast.error(message);
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,7 +225,7 @@ function AuthPage() {
           email: normalizedEmail,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/auth`,
             data: { full_name: name.trim() },
           },
         });
@@ -212,6 +259,18 @@ function AuthPage() {
           }
           toast.success(t("otp_sent"));
           nav({ to: "/auth/verificar-telefono", replace: true });
+          return;
+        }
+
+        const verificationRequired = !data.session && Boolean(data.user);
+        if (verificationRequired) {
+          setSignupPendingVerification(true);
+          setSignupEmail(normalizedEmail);
+          setSignupMessage(t("signup_check_email"));
+          toast.success(t("signup_check_email"));
+          setEmailTab("signin");
+          setPassword("");
+          setConfirmPassword("");
           return;
         }
 
