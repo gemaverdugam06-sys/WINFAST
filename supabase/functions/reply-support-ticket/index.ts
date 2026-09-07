@@ -28,8 +28,16 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const supportEmail = Deno.env.get("SUPPORT_EMAIL");
     const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || supportEmail;
-    if (!url || !anonKey || !serviceRoleKey || !fromEmail) {
-      return jsonResponse({ error: "Missing support configuration" }, 500);
+    const missingConfig = [
+      !url && "SUPABASE_URL",
+      !anonKey && "SUPABASE_ANON_KEY",
+      !serviceRoleKey && "SUPABASE_SERVICE_ROLE_KEY",
+      !fromEmail && "RESEND_FROM_EMAIL (o SUPPORT_EMAIL)",
+    ].filter(Boolean);
+    if (missingConfig.length > 0) {
+      return jsonResponse({
+        error: `Falta configuración de soporte: ${missingConfig.join(", ")}`,
+      }, 500);
     }
 
     const userClient = createClient(url, anonKey, {
@@ -65,7 +73,7 @@ Deno.serve(async (req) => {
     if (ticketError || !ticket) return jsonResponse({ error: "Ticket no encontrado" }, 404);
 
     const resendKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendKey) return jsonResponse({ error: "Missing RESEND_API_KEY" }, 500);
+    if (!resendKey) return jsonResponse({ error: "Falta configurar RESEND_API_KEY en Supabase." }, 500);
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
