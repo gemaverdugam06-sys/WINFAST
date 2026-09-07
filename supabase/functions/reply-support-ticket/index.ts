@@ -26,7 +26,8 @@ Deno.serve(async (req) => {
     const url = Deno.env.get("SUPABASE_URL");
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    const fromEmail = Deno.env.get("RESEND_FROM_EMAIL");
+    const supportEmail = Deno.env.get("SUPPORT_EMAIL");
+    const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || supportEmail;
     if (!url || !anonKey || !serviceRoleKey || !fromEmail) {
       return jsonResponse({ error: "Missing support configuration" }, 500);
     }
@@ -76,7 +77,19 @@ Deno.serve(async (req) => {
         text: `Respuesta de soporte WINFAST\n\nEn respuesta a: ${ticket.subject}\n\n${reply}\n\nTicket #${ticket.ticket_number ?? "N/A"}`,
       }),
     });
-    if (!emailResponse.ok) return jsonResponse({ error: "No se pudo enviar el correo de respuesta." }, 502);
+    if (!emailResponse.ok) {
+      const resendError = (await emailResponse.json().catch(() => ({}))) as { message?: string };
+      console.error("Resend rejected support reply", {
+        status: emailResponse.status,
+        message: resendError.message,
+      });
+      return jsonResponse(
+        {
+          error: resendError.message || "No se pudo enviar el correo de respuesta.",
+        },
+        502,
+      );
+    }
 
     const { error: updateError } = await adminClient
       .from("support_tickets")

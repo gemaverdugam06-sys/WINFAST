@@ -778,7 +778,16 @@ export function AdminPanel() {
     });
     setWorking(null);
     if (error || data?.error) {
-      toast.error(data?.error ?? error?.message ?? "No se pudo enviar la respuesta");
+      const functionError = error as typeof error & { context?: Response };
+      const responseBody = functionError?.context
+        ? await functionError.context.clone().json().catch(() => null)
+        : null;
+      toast.error(
+        data?.error ??
+          responseBody?.error ??
+          error?.message ??
+          "No se pudo enviar la respuesta",
+      );
       return;
     }
     setSupportReplies((current) => ({ ...current, [ticket.id]: "" }));
