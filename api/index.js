@@ -90,11 +90,6 @@ export default async function handler(req, res) {
       url === "/manifest.webmanifest" ||
       url === "/sw.js"
     ) {
-      const publicPath = join(__dirname, "../public", url.slice(1));
-      if (serveStatic(publicPath, res)) {
-        return;
-      }
-
       const clientPath = join(__dirname, "../dist/client", url.slice(1));
       if (serveStatic(clientPath, res)) return;
     }
