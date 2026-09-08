@@ -353,8 +353,8 @@ function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.35),_transparent_35%),linear-gradient(180deg,_#7c3aed_0%,_#3b82f6_100%)] p-2 text-white sm:p-4">
-      <Card className="w-full max-w-lg overflow-hidden rounded-[1.5rem] border border-slate-700/80 bg-slate-950/95 shadow-[0_24px_80px_rgba(124,58,237,0.15)] sm:rounded-[2rem]">
+    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.35),_transparent_35%),linear-gradient(180deg,_#7c3aed_0%,_#3b82f6_100%)] p-0 text-white sm:p-4">
+      <Card className="min-h-screen w-full max-w-lg overflow-hidden rounded-none border border-slate-700/80 bg-slate-950/95 shadow-[0_24px_80px_rgba(124,58,237,0.15)] sm:min-h-0 sm:rounded-[2rem]">
         <CardHeader className="space-y-5 border-b border-slate-700/80 bg-gradient-primary/90 px-5 py-8 text-center sm:px-8 sm:py-10">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white/10 text-white shadow-lg shadow-purple-500/20 sm:h-24 sm:w-24">
             <Logo className="h-14 w-14 sm:h-16 sm:w-16" />
