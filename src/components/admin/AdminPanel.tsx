@@ -244,9 +244,9 @@ function ProductoModerationCard({
             </dl>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2 border-t pt-3">
+        <div className="flex flex-col gap-2 border-t pt-3 sm:flex-row sm:flex-wrap">
           <Button
-            className="bg-success text-success-foreground hover:bg-success/90"
+            className="w-full bg-success text-success-foreground hover:bg-success/90 sm:w-auto"
             disabled={working}
             onClick={onAprobar}
           >
@@ -259,13 +259,13 @@ function ProductoModerationCard({
               </>
             )}
           </Button>
-          <Button variant="destructive" disabled={working} onClick={onRechazar}>
+          <Button className="w-full sm:w-auto" variant="destructive" disabled={working} onClick={onRechazar}>
             <ShieldX className="mr-1 h-4 w-4" />
             Rechazar
           </Button>
           <Button
             variant="outline"
-            className="text-destructive hover:text-destructive"
+            className="w-full text-destructive hover:text-destructive sm:w-auto"
             disabled={working}
             onClick={onEliminar}
           >
@@ -1033,11 +1033,12 @@ export function AdminPanel() {
                         {new Date(t.created_at).toLocaleString()}
                         {t.referencia && <> · Ref: {t.referencia}</>}
                       </p>
-                      <div className="flex flex-wrap gap-2 pt-1">
+                      <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:flex-wrap">
                         {t.comprobante_url && (
                           <>
                             <Button
                               size="sm"
+                              className="w-full sm:w-auto"
                               variant="outline"
                               onClick={() => verComprobante(t.comprobante_url!)}
                             >
@@ -1045,6 +1046,7 @@ export function AdminPanel() {
                             </Button>
                             <Button
                               size="sm"
+                              className="w-full sm:w-auto"
                               variant="outline"
                               className="text-destructive hover:text-destructive"
                               onClick={() => onEliminarComprobante(t)}
@@ -1055,7 +1057,7 @@ export function AdminPanel() {
                         )}
                         <Button
                           size="sm"
-                          className="bg-success text-success-foreground hover:bg-success/90"
+                          className="w-full bg-success text-success-foreground hover:bg-success/90 sm:w-auto"
                           disabled={working === t.id}
                           onClick={() => onAprobar(t)}
                         >
@@ -1069,6 +1071,7 @@ export function AdminPanel() {
                         </Button>
                         <Button
                           size="sm"
+                          className="w-full sm:w-auto"
                           variant="destructive"
                           disabled={working === t.id}
                           onClick={() => onRechazar(t.id)}

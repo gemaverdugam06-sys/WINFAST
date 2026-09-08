@@ -46,15 +46,15 @@ export function Header() {
       transition={{ duration: 0.45, ease: "easeOut" }}
       className="sticky top-0 z-40 border-b bg-background/60 backdrop-blur-lg glass"
     >
-      <div className="container mx-auto flex min-h-16 items-center gap-2 px-3 sm:gap-3 sm:px-4">
-        <Link to="/" className="flex min-w-0 items-center gap-2 font-bold">
+      <div className="container mx-auto flex min-h-16 flex-wrap items-center gap-2 px-3 sm:flex-nowrap sm:gap-3 sm:px-4">
+        <Link to="/" className="flex min-w-0 flex-1 basis-full items-center gap-2 py-2 font-bold sm:basis-auto sm:py-0">
           <Logo className="h-9 w-9 shrink-0 drop-shadow-sm" />
           <span className="truncate text-[1.5rem] font-black leading-none tracking-[-0.06em] text-slate-950 sm:text-[1.9rem]">
             WINFAST
           </span>
         </Link>
 
-        <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1">
+        <div className="ml-auto flex w-full shrink-0 items-center justify-end gap-0.5 pb-2 sm:w-auto sm:gap-1 sm:pb-0">
           <Button
             variant="ghost"
             size="sm"
@@ -62,7 +62,7 @@ export function Header() {
             onClick={() => setLang(lang === "es" ? "en" : "es")}
           >
             <Globe className="h-5 w-5 sm:h-4 sm:w-4" />
-            <span className="ml-1 text-xs font-semibold uppercase">{lang}</span>
+            <span className="ml-1 hidden text-xs font-semibold uppercase sm:inline">{lang}</span>
           </Button>
 
           {user ? (
