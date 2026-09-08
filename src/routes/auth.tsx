@@ -353,33 +353,33 @@ function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.35),_transparent_35%),linear-gradient(180deg,_#7c3aed_0%,_#3b82f6_100%)] p-4 text-white">
-      <Card className="w-full max-w-md overflow-hidden rounded-[2rem] border border-slate-700/80 bg-slate-950/95 shadow-[0_24px_80px_rgba(124,58,237,0.15)]">
-        <CardHeader className="space-y-4 border-b border-slate-700/80 px-8 py-8 text-center bg-gradient-primary/90">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10 text-white shadow-lg shadow-purple-500/20">
-            <Logo className="h-10 w-10" />
+    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.35),_transparent_35%),linear-gradient(180deg,_#7c3aed_0%,_#3b82f6_100%)] p-2 text-white sm:p-4">
+      <Card className="w-full max-w-lg overflow-hidden rounded-[1.5rem] border border-slate-700/80 bg-slate-950/95 shadow-[0_24px_80px_rgba(124,58,237,0.15)] sm:rounded-[2rem]">
+        <CardHeader className="space-y-5 border-b border-slate-700/80 bg-gradient-primary/90 px-5 py-8 text-center sm:px-8 sm:py-10">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white/10 text-white shadow-lg shadow-purple-500/20 sm:h-24 sm:w-24">
+            <Logo className="h-14 w-14 sm:h-16 sm:w-16" />
           </div>
-          <CardTitle className="flex items-center justify-center gap-3 text-3xl font-semibold tracking-tight text-white">
+          <CardTitle className="flex items-center justify-center gap-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
             <span>WINFAST</span>
           </CardTitle>
           <CardDescription className="text-sm text-slate-200">{t("tagline")}</CardDescription>
         </CardHeader>
-        <CardContent className="px-8 py-8">
+        <CardContent className="px-5 py-7 sm:px-8 sm:py-8">
           <Tabs
             value={emailTab}
             onValueChange={(v) => setEmailTab(v as "signin" | "signup")}
             className="space-y-4"
           >
-            <TabsList className="grid w-full grid-cols-2 overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-900/90 p-1 shadow-sm">
+            <TabsList className="grid h-14 w-full grid-cols-2 overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-900/90 p-1 text-base shadow-sm sm:h-12">
               <TabsTrigger
                 value="signin"
-                className="rounded-xl border-0 bg-transparent text-slate-300 data-[state=active]:bg-slate-950 data-[state=active]:text-white data-[state=active]:shadow-md"
+                className="rounded-xl border-0 bg-transparent text-base text-slate-300 data-[state=active]:bg-slate-950 data-[state=active]:text-white data-[state=active]:shadow-md"
               >
                 {t("sign_in")}
               </TabsTrigger>
               <TabsTrigger
                 value="signup"
-                className="rounded-xl border-0 bg-transparent text-slate-300 data-[state=active]:bg-slate-950 data-[state=active]:text-white data-[state=active]:shadow-md"
+                className="rounded-xl border-0 bg-transparent text-base text-slate-300 data-[state=active]:bg-slate-950 data-[state=active]:text-white data-[state=active]:shadow-md"
               >
                 {t("sign_up")}
               </TabsTrigger>
@@ -396,7 +396,7 @@ function AuthPage() {
                     autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 focus:border-primary/70"
+                    className="h-12 bg-slate-950 border border-slate-700 text-base text-white placeholder:text-slate-500 focus:border-primary/70 sm:h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -425,9 +425,9 @@ function AuthPage() {
                       type="button"
                       aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                       onClick={() => setShowPassword((v) => !v)}
-                      className="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-white"
+                      className="absolute inset-y-0 right-1 flex w-11 items-center justify-center text-slate-400 hover:text-white"
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
                 </div>
