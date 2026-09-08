@@ -46,16 +46,21 @@ export function Header() {
       transition={{ duration: 0.45, ease: "easeOut" }}
       className="sticky top-0 z-40 border-b bg-background/60 backdrop-blur-lg glass"
     >
-      <div className="container mx-auto flex h-16 items-center gap-3 px-4">
-        <Link to="/" className="flex items-center gap-2 font-bold">
-          <Logo className="h-9 w-9 drop-shadow-sm" />
-          <span className="text-[1.9rem] font-black leading-none tracking-[-0.06em] text-slate-950">
+      <div className="container mx-auto flex min-h-16 items-center gap-2 px-3 sm:gap-3 sm:px-4">
+        <Link to="/" className="flex min-w-0 items-center gap-2 font-bold">
+          <Logo className="h-8 w-8 shrink-0 drop-shadow-sm sm:h-9 sm:w-9" />
+          <span className="truncate text-[1.45rem] font-black leading-none tracking-[-0.06em] text-slate-950 sm:text-[1.9rem]">
             WINFAST
           </span>
         </Link>
 
-        <div className="ml-auto flex items-center gap-1">
-          <Button variant="ghost" size="sm" onClick={() => setLang(lang === "es" ? "en" : "es")}>
+        <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="px-2 sm:px-3"
+            onClick={() => setLang(lang === "es" ? "en" : "es")}
+          >
             <Globe className="h-4 w-4" />
             <span className="ml-1 text-xs font-semibold uppercase">{lang}</span>
           </Button>

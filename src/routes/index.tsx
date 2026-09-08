@@ -160,23 +160,23 @@ function Home() {
       <Header />
 
       <section className="relative overflow-hidden border-b bg-gradient-hero text-white">
-        <div className="container mx-auto px-4 py-16 md:py-24">
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-slate-600 shadow-lg bg-slate-900 p-10 md:p-14 shadow-card ring-1 ring-slate-600">
+        <div className="container mx-auto px-3 py-8 sm:px-4 sm:py-12 md:py-24">
+          <div className="relative overflow-hidden rounded-[1.5rem] border border-slate-600 bg-slate-900 p-5 shadow-lg shadow-card ring-1 ring-slate-600 sm:rounded-[2.5rem] sm:p-10 md:p-14">
             <div className="relative">
-              <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-primary bg-primary text-primary-foreground px-4 py-2 text-sm shadow-lg">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 shadow-lg">
-                  <Logo className="h-8 w-8" />
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary bg-primary px-3 py-1.5 text-sm text-primary-foreground shadow-lg sm:mb-6 sm:gap-3 sm:px-4 sm:py-2">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 shadow-lg sm:h-10 sm:w-10 sm:rounded-2xl">
+                  <Logo className="h-6 w-6 sm:h-8 sm:w-8" />
                 </span>
                 <span className="font-semibold">WINFAST</span>
               </div>
-              <h1 className="text-5xl font-extrabold tracking-tight md:text-7xl md:leading-tight logo-heading text-white drop-shadow-lg">
+              <h1 className="text-4xl font-extrabold leading-[1.05] tracking-tight text-white drop-shadow-lg sm:text-5xl md:text-7xl md:leading-tight logo-heading">
                 {t("tagline")}
               </h1>
-              <p className="mt-6 max-w-3xl text-slate-200 text-xl md:text-2xl leading-relaxed drop-shadow-lg">
+              <p className="mt-4 max-w-3xl text-base leading-relaxed text-slate-200 drop-shadow-lg sm:mt-6 sm:text-xl md:text-2xl">
                 Compra y vende en Ecuador de manera simple. Encuentra productos cerca de ti y
                 publica tu anuncio gratis en segundos.
               </p>
-              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+              <div className="mt-7 flex flex-col gap-3 sm:mt-10 sm:gap-4 sm:flex-row">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground" />
                   <Input
