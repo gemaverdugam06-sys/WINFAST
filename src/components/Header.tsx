@@ -48,8 +48,8 @@ export function Header() {
     >
       <div className="container mx-auto flex min-h-16 items-center gap-2 px-3 sm:gap-3 sm:px-4">
         <Link to="/" className="flex min-w-0 items-center gap-2 font-bold">
-          <Logo className="h-8 w-8 shrink-0 drop-shadow-sm sm:h-9 sm:w-9" />
-          <span className="truncate text-[1.45rem] font-black leading-none tracking-[-0.06em] text-slate-950 sm:text-[1.9rem]">
+          <Logo className="h-9 w-9 shrink-0 drop-shadow-sm" />
+          <span className="truncate text-[1.5rem] font-black leading-none tracking-[-0.06em] text-slate-950 sm:text-[1.9rem]">
             WINFAST
           </span>
         </Link>
@@ -61,7 +61,7 @@ export function Header() {
             className="px-2 sm:px-3"
             onClick={() => setLang(lang === "es" ? "en" : "es")}
           >
-            <Globe className="h-4 w-4" />
+            <Globe className="h-5 w-5 sm:h-4 sm:w-4" />
             <span className="ml-1 text-xs font-semibold uppercase">{lang}</span>
           </Button>
 
@@ -75,7 +75,7 @@ export function Header() {
                 aria-label={t("chats")}
               >
                 <Link to="/chats">
-                  <MessageCircle className="h-5 w-5" />
+                  <MessageCircle className="h-6 w-6 sm:h-5 sm:w-5" />
                   {unread > 0 && (
                     <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
                       {unread > 99 ? "99+" : unread}
@@ -93,7 +93,7 @@ export function Header() {
                       className="relative"
                       aria-label="Solicitudes de compra"
                     >
-                      <ShoppingBag className="h-5 w-5" />
+                      <ShoppingBag className="h-6 w-6 sm:h-5 sm:w-5" />
                       {purchaseNotifications.length > 0 && (
                         <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
                           {purchaseNotifications.length}
@@ -184,7 +184,7 @@ export function Header() {
                   aria-label="Notificaciones de administración"
                   onClick={() => navigate({ to: "/admin" })}
                 >
-                  <ShieldCheck className="h-5 w-5" />
+                  <ShieldCheck className="h-6 w-6 sm:h-5 sm:w-5" />
                   {pendingAdminNotifications > 0 && (
                     <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
                       {pendingAdminNotifications > 99 ? "99+" : pendingAdminNotifications}
@@ -204,7 +204,7 @@ export function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" aria-label={t("profile")}>
-                    <User className="h-5 w-5" />
+                    <User className="h-6 w-6 sm:h-5 sm:w-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-52">

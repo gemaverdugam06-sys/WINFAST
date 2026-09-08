@@ -49,7 +49,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-            <ImageOff className="h-10 w-10" />
+            <ImageOff className="h-12 w-12 sm:h-10 sm:w-10" />
           </div>
         )}
         {destacadoActivo && (
@@ -64,7 +64,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
         </p>
         <h3 className="line-clamp-2 text-sm font-medium leading-tight">{p.titulo}</h3>
         <p className="mt-auto flex items-center gap-1 pt-2 text-xs text-muted-foreground">
-          <MapPin className="h-3 w-3" />
+          <MapPin className="h-4 w-4 shrink-0 sm:h-3 sm:w-3" />
           {p.ciudad}
         </p>
       </div>
