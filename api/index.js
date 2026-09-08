@@ -84,11 +84,19 @@ export default async function handler(req, res) {
       }
     }
 
-    if (url === "/favicon.svg" || url === "/favicon.ico") {
-      const faviconPath = join(__dirname, "../dist/client", url.slice(1));
-      if (serveStatic(faviconPath, res)) {
+    if (
+      url === "/favicon.svg" ||
+      url === "/favicon.ico" ||
+      url === "/manifest.webmanifest" ||
+      url === "/sw.js"
+    ) {
+      const publicPath = join(__dirname, "../public", url.slice(1));
+      if (serveStatic(publicPath, res)) {
         return;
       }
+
+      const clientPath = join(__dirname, "../dist/client", url.slice(1));
+      if (serveStatic(clientPath, res)) return;
     }
 
     // Delegate to SSR server
