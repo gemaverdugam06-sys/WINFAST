@@ -933,18 +933,28 @@ export function AdminPanel() {
           </div>
         ) : (
           <Tabs defaultValue="transacciones" className="w-full">
-            <TabsList className="grid w-full grid-cols-7">
-              <TabsTrigger value="transacciones">Transacciones ({pendientes.length})</TabsTrigger>
-              <TabsTrigger value="compras">
+            <TabsList className="flex h-auto w-full justify-start gap-1 overflow-x-auto rounded-xl p-1">
+              <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="transacciones">
+                Transacciones ({pendientes.length})
+              </TabsTrigger>
+              <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="compras">
                 Compras ({compras.filter((c) => c.estado === "PENDIENTE").length})
               </TabsTrigger>
-              <TabsTrigger value="moderacion">Productos ({productosPendientes.length})</TabsTrigger>
-              <TabsTrigger value="reportes">Reportes ({reportesPendientes.length})</TabsTrigger>
-              <TabsTrigger value="resenias">Reseñas ({reseniasReportadas.length})</TabsTrigger>
-              <TabsTrigger value="usuarios">
+              <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="moderacion">
+                Productos ({productosPendientes.length})
+              </TabsTrigger>
+              <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="reportes">
+                Reportes ({reportesPendientes.length})
+              </TabsTrigger>
+              <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="resenias">
+                Reseñas ({reseniasReportadas.length})
+              </TabsTrigger>
+              <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="usuarios">
                 Usuarios ({usuarios.filter((u) => u.is_blocked).length})
               </TabsTrigger>
-              <TabsTrigger value="soporte">Soporte ({ticketsSoporte.length})</TabsTrigger>
+              <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="soporte">
+                Soporte ({ticketsSoporte.length})
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="compras" className="space-y-4">
@@ -976,7 +986,7 @@ export function AdminPanel() {
                         Comprador: {compra.comprador_id} · Vendedor: {compra.vendedor_id}
                       </p>
                       {compra.estado === "PENDIENTE" && (
-                        <div className="flex gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                           <Button
                             size="sm"
                             disabled={working === compra.id}
@@ -1037,6 +1047,7 @@ export function AdminPanel() {
                         {t.comprobante_url && (
                           <>
                             <Button
+                              className="w-full sm:w-auto"
                               size="sm"
                               className="w-full sm:w-auto"
                               variant="outline"
@@ -1045,6 +1056,7 @@ export function AdminPanel() {
                               <Eye className="mr-1 h-4 w-4" /> Ver comprobante
                             </Button>
                             <Button
+                              className="w-full sm:w-auto"
                               size="sm"
                               className="w-full sm:w-auto"
                               variant="outline"
@@ -1188,10 +1200,11 @@ export function AdminPanel() {
                             <span className="font-semibold">Detalles:</span> {r.descripcion}
                           </p>
                         )}
-                        <div className="flex gap-2 pt-2">
+                        <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:flex-wrap">
                           {r.estado === "pendiente" && (
                             <>
                               <Button
+                                className="w-full sm:w-auto"
                                 size="sm"
                                 variant="outline"
                                 disabled={working === r.id}
@@ -1218,6 +1231,7 @@ export function AdminPanel() {
                             </>
                           )}
                           <Button
+                            className="w-full sm:w-auto"
                             size="sm"
                             variant="outline"
                             className="text-destructive hover:text-destructive"
@@ -1264,8 +1278,9 @@ export function AdminPanel() {
                           </span>
                         </div>
                         {r.comentario && <p className="text-sm italic">{r.comentario}</p>}
-                        <div className="flex gap-2 pt-2">
+                        <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:flex-wrap">
                           <Button
+                            className="w-full sm:w-auto"
                             size="sm"
                             variant="destructive"
                             disabled={working === r.id}
@@ -1278,6 +1293,7 @@ export function AdminPanel() {
                             )}
                           </Button>
                           <Button
+                            className="w-full sm:w-auto"
                             size="sm"
                             variant="outline"
                             className="text-destructive hover:text-destructive"
@@ -1340,8 +1356,9 @@ export function AdminPanel() {
                         maxLength={5000}
                         rows={3}
                       />
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                         <Button
+                          className="w-full sm:w-auto"
                           size="sm"
                           disabled={working === ticket.id}
                           onClick={() => void onResponderTicket(ticket)}
@@ -1350,6 +1367,7 @@ export function AdminPanel() {
                         </Button>
                         {ticket.status === "open" && (
                           <Button
+                            className="w-full sm:w-auto"
                             size="sm"
                             variant="outline"
                             disabled={working === ticket.id}
@@ -1360,6 +1378,7 @@ export function AdminPanel() {
                         )}
                         {ticket.status !== "resolved" && (
                           <Button
+                            className="w-full sm:w-auto"
                             size="sm"
                             onClick={() => void onCambiarEstadoTicket(ticket.id, "resolved")}
                           >
@@ -1367,6 +1386,7 @@ export function AdminPanel() {
                           </Button>
                         )}
                         <Button
+                          className="w-full sm:w-auto"
                           size="sm"
                           variant="outline"
                           className="text-destructive hover:text-destructive"
