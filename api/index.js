@@ -87,6 +87,8 @@ export default async function handler(req, res) {
     if (
       url === "/favicon.svg" ||
       url === "/favicon.ico" ||
+      url === "/icon-192.svg" ||
+      url === "/icon-512.svg" ||
       url === "/manifest.webmanifest" ||
       url === "/sw.js"
     ) {
