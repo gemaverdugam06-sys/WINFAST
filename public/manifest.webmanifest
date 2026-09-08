@@ -1,0 +1,19 @@
+{
+  "name": "WINFAST - Marketplace de Ecuador",
+  "short_name": "WINFAST",
+  "description": "Compra, vende y promociona tus anuncios en Ecuador.",
+  "lang": "es-EC",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

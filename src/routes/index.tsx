@@ -25,6 +25,18 @@ interface Categoria {
   icono: string;
 }
 
+const CATEGORIAS_POR_DEFECTO: Categoria[] = [
+  { id: "tecnologia", nombre: "Tecnología y Electrónica", icono: "Laptop" },
+  { id: "vehiculos", nombre: "Vehículos", icono: "Car" },
+  { id: "hogar", nombre: "Hogar y Muebles", icono: "Sofa" },
+  { id: "moda", nombre: "Moda y Belleza", icono: "Shirt" },
+  { id: "inmuebles", nombre: "Inmuebles", icono: "Home" },
+  { id: "deportes", nombre: "Deportes y Aire Libre", icono: "Dumbbell" },
+  { id: "empleo", nombre: "Empleo y Servicios", icono: "Briefcase" },
+  { id: "ninos", nombre: "Niños y Bebés", icono: "Baby" },
+  { id: "mascotas", nombre: "Mascotas", icono: "PawPrint" },
+];
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -59,6 +71,14 @@ function Home() {
   useEffect(() => {
     const loadCategorias = async () => {
       try {
+        const backendUnavailable = Boolean(
+          (supabase as typeof supabase & { __unavailable?: boolean }).__unavailable,
+        );
+        if (backendUnavailable) {
+          setCategorias(CATEGORIAS_POR_DEFECTO);
+          return;
+        }
+
         const { data, error } = await supabase
           .from("categorias")
           .select("id, nombre, icono")
@@ -71,7 +91,8 @@ function Home() {
         }
       } catch (err) {
         console.error("Error cargando categorías:", err);
-        toast.error("No se cargaron las categorías. Por favor, recarga la página.");
+        setCategorias(CATEGORIAS_POR_DEFECTO);
+        toast.error("No se pudieron actualizar las categorías; se muestran las predeterminadas.");
       }
     };
 

@@ -18,6 +18,11 @@ import { supabase } from "@/integrations/supabase/client";
 
 const OG_IMAGE = import.meta.env.VITE_OG_IMAGE_URL ?? "https://your-domain.com/og-image.png";
 
+type InstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -78,6 +83,55 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function InstallAppPrompt() {
+  const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (import.meta.env.DEV || window.matchMedia("(display-mode: standalone)").matches) return;
+
+    const onBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallEvent(event as InstallPromptEvent);
+      setVisible(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    return () => window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+  }, []);
+
+  if (!visible || !installEvent) return null;
+
+  const install = async () => {
+    await installEvent.prompt();
+    await installEvent.userChoice;
+    setVisible(false);
+    setInstallEvent(null);
+  };
+
+  return (
+    <div className="fixed inset-x-4 bottom-4 z-50 flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3 shadow-lg sm:left-auto sm:max-w-sm">
+      <p className="text-sm font-medium text-foreground">Instala WINFAST en tu dispositivo</p>
+      <div className="flex shrink-0 gap-2">
+        <button
+          type="button"
+          onClick={() => setVisible(false)}
+          className="rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted"
+        >
+          Ahora no
+        </button>
+        <button
+          type="button"
+          onClick={install}
+          className="rounded-md bg-primary px-3 py-1 text-sm font-medium text-primary-foreground hover:opacity-90"
+        >
+          Instalar
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
@@ -117,6 +171,12 @@ function RootComponent() {
     };
   }, []);
 
+  useEffect(() => {
+    if (import.meta.env.PROD && "serviceWorker" in navigator) {
+      void navigator.serviceWorker.register("/sw.js");
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
@@ -133,6 +193,7 @@ function RootComponent() {
             </div>
             <Footer />
           </div>
+          <InstallAppPrompt />
           <Toaster richColors position="top-center" />
         </AuthProvider>
       </I18nProvider>
@@ -146,7 +207,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "alternate icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
+    scripts: [],
   }),
   shellComponent: RootShell,
   component: RootComponent,
