@@ -255,8 +255,9 @@ function PublicarPage() {
       toast.error(toUserMessage(error, "No se pudo publicar el anuncio. Intenta de nuevo."));
       return;
     }
-    toast.success("¡Anuncio publicado! Está siendo revisado por nuestro equipo de moderación.");
-    nav({ to: "/producto/$id", params: { id: data.id } });
+    toast.success("✅ Publicación creada correctamente");
+    toast.info("⭐ ¿Quieres darle mayor visibilidad? DESTACAR PUBLICACIÓN");
+    nav({ to: "/mis-publicaciones" });
   };
 
   return (

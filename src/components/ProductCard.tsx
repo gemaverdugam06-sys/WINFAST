@@ -53,7 +53,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           </div>
         )}
         {destacadoActivo && (
-          <Badge className="absolute left-2 top-2 bg-gradient-featured text-warning-foreground border-0 gap-1 shadow-md">
+          <Badge className="absolute left-2 top-2 bg-gradient-featured text-warning-foreground border-0 gap-1 shadow-md uppercase tracking-wide">
             <Sparkles className="h-3 w-3" /> {t("featured")}
           </Badge>
         )}

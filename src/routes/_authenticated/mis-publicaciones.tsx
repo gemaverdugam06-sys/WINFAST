@@ -46,6 +46,10 @@ interface Pub {
   razon_rechazo?: string | null;
 }
 
+interface MonetizationSettings {
+  featured?: Record<string, { enabled?: boolean; price?: number; durationDays?: number }>;
+}
+
 const normalizePaymentState = (value?: string | null) =>
   String(value ?? "")
     .trim()
@@ -60,6 +64,7 @@ function MisPubs() {
   const { user } = useAuth();
   const [items, setItems] = useState<Pub[]>([]);
   const [loading, setLoading] = useState(true);
+  const [featuredPlansEnabled, setFeaturedPlansEnabled] = useState(true);
 
   const load = async () => {
     if (!user) return;
@@ -106,6 +111,22 @@ function MisPubs() {
         .order("created_at", { ascending: false });
 
       if (joinErr) throw joinErr;
+
+      const { data: settingsData, error: settingsErr } = await supabase
+        .from("monetization_settings")
+        .select("settings")
+        .limit(1)
+        .maybeSingle();
+
+      if (settingsErr && settingsErr.code !== "PGRST116") throw settingsErr;
+
+      const featuredSettings = ((settingsData?.settings as MonetizationSettings | null)?.featured ?? {}) as Record<
+        string,
+        { enabled?: boolean }
+      >;
+
+      const anyPlanEnabled = Object.values(featuredSettings).some((plan) => plan.enabled !== false);
+      setFeaturedPlansEnabled(Object.keys(featuredSettings).length === 0 ? true : anyPlanEnabled);
 
       const listaProductos = (productsWithTx || []).map((p) => {
         const transacciones = Array.isArray(p.transacciones) ? p.transacciones : [];
@@ -191,6 +212,7 @@ function MisPubs() {
               <PubRow
                 key={p.id}
                 p={p}
+                featuredPlansEnabled={featuredPlansEnabled}
                 onDelete={() => del(p.id)}
                 onToggle={() => toggleActive(p)}
               />
@@ -202,7 +224,17 @@ function MisPubs() {
   );
 }
 
-function PubRow({ p, onDelete, onToggle }: { p: Pub; onDelete: () => void; onToggle: () => void }) {
+function PubRow({
+  p,
+  featuredPlansEnabled,
+  onDelete,
+  onToggle,
+}: {
+  p: Pub;
+  featuredPlansEnabled: boolean;
+  onDelete: () => void;
+  onToggle: () => void;
+}) {
   const { t } = useI18n();
   const nav = useNavigate();
   const img = useSignedUrl("productos", p.imagenes?.[0]);
@@ -245,14 +277,14 @@ function PubRow({ p, onDelete, onToggle }: { p: Pub; onDelete: () => void; onTog
                 </Badge>
               )}
               {promoActiva && (
-                <Badge className="bg-gradient-featured text-warning-foreground border-0 gap-1 text-[10px]">
-                  <Sparkles className="h-3 w-3" /> {p.tipo_promocion}
+                <Badge className="bg-gradient-featured text-warning-foreground border-0 gap-1 text-[10px] uppercase tracking-wide">
+                  <Sparkles className="h-3 w-3" /> DESTACADO · {p.tipo_promocion}
                 </Badge>
               )}
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            {!promoActiva && estadoPago !== "PENDIENTE" && (
+            {!promoActiva && estadoPago !== "PENDIENTE" && featuredPlansEnabled && (
               <Button
                 size="sm"
                 className="bg-gradient-featured text-warning-foreground hover:opacity-90"
@@ -260,8 +292,13 @@ function PubRow({ p, onDelete, onToggle }: { p: Pub; onDelete: () => void; onTog
                   nav({ to: "/promocionar/$productoId", params: { productoId: p.id } })
                 }
               >
-                <Sparkles className="h-3 w-3" /> {t("promote")}
+                <Sparkles className="h-3 w-3" /> DESTACAR PUBLICACIÓN
               </Button>
+            )}
+            {!promoActiva && estadoPago !== "PENDIENTE" && !featuredPlansEnabled && (
+              <Badge variant="secondary" className="text-[10px]">
+                DESTACADO temporalmente inactivo
+              </Badge>
             )}
             <div className="flex gap-1">
               <Button

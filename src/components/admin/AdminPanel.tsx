@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -29,7 +30,12 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { promoEndDate } from "@/lib/promo-plans";
+import {
+  ADVERTISING_OPTIONS,
+  BUSINESS_PLANS,
+  FEATURED_PLAN_CONFIG,
+  promoEndDate,
+} from "@/lib/promo-plans";
 import { reportReasons } from "@/lib/reporting";
 import { useSignedUrls } from "@/lib/storage";
 
@@ -157,6 +163,263 @@ const isRejectedState = (value?: string | null) => {
 
 const isHistoryState = (value?: string | null) => isCompletedState(value) || isRejectedState(value);
 
+type MonetizationSettings = {
+  featured: Record<string, { enabled: boolean; price: number; durationDays: number }>;
+  business: Record<string, { enabled: boolean; price: number }>;
+  advertising: Record<string, { enabled: boolean; price: number }>;
+};
+
+const defaultMonetizationSettings: MonetizationSettings = {
+  featured: Object.fromEntries(
+    Object.entries(FEATURED_PLAN_CONFIG).map(([key, plan]) => [
+      key,
+      { enabled: true, price: plan.price, durationDays: plan.durationDays },
+    ]),
+  ) as Record<string, { enabled: boolean; price: number; durationDays: number }>,
+  business: Object.fromEntries(
+    BUSINESS_PLANS.map((plan) => [plan.key, { enabled: true, price: plan.price }]),
+  ) as Record<string, { enabled: boolean; price: number }>,
+  advertising: Object.fromEntries(
+    Object.entries(ADVERTISING_OPTIONS).map(([key, option]) => [
+      key,
+      { enabled: false, price: option.price },
+    ]),
+  ) as Record<string, { enabled: boolean; price: number }>,
+};
+
+function MonetizationOverview({ transactions }: { transactions: Tx[] }) {
+  const stats = useMemo(() => {
+    const completed = transactions.filter((tx) => normalizePaymentState(tx.estado_pago) === "COMPLETADO");
+    const totalIngresos = completed.reduce((sum, tx) => sum + Number(tx.monto ?? 0), 0);
+    const currentMonth = new Date();
+    const monthIngresos = completed.filter((tx) => {
+      const created = new Date(tx.created_at ?? Date.now());
+      return created.getMonth() === currentMonth.getMonth() && created.getFullYear() === currentMonth.getFullYear();
+    }).reduce((sum, tx) => sum + Number(tx.monto ?? 0), 0);
+    const activos = transactions.filter((tx) => normalizePaymentState(tx.estado_pago) === "COMPLETADO").length;
+    const pendientes = transactions.filter((tx) => isPendingState(tx.estado_pago)).length;
+
+    return {
+      totalIngresos,
+      monthIngresos,
+      destacadosVendidos: activos,
+      destacadosActivos: Math.min(activos, 50),
+      destacadosVencidos: Math.max(0, pendientes),
+      productosDestacados: completed.length,
+    };
+  }, [transactions]);
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <Card>
+        <CardContent className="p-4">
+          <p className="text-sm text-muted-foreground">Ingresos totales</p>
+          <p className="mt-2 text-2xl font-bold">${stats.totalIngresos.toFixed(2)}</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent className="p-4">
+          <p className="text-sm text-muted-foreground">Ingresos del mes</p>
+          <p className="mt-2 text-2xl font-bold">${stats.monthIngresos.toFixed(2)}</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent className="p-4">
+          <p className="text-sm text-muted-foreground">DESTACADOS vendidos</p>
+          <p className="mt-2 text-2xl font-bold">{stats.destacadosVendidos}</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent className="p-4">
+          <p className="text-sm text-muted-foreground">DESTACADOS activos</p>
+          <p className="mt-2 text-2xl font-bold">{stats.destacadosActivos}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function MonetizationConfigPanel({
+  settings,
+  onSave,
+  onToggle,
+}: {
+  settings: MonetizationSettings;
+  onSave: (nextSettings: MonetizationSettings) => Promise<void>;
+  onToggle: (group: keyof MonetizationSettings, key: string) => Promise<void>;
+}) {
+  const updateField = async (
+    group: keyof MonetizationSettings,
+    key: string,
+    field: string,
+    value: number,
+  ) => {
+    const nextSettings: MonetizationSettings = {
+      ...settings,
+      [group]: {
+        ...settings[group],
+        [key]: {
+          ...settings[group][key],
+          [field]: Number.isFinite(value) ? value : 0,
+        },
+      },
+    };
+
+    await onSave(nextSettings);
+  };
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-3">
+      <Card>
+        <CardHeader>
+          <CardTitle>Planes destacados</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {Object.entries(FEATURED_PLAN_CONFIG).map(([key, plan]) => {
+            const item = settings.featured[key];
+            return (
+              <div key={key} className="rounded-lg border p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="font-semibold">{plan.name}</p>
+                    <p className="text-xs text-muted-foreground">{plan.durationDays} días</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={item.enabled ? "default" : "outline"}
+                    onClick={() => void onToggle("featured", key)}
+                  >
+                    {item.enabled ? "Activo" : "Inactivo"}
+                  </Button>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
+                      Precio
+                    </Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={item.price}
+                      onChange={(event) =>
+                        void updateField("featured", key, "price", Number(event.target.value))
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
+                      Días
+                    </Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={item.durationDays}
+                      onChange={(event) =>
+                        void updateField(
+                          "featured",
+                          key,
+                          "durationDays",
+                          Number(event.target.value),
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Planes de negocio</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {BUSINESS_PLANS.map((plan) => {
+            const item = settings.business[plan.key];
+            return (
+              <div key={plan.key} className="rounded-lg border p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="font-semibold">{plan.name}</p>
+                    <p className="text-xs text-muted-foreground">Plan comercial</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={item.enabled ? "default" : "outline"}
+                    onClick={() => void onToggle("business", plan.key)}
+                  >
+                    {item.enabled ? "Activo" : "Inactivo"}
+                  </Button>
+                </div>
+                <div className="mt-3">
+                  <Label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
+                    Precio
+                  </Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={item.price}
+                    onChange={(event) =>
+                      void updateField("business", plan.key, "price", Number(event.target.value))
+                    }
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Publicidad</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {Object.entries(ADVERTISING_OPTIONS).map(([key, option]) => {
+            const item = settings.advertising[key];
+            return (
+              <div key={key} className="rounded-lg border p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="font-semibold">{option.name}</p>
+                    <p className="text-xs text-muted-foreground">Espacio premium</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={item.enabled ? "default" : "outline"}
+                    onClick={() => void onToggle("advertising", key)}
+                  >
+                    {item.enabled ? "Activo" : "Inactivo"}
+                  </Button>
+                </div>
+                <div className="mt-3">
+                  <Label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
+                    Precio
+                  </Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={item.price}
+                    onChange={(event) =>
+                      void updateField("advertising", key, "price", Number(event.target.value))
+                    }
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 function ProductoModerationCard({
   producto,
   working,
@@ -280,6 +543,8 @@ function ProductoModerationCard({
 
 export function AdminPanel() {
   const { user } = useAuth();
+  const [settings, setSettings] = useState<MonetizationSettings>(defaultMonetizationSettings);
+  const [settingsRowId, setSettingsRowId] = useState<string | null>(null);
   const [txs, setTxs] = useState<Tx[]>([]);
   const [compras, setCompras] = useState<Compra[]>([]);
   const [productosPendientes, setProductosPendientes] = useState<ProductoPendiente[]>([]);
@@ -310,8 +575,106 @@ export function AdminPanel() {
       loadTicketsSoporte();
       loadUsuarios();
       loadRazonesPolitica();
+      void loadMonetizationSettings();
     }
   }, [user]);
+
+  const saveMonetizationSettings = async (nextSettings: MonetizationSettings) => {
+    try {
+      const payload = {
+        settings: nextSettings,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (settingsRowId) {
+        const { error } = await supabase
+          .from("monetization_settings")
+          .update(payload)
+          .eq("id", settingsRowId);
+
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase
+          .from("monetization_settings")
+          .insert(payload)
+          .select("id")
+          .single();
+
+        if (error) throw error;
+        if (data?.id) setSettingsRowId(data.id);
+      }
+
+      setSettings(nextSettings);
+    } catch (error) {
+      console.error("Error al guardar configuración de monetización:", error);
+      toast.error("No se pudo guardar la configuración de monetización");
+    }
+  };
+
+  const loadMonetizationSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("monetization_settings")
+        .select("id, settings")
+        .limit(1)
+        .maybeSingle();
+
+      if (error && error.code !== "PGRST116") throw error;
+
+      if (data?.settings) {
+        const merged = {
+          ...defaultMonetizationSettings,
+          ...((data.settings as Partial<MonetizationSettings>) ?? {}),
+          featured: {
+            ...defaultMonetizationSettings.featured,
+            ...((data.settings as Partial<MonetizationSettings>)?.featured ?? {}),
+          },
+          business: {
+            ...defaultMonetizationSettings.business,
+            ...((data.settings as Partial<MonetizationSettings>)?.business ?? {}),
+          },
+          advertising: {
+            ...defaultMonetizationSettings.advertising,
+            ...((data.settings as Partial<MonetizationSettings>)?.advertising ?? {}),
+          },
+        } satisfies MonetizationSettings;
+
+        setSettings(merged);
+        setSettingsRowId(data.id);
+        return;
+      }
+
+      const { data: insertData, error: insertError } = await supabase
+        .from("monetization_settings")
+        .insert({ settings: defaultMonetizationSettings, updated_at: new Date().toISOString() })
+        .select("id")
+        .single();
+
+      if (insertError) throw insertError;
+      setSettingsRowId(insertData.id);
+      setSettings(defaultMonetizationSettings);
+    } catch (error) {
+      console.error("Error al cargar configuración de monetización:", error);
+      toast.error("No se pudo cargar la configuración de monetización");
+    }
+  };
+
+  const toggleMonetizationPlan = async (group: keyof MonetizationSettings, key: string) => {
+    const currentGroup = settings[group];
+    const nextSettings: MonetizationSettings = {
+      ...settings,
+      [group]: {
+        ...currentGroup,
+        [key]: {
+          ...currentGroup[key],
+          enabled: !currentGroup[key].enabled,
+        },
+      },
+    };
+
+    setSettings(nextSettings);
+    await saveMonetizationSettings(nextSettings);
+  };
 
   const loadTransactions = async () => {
     setLoading(true);
@@ -940,6 +1303,9 @@ export function AdminPanel() {
               <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="compras">
                 Compras ({compras.filter((c) => c.estado === "PENDIENTE").length})
               </TabsTrigger>
+              <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="monetizacion">
+                💰 Monetización
+              </TabsTrigger>
               <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="moderacion">
                 Productos ({productosPendientes.length})
               </TabsTrigger>
@@ -1049,18 +1415,15 @@ export function AdminPanel() {
                             <Button
                               className="w-full sm:w-auto"
                               size="sm"
-                              className="w-full sm:w-auto"
                               variant="outline"
                               onClick={() => verComprobante(t.comprobante_url!)}
                             >
                               <Eye className="mr-1 h-4 w-4" /> Ver comprobante
                             </Button>
                             <Button
-                              className="w-full sm:w-auto"
+                              className="w-full sm:w-auto text-destructive hover:text-destructive"
                               size="sm"
-                              className="w-full sm:w-auto"
                               variant="outline"
-                              className="text-destructive hover:text-destructive"
                               onClick={() => onEliminarComprobante(t)}
                             >
                               <Trash2 className="mr-1 h-4 w-4" /> Eliminar
@@ -1141,6 +1504,16 @@ export function AdminPanel() {
                   </Card>
                 ))}
               </div>
+            </TabsContent>
+
+            {/* MONETIZACIÓN TAB */}
+            <TabsContent value="monetizacion" className="space-y-4">
+              <MonetizationOverview transactions={txs} />
+              <MonetizationConfigPanel
+                settings={settings}
+                onSave={saveMonetizationSettings}
+                onToggle={toggleMonetizationPlan}
+              />
             </TabsContent>
 
             {/* MODERACIÓN TAB */}
@@ -1231,10 +1604,9 @@ export function AdminPanel() {
                             </>
                           )}
                           <Button
-                            className="w-full sm:w-auto"
+                            className="w-full sm:w-auto text-destructive hover:text-destructive"
                             size="sm"
                             variant="outline"
-                            className="text-destructive hover:text-destructive"
                             disabled={working === r.id}
                             onClick={() => void onEliminarReporte(r.id)}
                           >
@@ -1293,10 +1665,9 @@ export function AdminPanel() {
                             )}
                           </Button>
                           <Button
-                            className="w-full sm:w-auto"
+                            className="w-full sm:w-auto text-destructive hover:text-destructive"
                             size="sm"
                             variant="outline"
-                            className="text-destructive hover:text-destructive"
                             disabled={working === r.id}
                             onClick={() => onEliminarResena(r.id)}
                           >
@@ -1386,10 +1757,9 @@ export function AdminPanel() {
                           </Button>
                         )}
                         <Button
-                          className="w-full sm:w-auto"
+                          className="w-full sm:w-auto text-destructive hover:text-destructive"
                           size="sm"
                           variant="outline"
-                          className="text-destructive hover:text-destructive"
                           disabled={working === ticket.id}
                           onClick={() => void onEliminarTicket(ticket.id)}
                         >

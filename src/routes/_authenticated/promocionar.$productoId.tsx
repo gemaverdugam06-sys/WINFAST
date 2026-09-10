@@ -24,6 +24,10 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { toUserMessage } from "@/lib/error-messages";
+import {
+  FEATURED_PLAN_CONFIG,
+  type FeaturedPlanKey,
+} from "@/lib/promo-plans";
 
 const PAYPHONE_LINK =
   import.meta.env.VITE_PAYPHONE_LINK ?? "https://ppls.me/yV2qDHkhPNunrElO0Tut1g";
@@ -32,68 +36,42 @@ export const Route = createFileRoute("/_authenticated/promocionar/$productoId")(
   component: PromocionarPage,
 });
 
-type PlanKey = "FLASH" | "BASICO" | "PLUS" | "PRO" | "MEGA";
+type MonetizationSettings = {
+  featured?: Record<string, { enabled?: boolean; price?: number; durationDays?: number }>;
+};
 
-const PLANS: Array<{
-  key: PlanKey;
-  name: string;
-  price: number;
-  days: number;
-  perks: string[];
-  Icon: typeof Zap;
-  highlight?: boolean;
-  badge?: string;
-  gradient: string;
-}> = [
-  {
-    key: "FLASH",
-    name: "Flash",
-    price: 1,
-    days: 2,
-    perks: ["Insignia 'Destacado'", "Aparece arriba", "Ideal para probar"],
-    Icon: Zap,
-    gradient: "from-amber-400 to-orange-500",
-  },
-  {
-    key: "BASICO",
-    name: "Básico",
-    price: 2,
-    days: 5,
-    perks: ["Todo lo de Flash", "5 días destacado", "Más visitas"],
-    Icon: Star,
-    badge: "Recomendado",
-    highlight: true,
-    gradient: "from-pink-500 to-rose-500",
-  },
-  {
-    key: "PLUS",
-    name: "Plus",
-    price: 3.5,
-    days: 10,
-    perks: ["10 días destacado", "Prioridad en búsqueda", "Insignia premium"],
-    Icon: Rocket,
-    gradient: "from-fuchsia-500 to-purple-600",
-  },
-  {
-    key: "PRO",
-    name: "Pro",
-    price: 5.99,
-    days: 20,
-    perks: ["20 días destacado", "Top en categoría", "Soporte prioritario"],
-    Icon: Flame,
-    gradient: "from-violet-500 to-indigo-600",
-  },
-  {
-    key: "MEGA",
-    name: "Mega",
-    price: 8.99,
-    days: 30,
-    perks: ["30 días destacado", "Insignia dorada", "Máxima exposición"],
-    Icon: Crown,
-    badge: "Mejor valor",
-    gradient: "from-yellow-400 via-orange-500 to-pink-500",
-  },
-];
+type PlanKey = keyof typeof FEATURED_PLAN_CONFIG;
+
+const buildPlans = (settings?: MonetizationSettings) => {
+  const featuredSettings = settings?.featured ?? {};
+
+  return Object.values(FEATURED_PLAN_CONFIG)
+    .filter((plan) => {
+      const config = featuredSettings[plan.key];
+      return config ? config.enabled !== false : true;
+    })
+    .map((plan) => ({
+      key: plan.key as PlanKey,
+      name: plan.name,
+      price: Number(featuredSettings[plan.key]?.price ?? plan.price),
+      days: Number(featuredSettings[plan.key]?.durationDays ?? plan.durationDays),
+      perks: [
+        "Insignia DESTACADO",
+        `${Number(featuredSettings[plan.key]?.durationDays ?? plan.durationDays)} días de visibilidad`,
+        plan.priority === 1 ? "Máxima prioridad" : "Mayor exposición",
+      ],
+      Icon: [Zap, Star, Rocket, Flame, Crown][Object.keys(FEATURED_PLAN_CONFIG).indexOf(plan.key)] ?? Zap,
+      highlight: plan.key === "BASICO",
+      badge: plan.key === "BASICO" ? "Recomendado" : plan.key === "MEGA" ? "Mejor valor" : undefined,
+      gradient: {
+        FLASH: "from-amber-400 to-orange-500",
+        BASICO: "from-pink-500 to-rose-500",
+        PLUS: "from-fuchsia-500 to-purple-600",
+        PRO: "from-violet-500 to-indigo-600",
+        MEGA: "from-yellow-400 via-orange-500 to-pink-500",
+      }[plan.key],
+    }));
+};
 
 function PromocionarPage() {
   const { productoId } = Route.useParams();
@@ -104,8 +82,41 @@ function PromocionarPage() {
   const [file, setFile] = useState<File | null>(null);
   const [referencia, setReferencia] = useState("");
   const [loading, setLoading] = useState(false);
+  const [plans, setPlans] = useState(() => buildPlans());
+  const [loadingPlans, setLoadingPlans] = useState(true);
 
-  const cfg = selected ? PLANS.find((p) => p.key === selected)! : null;
+  useState(() => {
+    const loadPlans = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("monetization_settings")
+          .select("settings")
+          .limit(1)
+          .maybeSingle();
+
+        if (error && error.code !== "PGRST116") throw error;
+
+        const settings = (data?.settings as MonetizationSettings | null) ?? undefined;
+        const nextPlans = buildPlans(settings);
+        setPlans(nextPlans);
+
+        if (nextPlans.length > 0) {
+          setSelected(nextPlans[0].key);
+        } else {
+          setSelected(null);
+        }
+      } catch (error) {
+        console.error("Error al cargar planes de monetización:", error);
+        toast.error("No se pudieron cargar los planes disponibles");
+      } finally {
+        setLoadingPlans(false);
+      }
+    };
+
+    void loadPlans();
+  });
+
+  const cfg = selected ? plans.find((p) => p.key === selected)! : null;
 
   const submit = async () => {
     if (!selected || !file || !user || !cfg)
@@ -149,62 +160,72 @@ function PromocionarPage() {
       <Header />
       <main className="container mx-auto max-w-6xl px-4 py-6">
         <div className="mb-6 text-center">
-          <Badge className="bg-gradient-featured text-warning-foreground border-0 gap-1 mb-2">
-            <Sparkles className="h-3 w-3" /> Vende hasta 5x más rápido
+          <Badge className="bg-gradient-featured text-warning-foreground border-0 gap-1 mb-2 uppercase tracking-wide">
+            <Sparkles className="h-3 w-3" /> Tu publicación gana más visibilidad
           </Badge>
-          <h1 className="text-2xl font-bold sm:text-3xl">{t("promote_listing")}</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl">DESTACAR PUBLICACIÓN</h1>
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-            Elige un plan y paga con PayPhone 🇪🇨
+            Elige un plan DESTACADO y paga con PayPhone 🇪🇨. La activación ocurre solo tras confirmar el pago.
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          {PLANS.map(({ key, name, price, days, perks, Icon, gradient, highlight, badge }) => (
-            <Card
-              key={key}
-              onClick={() => setSelected(key)}
-              className={`relative flex flex-col overflow-hidden cursor-pointer transition hover:-translate-y-0.5 hover:shadow-hover ${
-                selected === key
-                  ? "ring-2 ring-primary shadow-glow"
-                  : highlight
-                    ? "ring-1 ring-primary/40"
-                    : ""
-              }`}
-            >
+        {loadingPlans ? (
+          <div className="mb-6 flex justify-center py-6 text-muted-foreground">
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Cargando planes...
+          </div>
+        ) : plans.length === 0 ? (
+          <div className="mb-6 rounded-xl border border-dashed bg-muted/30 p-6 text-center text-sm text-muted-foreground">
+            No hay planes de destacado disponibles en este momento.
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {plans.map(({ key, name, price, days, perks, Icon, gradient, highlight, badge }) => (
+              <Card
+                key={key}
+                onClick={() => setSelected(key)}
+                className={`relative flex flex-col overflow-hidden cursor-pointer transition hover:-translate-y-0.5 hover:shadow-hover ${
+                  selected === key
+                    ? "ring-2 ring-primary shadow-glow"
+                    : highlight
+                      ? "ring-1 ring-primary/40"
+                      : ""
+                }`}
+              >
               {badge && (
                 <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-primary text-primary-foreground border-0 text-[10px] uppercase tracking-wide">
                   {badge}
                 </Badge>
               )}
-              <div className={`h-1.5 w-full bg-gradient-to-r ${gradient}`} />
-              <CardContent className="flex flex-1 flex-col gap-3 p-4">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br ${gradient} text-white shadow`}
-                  >
-                    <Icon className="h-5 w-5" />
+                <div className={`h-1.5 w-full bg-gradient-to-r ${gradient}`} />
+                <CardContent className="flex flex-1 flex-col gap-3 p-4">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br ${gradient} text-white shadow`}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="font-bold leading-none">{name}</p>
+                      <p className="text-xs text-muted-foreground">{days} días</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-bold leading-none">{name}</p>
-                    <p className="text-xs text-muted-foreground">{days} días</p>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-extrabold">${price.toFixed(2)}</span>
+                    <span className="text-xs text-muted-foreground">USD</span>
                   </div>
-                </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-extrabold">${price.toFixed(2)}</span>
-                  <span className="text-xs text-muted-foreground">USD</span>
-                </div>
-                <ul className="space-y-1.5 text-xs">
-                  {perks.map((p) => (
-                    <li key={p} className="flex items-start gap-1.5">
-                      <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
-                      <span>{p}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  <ul className="space-y-1.5 text-xs">
+                    {perks.map((p) => (
+                      <li key={p} className="flex items-start gap-1.5">
+                        <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
+                        <span>{p}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {cfg && (
           <Card className="mt-6 border-primary/30">
@@ -218,7 +239,7 @@ function PromocionarPage() {
 
               <div className="rounded-xl border bg-muted/30 p-4 space-y-3">
                 <p className="text-sm font-semibold">
-                  1. Paga ${cfg.price.toFixed(2)} con PayPhone
+                  1. Paga ${cfg.price.toFixed(2)} por el plan {cfg.name} y confirma el recibo.
                 </p>
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <Button asChild className="flex-1 bg-gradient-primary">
@@ -234,7 +255,7 @@ function PromocionarPage() {
               </div>
 
               <div className="space-y-3">
-                <p className="text-sm font-semibold">2. Sube la captura del comprobante</p>
+                <p className="text-sm font-semibold">2. Sube la captura del comprobante del pago</p>
                 <Label htmlFor="ref">Número de referencia (opcional)</Label>
                 <Input
                   id="ref"
@@ -270,7 +291,7 @@ function PromocionarPage() {
                 )}
               </Button>
               <p className="text-xs text-center text-muted-foreground">
-                Validaremos tu pago manualmente y activaremos el destacado en pocas horas.
+                No activamos el DESTACADO solo por pulsar pagar; la publicación se activa tras la confirmación real del pago.
               </p>
             </CardContent>
           </Card>

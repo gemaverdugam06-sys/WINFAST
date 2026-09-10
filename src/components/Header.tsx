@@ -211,6 +211,12 @@ export function Header() {
                   <DropdownMenuItem onClick={() => navigate({ to: "/mis-publicaciones" })}>
                     {t("my_listings")}
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate({ to: "/mis-destacados" })}>
+                    ⭐ Mis destacados
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate({ to: "/mis-pagos" })}>
+                    💳 Mis pagos
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate({ to: "/perfil" })}>
                     {t("profile")}
                   </DropdownMenuItem>

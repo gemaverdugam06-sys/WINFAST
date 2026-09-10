@@ -25,6 +25,8 @@ import { Route as AuthenticatedPublicarRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedNotificacionesRouteImport } from './routes/_authenticated/notificaciones'
 import { Route as AuthenticatedMisPublicacionesRouteImport } from './routes/_authenticated/mis-publicaciones'
+import { Route as AuthenticatedMisPagosRouteImport } from './routes/_authenticated/mis-pagos'
+import { Route as AuthenticatedMisDestacadosRouteImport } from './routes/_authenticated/mis-destacados'
 import { Route as AuthenticatedChatsRouteImport } from './routes/_authenticated/chats'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as VendedorVendedorIdReseChar241asRouteImport } from './routes/vendedor.$vendedorId.reseñas'
@@ -114,6 +116,17 @@ const AuthenticatedMisPublicacionesRoute =
     path: '/mis-publicaciones',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMisPagosRoute = AuthenticatedMisPagosRouteImport.update({
+  id: '/mis-pagos',
+  path: '/mis-pagos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMisDestacadosRoute =
+  AuthenticatedMisDestacadosRouteImport.update({
+    id: '/mis-destacados',
+    path: '/mis-destacados',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedChatsRoute = AuthenticatedChatsRouteImport.update({
   id: '/chats',
   path: '/chats',
@@ -161,6 +174,8 @@ export interface FileRoutesByFullPath {
   '/terminos': typeof TerminosRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/chats': typeof AuthenticatedChatsRoute
+  '/mis-destacados': typeof AuthenticatedMisDestacadosRoute
+  '/mis-pagos': typeof AuthenticatedMisPagosRoute
   '/mis-publicaciones': typeof AuthenticatedMisPublicacionesRoute
   '/notificaciones': typeof AuthenticatedNotificacionesRoute
   '/perfil': typeof AuthenticatedPerfilRoute
@@ -185,6 +200,8 @@ export interface FileRoutesByTo {
   '/terminos': typeof TerminosRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/chats': typeof AuthenticatedChatsRoute
+  '/mis-destacados': typeof AuthenticatedMisDestacadosRoute
+  '/mis-pagos': typeof AuthenticatedMisPagosRoute
   '/mis-publicaciones': typeof AuthenticatedMisPublicacionesRoute
   '/notificaciones': typeof AuthenticatedNotificacionesRoute
   '/perfil': typeof AuthenticatedPerfilRoute
@@ -211,6 +228,8 @@ export interface FileRoutesById {
   '/terminos': typeof TerminosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/chats': typeof AuthenticatedChatsRoute
+  '/_authenticated/mis-destacados': typeof AuthenticatedMisDestacadosRoute
+  '/_authenticated/mis-pagos': typeof AuthenticatedMisPagosRoute
   '/_authenticated/mis-publicaciones': typeof AuthenticatedMisPublicacionesRoute
   '/_authenticated/notificaciones': typeof AuthenticatedNotificacionesRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
@@ -237,6 +256,8 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/admin'
     | '/chats'
+    | '/mis-destacados'
+    | '/mis-pagos'
     | '/mis-publicaciones'
     | '/notificaciones'
     | '/perfil'
@@ -261,6 +282,8 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/admin'
     | '/chats'
+    | '/mis-destacados'
+    | '/mis-pagos'
     | '/mis-publicaciones'
     | '/notificaciones'
     | '/perfil'
@@ -286,6 +309,8 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/_authenticated/admin'
     | '/_authenticated/chats'
+    | '/_authenticated/mis-destacados'
+    | '/_authenticated/mis-pagos'
     | '/_authenticated/mis-publicaciones'
     | '/_authenticated/notificaciones'
     | '/_authenticated/perfil'
@@ -429,6 +454,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMisPublicacionesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mis-pagos': {
+      id: '/_authenticated/mis-pagos'
+      path: '/mis-pagos'
+      fullPath: '/mis-pagos'
+      preLoaderRoute: typeof AuthenticatedMisPagosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mis-destacados': {
+      id: '/_authenticated/mis-destacados'
+      path: '/mis-destacados'
+      fullPath: '/mis-destacados'
+      preLoaderRoute: typeof AuthenticatedMisDestacadosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/chats': {
       id: '/_authenticated/chats'
       path: '/chats'
@@ -484,6 +523,8 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedChatsRoute: typeof AuthenticatedChatsRoute
+  AuthenticatedMisDestacadosRoute: typeof AuthenticatedMisDestacadosRoute
+  AuthenticatedMisPagosRoute: typeof AuthenticatedMisPagosRoute
   AuthenticatedMisPublicacionesRoute: typeof AuthenticatedMisPublicacionesRoute
   AuthenticatedNotificacionesRoute: typeof AuthenticatedNotificacionesRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
@@ -498,6 +539,8 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedChatsRoute: AuthenticatedChatsRoute,
+  AuthenticatedMisDestacadosRoute: AuthenticatedMisDestacadosRoute,
+  AuthenticatedMisPagosRoute: AuthenticatedMisPagosRoute,
   AuthenticatedMisPublicacionesRoute: AuthenticatedMisPublicacionesRoute,
   AuthenticatedNotificacionesRoute: AuthenticatedNotificacionesRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
