@@ -128,7 +128,7 @@ function ProductoPage() {
         setP(producto);
 
         // Load vendor stats and recent reviews
-        if (producto?.user_id) {
+        if (producto?.user_id && user?.id) {
           try {
             // Get vendor stats
             const { data: stats } = await supabase
@@ -486,7 +486,7 @@ function ProductoPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Opiniones del vendedor</h2>
                 <div className="flex items-center gap-3">
-                  {reviewTransactionId && (
+                  {user && reviewTransactionId && (
                     <Link
                       to="/reseña/$transaccionId"
                       params={{ transaccionId: reviewTransactionId }}
@@ -495,7 +495,7 @@ function ProductoPage() {
                       Calificar vendedor
                     </Link>
                   )}
-                  {vendorStats && vendorStats.review_count > 0 && (
+                  {user && vendorStats && vendorStats.review_count > 0 && (
                     <Link
                       to="/vendedor/$vendedorId/reseñas"
                       params={{ vendedorId: p.user_id }}
@@ -504,7 +504,7 @@ function ProductoPage() {
                       Ver todas ({vendorStats.review_count})
                     </Link>
                   )}
-                  {(!vendorStats || vendorStats.review_count === 0) && (
+                  {user && (!vendorStats || vendorStats.review_count === 0) && (
                     <Link
                       to="/vendedor/$vendedorId/reseñas"
                       params={{ vendedorId: p.user_id }}
@@ -516,7 +516,11 @@ function ProductoPage() {
                 </div>
               </div>
 
-              {vendorStats ? (
+              {!user ? (
+                <p className="text-sm text-muted-foreground">
+                  Inicia sesión para ver las reseñas y la calificación del vendedor.
+                </p>
+              ) : vendorStats ? (
                 <div className="mb-4 flex items-center gap-3">
                   <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (

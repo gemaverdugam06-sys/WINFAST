@@ -82,9 +82,5 @@ BEGIN
   CREATE POLICY "profiles_update_own" ON public.profiles
     FOR UPDATE TO authenticated
     USING (auth.uid() = id)
-    WITH CHECK (
-      auth.uid() = id
-      AND NEW.is_blocked IS NOT DISTINCT FROM OLD.is_blocked
-      AND NEW.motivo_bloqueo IS NOT DISTINCT FROM OLD.motivo_bloqueo
-    );
+    WITH CHECK (auth.uid() = id);
 END $$;

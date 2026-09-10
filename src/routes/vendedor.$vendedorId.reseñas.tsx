@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Star, ArrowLeft } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useSignedUrl } from "@/lib/storage";
+import { useAuth } from "@/lib/auth";
 
 interface Reseña {
   id: string;
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/vendedor/$vendedorId/reseñas")({
 function ReseñasVendedor() {
   const { vendedorId } = useParams({ from: "/vendedor/$vendedorId/reseñas" });
   const nav = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [vendedor, setVendedor] = useState<VendedorStats | null>(null);
   const [reseñas, setReseñas] = useState<Reseña[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +47,11 @@ function ReseñasVendedor() {
 
   useEffect(() => {
     const loadData = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         let vendorRow = null;
@@ -137,7 +144,39 @@ function ReseñasVendedor() {
     };
 
     loadData();
-  }, [vendedorId]);
+  }, [vendedorId, user?.id]);
+
+  if (authLoading || (loading && user)) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center py-20 text-muted-foreground">
+          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Cargando...
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto max-w-3xl px-4 py-6">
+          <Card>
+            <CardContent className="py-10 text-center">
+              <h1 className="text-xl font-bold">Inicia sesión para ver las reseñas</h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Necesitas ingresar a tu cuenta para consultar las opiniones de los vendedores.
+              </p>
+              <Button className="mt-4" onClick={() => nav({ to: "/auth" })}>
+                Iniciar sesión
+              </Button>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
