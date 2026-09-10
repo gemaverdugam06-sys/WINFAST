@@ -29,19 +29,20 @@ export function validateStrongPassword(password: string): string | null {
 export async function getUserRole(userId: string): Promise<string | null> {
   if (!userId) return null;
 
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .limit(50);
+  const { data: isAdmin, error: adminError } = await supabase.rpc("has_role", {
+    _user_id: userId,
+    _role: "admin",
+  });
 
-  if (error) {
-    console.error("Error consultando el rol del usuario en user_roles:", error);
-    return null;
+  if (!adminError && isAdmin) {
+    return "admin";
   }
 
-  const roles = Array.isArray(data) ? data.map((row) => row?.role).filter(Boolean) : [];
-  return roles.includes("admin") ? "admin" : (roles[0] ?? null);
+  if (adminError) {
+    console.error("Error consultando el rol admin:", adminError);
+  }
+
+  return null;
 }
 
 export async function checkIsAdmin(userId: string): Promise<boolean> {

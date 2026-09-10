@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { checkIsAdmin } from "@/lib/auth-utils";
 
 interface AuthCtx {
   user: User | null;
@@ -125,21 +126,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const refreshRole = async () => {
       try {
-        const { data, error } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", userId)
-          .limit(50);
-
         if (!active) return;
 
-        const roles = Array.isArray(data)
-          ? data
-              .map((row) => row?.role)
-              .filter((role): role is "admin" | "moderator" | "user" => Boolean(role))
-          : [];
-
-        setIsAdmin(!error && roles.includes("admin"));
+        setIsAdmin(await checkIsAdmin(userId));
       } catch {
         if (active) setIsAdmin(false);
       } finally {
