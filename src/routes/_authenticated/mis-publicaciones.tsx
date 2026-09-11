@@ -160,8 +160,9 @@ function MisPubs() {
 
       setItems(listaProductos);
     } catch (err: unknown) {
-      toUserMessage(err, "Error al sincronizar con el servidor");
-      toast.error("Error al sincronizar con el servidor");
+      const message = toUserMessage(err, "Error al sincronizar con el servidor");
+      console.error("Error sincronizando publicaciones:", err);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
