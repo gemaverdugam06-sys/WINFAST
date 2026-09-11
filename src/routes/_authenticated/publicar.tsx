@@ -67,6 +67,43 @@ const schema = z.object({
   whatsapp: z.string().trim().max(20).optional().or(z.literal("")),
 });
 
+const isMissingProductColumnError = (error: unknown) => {
+  if (!error || typeof error !== "object") return false;
+
+  const code = (error as { code?: string }).code;
+  const message = String((error as { message?: string }).message ?? "").toLowerCase();
+
+  return (
+    code === "42703" ||
+    code === "PGRST204" ||
+    message.includes("estado_moderacion") ||
+    message.includes("razon_rechazo") ||
+    message.includes("column") && message.includes("does not exist")
+  );
+};
+
+const isProductPermissionError = (error: unknown) => {
+  if (!error || typeof error !== "object") return false;
+
+  const code = (error as { code?: string }).code;
+  const message = String((error as { message?: string }).message ?? "").toLowerCase();
+
+  return (
+    code === "42501" ||
+    message.includes("permission denied") ||
+    message.includes("unauthorized") ||
+    message.includes("row-level security")
+  );
+};
+
+const isStorageBucketMissingError = (error: unknown) => {
+  if (!error || typeof error !== "object") return false;
+
+  const message = String((error as { message?: string }).message ?? "").toLowerCase();
+
+  return message.includes("bucket not found") || message.includes("not found") && message.includes("bucket");
+};
+
 export const Route = createFileRoute("/_authenticated/publicar")({
   component: PublicarPage,
 });
@@ -193,7 +230,6 @@ function PublicarPage() {
       return;
     }
 
-    // SECURITY: Validate content for prohibited items
     const titleValidation = validateProductTitle(parsed.data.titulo);
     if (!titleValidation.valid) {
       toast.error(titleValidation.errors[0]);
@@ -206,7 +242,6 @@ function PublicarPage() {
       return;
     }
 
-    // SECURITY: Additional check for title + description together
     const combinedText = `${parsed.data.titulo} ${parsed.data.descripcion}`;
     const prohibited = containsProhibitedKeywords(combinedText);
     if (prohibited.found) {
@@ -226,35 +261,78 @@ function PublicarPage() {
         contentType: f.type,
       });
       if (error) {
-        toast.error(toUserMessage(error, "Error al subir la imagen. Intenta de nuevo."));
+        console.error("Error subiendo imagen del producto:", error);
+        if (isStorageBucketMissingError(error)) {
+          toast.error("El bucket 'productos' no existe en Supabase Storage. Crea el bucket para poder publicar.");
+        } else {
+          toast.error(toUserMessage(error, "Error al subir la imagen. Intenta de nuevo."));
+        }
         setLoading(false);
         return;
       }
       uploadedPaths.push(path);
     }
 
-    const { data, error } = await supabase
-      .from("productos")
-      .insert({
-        user_id: user.id,
-        titulo: parsed.data.titulo,
-        descripcion: parsed.data.descripcion,
-        precio: parsed.data.precio,
-        categoria_id: parsed.data.categoria_id,
-        ciudad: parsed.data.ciudad,
-        estado: parsed.data.estado,
-        whatsapp: parsed.data.whatsapp || null,
-        imagenes: uploadedPaths,
-        estado_moderacion: "pendiente", // All new products start as pending
-      })
-      .select("id")
-      .single();
+    const basePayload = {
+      user_id: user.id,
+      titulo: parsed.data.titulo,
+      descripcion: parsed.data.descripcion,
+      precio: parsed.data.precio,
+      categoria_id: parsed.data.categoria_id,
+      ciudad: parsed.data.ciudad,
+      estado: parsed.data.estado,
+      whatsapp: parsed.data.whatsapp || null,
+      imagenes: uploadedPaths,
+      moneda: "USD",
+      activo: true,
+    };
+
+    const payloadVariants = [
+      {
+        ...basePayload,
+        estado_moderacion: "pendiente",
+        razon_rechazo: null,
+      },
+      basePayload,
+    ];
+
+    let insertError: unknown = null;
+    let productoId: string | null = null;
+
+    for (const payload of payloadVariants) {
+      const { data, error } = await supabase
+        .from("productos")
+        .insert(payload)
+        .select("id")
+        .single();
+
+      if (error) {
+        insertError = error;
+        if (!isMissingProductColumnError(error)) {
+          break;
+        }
+        console.warn("El esquema de productos no tiene moderación; reintentando con payload mínimo:", error);
+        continue;
+      }
+
+      productoId = data?.id ?? null;
+      break;
+    }
 
     setLoading(false);
-    if (error) {
-      toast.error(toUserMessage(error, "No se pudo publicar el anuncio. Intenta de nuevo."));
+
+    if (!productoId || insertError) {
+      console.error("Error publicando producto:", insertError ?? "No se recibió id del producto");
+      if (isProductPermissionError(insertError)) {
+        toast.error("No tienes permisos para publicar este anuncio. Revisa tu sesión o los permisos de Supabase.");
+      } else if (isMissingProductColumnError(insertError)) {
+        toast.error("La estructura real de Supabase no incluye una o más columnas de moderación. Revisa la migración del esquema de productos.");
+      } else {
+        toast.error(toUserMessage(insertError, "No se pudo publicar el anuncio. Intenta de nuevo."));
+      }
       return;
     }
+
     toast.success("✅ Publicación creada correctamente");
     toast.info("⭐ ¿Quieres darle mayor visibilidad? DESTACAR PUBLICACIÓN");
     nav({ to: "/mis-publicaciones" });
