@@ -173,8 +173,29 @@ const isMonetizationSettingsUnavailable = (error: unknown) => {
     code === "42P01" ||
     code === "PGRST205" ||
     code === "42501" ||
-    message.includes("monetization_settings") &&
-      (message.includes("does not exist") || message.includes("not found") || message.includes("permission denied"))
+    (message.includes("monetization_settings") &&
+      (message.includes("does not exist") ||
+        message.includes("not found") ||
+        message.includes("permission denied")))
+  );
+};
+
+const isSupabaseAccessError = (error: unknown) => {
+  if (!error || typeof error !== "object") return false;
+
+  const code = (error as { code?: string }).code;
+  const message = String((error as { message?: string }).message ?? "").toLowerCase();
+
+  return (
+    code === "42501" ||
+    code === "PGRST301" ||
+    code === "PGRST205" ||
+    code === "42P01" ||
+    message.includes("permission denied") ||
+    message.includes("unauthorized") ||
+    message.includes("forbidden") ||
+    message.includes("does not exist") ||
+    message.includes("not found")
   );
 };
 
@@ -741,8 +762,12 @@ export function AdminPanel() {
 
       if (error) throw error;
       setTxs((data as unknown as Tx[]) ?? []);
-    } catch {
-      toast.error("Error al cargar transacciones");
+    } catch (error) {
+      console.warn("Error al cargar transacciones:", error);
+      setTxs([]);
+      if (!isSupabaseAccessError(error)) {
+        toast.error("Error al cargar transacciones");
+      }
     } finally {
       setLoading(false);
     }
@@ -758,8 +783,12 @@ export function AdminPanel() {
         .order("created_at", { ascending: false });
       if (error) throw error;
       setCompras((data as unknown as Compra[]) ?? []);
-    } catch {
-      toast.error("No se pudieron cargar las compras");
+    } catch (error) {
+      console.warn("Error al cargar compras:", error);
+      setCompras([]);
+      if (!isSupabaseAccessError(error)) {
+        toast.error("No se pudieron cargar las compras");
+      }
     }
   };
 
@@ -819,7 +848,11 @@ export function AdminPanel() {
       if (error) throw error;
       setReportes((data as unknown as Reporte[]) ?? []);
     } catch (err) {
-      console.error("Error al cargar reportes:", err);
+      console.warn("Error al cargar reportes:", err);
+      setReportes([]);
+      if (!isSupabaseAccessError(err)) {
+        toast.error("No se pudieron cargar los reportes");
+      }
     }
   };
 
@@ -834,7 +867,11 @@ export function AdminPanel() {
       if (error) throw error;
       setReseniasReportadas((data as unknown as ReportedReview[]) ?? []);
     } catch (err) {
-      console.error("Error al cargar reseñas reportadas:", err);
+      console.warn("Error al cargar reseñas reportadas:", err);
+      setReseniasReportadas([]);
+      if (!isSupabaseAccessError(err)) {
+        toast.error("No se pudieron cargar las reseñas reportadas");
+      }
     }
   };
 
@@ -850,7 +887,11 @@ export function AdminPanel() {
       if (error) throw error;
       setTicketsSoporte((data as SupportTicket[]) ?? []);
     } catch (err) {
-      console.error("Error al cargar tickets de soporte:", err);
+      console.warn("Error al cargar tickets de soporte:", err);
+      setTicketsSoporte([]);
+      if (!isSupabaseAccessError(err)) {
+        toast.error("No se pudieron cargar los tickets de soporte");
+      }
     }
   };
 
@@ -878,7 +919,11 @@ export function AdminPanel() {
 
       setUsuarios(rows as UserProfile[]);
     } catch (err) {
-      console.error("Error al cargar usuarios:", err);
+      console.warn("Error al cargar usuarios:", err);
+      setUsuarios([]);
+      if (!isSupabaseAccessError(err)) {
+        toast.error("No se pudieron cargar los usuarios");
+      }
     }
   };
 
@@ -895,7 +940,11 @@ export function AdminPanel() {
         (data as unknown as Array<{ categoria: string; descripcion: string }>) ?? [],
       );
     } catch (err) {
-      console.error("Error al cargar razones de política:", err);
+      console.warn("Error al cargar razones de política:", err);
+      setRazonesPolitica([]);
+      if (!isSupabaseAccessError(err)) {
+        toast.error("No se pudieron cargar las razones de política");
+      }
     }
   };
 
