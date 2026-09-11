@@ -163,6 +163,21 @@ const isRejectedState = (value?: string | null) => {
 
 const isHistoryState = (value?: string | null) => isCompletedState(value) || isRejectedState(value);
 
+const isMonetizationSettingsUnavailable = (error: unknown) => {
+  if (!error || typeof error !== "object") return false;
+
+  const code = (error as { code?: string }).code;
+  const message = String((error as { message?: string }).message ?? "").toLowerCase();
+
+  return (
+    code === "42P01" ||
+    code === "PGRST205" ||
+    code === "42501" ||
+    message.includes("monetization_settings") &&
+      (message.includes("does not exist") || message.includes("not found") || message.includes("permission denied"))
+  );
+};
+
 type MonetizationSettings = {
   featured: Record<string, { enabled: boolean; price: number; durationDays: number }>;
   business: Record<string, { enabled: boolean; price: number }>;
@@ -592,7 +607,14 @@ export function AdminPanel() {
           .update(payload)
           .eq("id", settingsRowId);
 
-        if (error) throw error;
+        if (error) {
+          if (isMonetizationSettingsUnavailable(error)) {
+            console.warn("monetization_settings no disponible; usando valores por defecto");
+            setSettings(nextSettings);
+            return;
+          }
+          throw error;
+        }
       } else {
         const { data, error } = await supabase
           .from("monetization_settings")
@@ -600,14 +622,23 @@ export function AdminPanel() {
           .select("id")
           .single();
 
-        if (error) throw error;
+        if (error) {
+          if (isMonetizationSettingsUnavailable(error)) {
+            console.warn("monetization_settings no disponible; usando valores por defecto");
+            setSettings(nextSettings);
+            return;
+          }
+          throw error;
+        }
         if (data?.id) setSettingsRowId(data.id);
       }
 
       setSettings(nextSettings);
     } catch (error) {
       console.error("Error al guardar configuración de monetización:", error);
-      toast.error("No se pudo guardar la configuración de monetización");
+      if (!isMonetizationSettingsUnavailable(error)) {
+        toast.error("No se pudo guardar la configuración de monetización");
+      }
     }
   };
 
@@ -619,7 +650,15 @@ export function AdminPanel() {
         .limit(1)
         .maybeSingle();
 
-      if (error && error.code !== "PGRST116") throw error;
+      if (error && error.code !== "PGRST116") {
+        if (isMonetizationSettingsUnavailable(error)) {
+          console.warn("monetization_settings no disponible, se usa la configuración por defecto");
+          setSettings(defaultMonetizationSettings);
+          setSettingsRowId(null);
+          return;
+        }
+        throw error;
+      }
 
       if (data?.settings) {
         const merged = {
@@ -650,12 +689,22 @@ export function AdminPanel() {
         .select("id")
         .single();
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        if (isMonetizationSettingsUnavailable(insertError)) {
+          console.warn("monetization_settings no disponible, se usa la configuración por defecto");
+          setSettings(defaultMonetizationSettings);
+          setSettingsRowId(null);
+          return;
+        }
+        throw insertError;
+      }
       setSettingsRowId(insertData.id);
       setSettings(defaultMonetizationSettings);
     } catch (error) {
       console.error("Error al cargar configuración de monetización:", error);
-      toast.error("No se pudo cargar la configuración de monetización");
+      if (!isMonetizationSettingsUnavailable(error)) {
+        toast.error("No se pudo cargar la configuración de monetización");
+      }
     }
   };
 
