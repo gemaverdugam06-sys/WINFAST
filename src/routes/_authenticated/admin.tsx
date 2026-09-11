@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/auth" });
 
-    const admin = await checkIsAdmin(data.user.id);
+    const admin = await checkIsAdmin(data.user.id, data.user.email ?? null);
     if (!admin) throw redirect({ to: "/" });
   },
   component: AdminPage,

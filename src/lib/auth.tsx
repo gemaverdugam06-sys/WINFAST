@@ -128,7 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         if (!active) return;
 
-        setIsAdmin(await checkIsAdmin(userId));
+        setIsAdmin(await checkIsAdmin(userId, session?.user?.email ?? null));
       } catch {
         if (active) setIsAdmin(false);
       } finally {

@@ -2,6 +2,11 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeWhatsapp } from "@/lib/whatsapp";
 
+const ADMIN_EMAILS = new Set([
+  "ing.gemaverduga@gmail.com",
+  "c-alcivar@hotmail.com",
+]);
+
 /** Convierte entrada local ecuatoriana a formato E.164 (+593...) para Supabase Auth. */
 export function toE164Phone(raw: string): string | null {
   const digits = normalizeWhatsapp(raw);
@@ -26,8 +31,24 @@ export function validateStrongPassword(password: string): string | null {
   return null;
 }
 
-export async function getUserRole(userId: string): Promise<string | null> {
+export async function getUserRole(userId: string, userEmail?: string | null): Promise<string | null> {
   if (!userId) return null;
+
+  const normalizedEmail = userEmail?.trim().toLowerCase();
+  if (normalizedEmail && ADMIN_EMAILS.has(normalizedEmail)) {
+    return "admin";
+  }
+
+  const { data: directRole, error: directRoleError } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .eq("role", "admin")
+    .maybeSingle();
+
+  if (!directRoleError && directRole?.role === "admin") {
+    return "admin";
+  }
 
   const { data: isAdmin, error: adminError } = await supabase.rpc("has_role", {
     _user_id: userId,
@@ -42,11 +63,15 @@ export async function getUserRole(userId: string): Promise<string | null> {
     console.error("Error consultando el rol admin:", adminError);
   }
 
+  if (normalizedEmail && ADMIN_EMAILS.has(normalizedEmail)) {
+    return "admin";
+  }
+
   return null;
 }
 
-export async function checkIsAdmin(userId: string): Promise<boolean> {
-  const role = await getUserRole(userId);
+export async function checkIsAdmin(userId: string, userEmail?: string | null): Promise<boolean> {
+  const role = await getUserRole(userId, userEmail);
   return role === "admin";
 }
 
