@@ -120,6 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     let active = true;
+    setIsAdmin(false);
     setRoleLoading(true);
 
     void supabase.rpc("sync_my_profile_name");
@@ -128,7 +129,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         if (!active) return;
 
-        setIsAdmin(await checkIsAdmin(userId, session?.user?.email ?? null));
+        const allowed = await checkIsAdmin(userId, session?.user?.email ?? null);
+        if (active) setIsAdmin(allowed);
       } catch {
         if (active) setIsAdmin(false);
       } finally {
