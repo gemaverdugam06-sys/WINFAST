@@ -88,6 +88,16 @@ ON CONFLICT (user_id, role) DO NOTHING;
 
 ALTER TABLE public.productos ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Permitir DELETE a propietarios y admins" ON public.productos;
+DROP POLICY IF EXISTS "Permitir INSERT a usuarios y admins" ON public.productos;
+DROP POLICY IF EXISTS "Permitir SELECT a todos" ON public.productos;
+DROP POLICY IF EXISTS "Permitir UPDATE a propietarios y admins" ON public.productos;
+DROP POLICY IF EXISTS "Permitir insertar a autenticados" ON public.productos;
+DROP POLICY IF EXISTS "Permitir lectura publica de productos" ON public.productos;
+DROP POLICY IF EXISTS "Permitir modificar a dueños" ON public.productos;
+DROP POLICY IF EXISTS "Usuarios pueden ver sus propios productos" ON public.productos;
+DROP POLICY IF EXISTS "productos_admin_manage" ON public.productos;
+DROP POLICY IF EXISTS "productos_admin_delete" ON public.productos;
 DROP POLICY IF EXISTS "productos_select_all" ON public.productos;
 DROP POLICY IF EXISTS "productos_public_select_approved" ON public.productos;
 CREATE POLICY "productos_public_select_approved" ON public.productos
@@ -131,6 +141,16 @@ DROP POLICY IF EXISTS "productos_delete_own" ON public.productos;
 CREATE POLICY "productos_delete_own" ON public.productos
   FOR DELETE TO authenticated
   USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "productos_admin_update" ON public.productos;
+CREATE POLICY "productos_admin_update" ON public.productos
+  FOR UPDATE TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'::public.app_role))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+
+CREATE POLICY "productos_admin_delete" ON public.productos
+  FOR DELETE TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 
 ALTER TABLE public.transacciones ENABLE ROW LEVEL SECURITY;
 
