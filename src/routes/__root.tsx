@@ -160,6 +160,14 @@ function RootComponent() {
     });
 
     const recoveryUrl = decodeURIComponent(`${window.location.hash}${window.location.search}`);
+    const recoveryError = new URLSearchParams(
+      `${window.location.hash.replace(/^#/, "")}&${window.location.search.replace(/^\?/, "")}`,
+    ).get("error_code");
+
+    if (recoveryError === "otp_expired") {
+      void router.navigate({ to: "/auth/recuperar", replace: true });
+    }
+
     if (
       recoveryUrl.includes("type=recovery") ||
       (recoveryUrl.includes("access_token=") && recoveryUrl.includes("refresh_token="))
