@@ -89,12 +89,31 @@ ON CONFLICT (user_id, role) DO NOTHING;
 ALTER TABLE public.productos ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "productos_select_all" ON public.productos;
-CREATE POLICY "productos_select_all" ON public.productos
+DROP POLICY IF EXISTS "productos_public_select_approved" ON public.productos;
+CREATE POLICY "productos_public_select_approved" ON public.productos
   FOR SELECT TO anon, authenticated
-  USING (true);
+  USING (activo = true AND estado_moderacion = 'aprobado');
+
+DROP POLICY IF EXISTS "productos_owner_select" ON public.productos;
+CREATE POLICY "productos_owner_select" ON public.productos
+  FOR SELECT TO authenticated
+  USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "productos_admin_select" ON public.productos;
+CREATE POLICY "productos_admin_select" ON public.productos
+  FOR SELECT TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON TABLE public.productos
+TO authenticated;
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON TABLE public.reportes
+TO authenticated;
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON TABLE public.support_tickets
 TO authenticated;
 
 DROP POLICY IF EXISTS "productos_insert_own" ON public.productos;
