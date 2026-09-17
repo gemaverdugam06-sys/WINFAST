@@ -44,6 +44,8 @@ $$;
 REVOKE ALL ON FUNCTION public.is_admin_email(text) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.is_admin_email(text) TO authenticated, service_role;
 
+DROP FUNCTION IF EXISTS public.has_role(uuid, text);
+
 CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role public.app_role)
 RETURNS boolean
 LANGUAGE sql
