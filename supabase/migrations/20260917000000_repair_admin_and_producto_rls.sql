@@ -53,6 +53,10 @@ BEGIN
 END
 $$;
 
+GRANT EXECUTE
+ON FUNCTION public.has_role_text(uuid, text)
+TO authenticated, service_role;
+
 CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role public.app_role)
 RETURNS boolean
 LANGUAGE sql
@@ -88,6 +92,10 @@ DROP POLICY IF EXISTS "productos_select_all" ON public.productos;
 CREATE POLICY "productos_select_all" ON public.productos
   FOR SELECT TO anon, authenticated
   USING (true);
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON TABLE public.productos
+TO authenticated;
 
 DROP POLICY IF EXISTS "productos_insert_own" ON public.productos;
 CREATE POLICY "productos_insert_own" ON public.productos
