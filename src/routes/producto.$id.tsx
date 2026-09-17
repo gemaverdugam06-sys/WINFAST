@@ -40,6 +40,7 @@ interface Producto {
   estado_moderacion: string;
   whatsapp: string | null;
   es_destacado: boolean;
+  promocionado_hasta: string | null;
   user_id: string;
   categoria_id: string;
   profiles: {
@@ -301,6 +302,10 @@ function ProductoPage() {
     );
   }
 
+  const destacadoActivo =
+    Boolean(p.es_destacado) &&
+    (!p.promocionado_hasta || new Date(p.promocionado_hasta) > new Date());
+
   const waLink = buildWhatsappLink(
     p.whatsapp,
     `Hola, vi tu anuncio "${p.titulo}" en WINFAST y me interesa. ¿Sigue disponible?`,
@@ -366,7 +371,7 @@ function ProductoPage() {
               {p.estado_moderacion === "rechazado" && (
                 <Badge variant="destructive">Producto rechazado</Badge>
               )}
-              {p.es_destacado && (
+              {destacadoActivo && (
                 <Badge className="bg-gradient-featured text-warning-foreground border-0 gap-1">
                   <Sparkles className="h-3 w-3" /> {t("featured")}
                 </Badge>
