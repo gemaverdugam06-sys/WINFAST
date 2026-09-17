@@ -29,11 +29,19 @@ function NuevaContrasenaPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    let active = true;
     const { data } = supabase.auth.onAuthStateChange((event, s) => {
       if (event === "PASSWORD_RECOVERY" || s) setReady(true);
     });
-    if (session) setReady(true);
-    return () => data.subscription.unsubscribe();
+
+    void supabase.auth.getSession().then(({ data: sessionData }) => {
+      if (active && (sessionData.session || session)) setReady(true);
+    });
+
+    return () => {
+      active = false;
+      data.subscription.unsubscribe();
+    };
   }, [session]);
 
   useEffect(() => {
