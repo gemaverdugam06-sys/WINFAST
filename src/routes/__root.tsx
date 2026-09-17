@@ -158,6 +158,15 @@ function RootComponent() {
         if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
       }
     });
+
+    const recoveryUrl = decodeURIComponent(`${window.location.hash}${window.location.search}`);
+    if (
+      recoveryUrl.includes("type=recovery") ||
+      (recoveryUrl.includes("access_token=") && recoveryUrl.includes("refresh_token="))
+    ) {
+      void router.navigate({ to: "/auth/nueva-contrasena" });
+    }
+
     return () => subscription.unsubscribe();
   }, [router, queryClient]);
 
