@@ -900,7 +900,7 @@ export function AdminPanel() {
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .order("created_at", { ascending: false })
+        .order("updated_at", { ascending: false })
         .limit(200);
 
       if (error) throw error;
@@ -914,7 +914,7 @@ export function AdminPanel() {
         is_blocked: Boolean(userRow.is_blocked),
         motivo_bloqueo: typeof userRow.motivo_bloqueo === "string" ? userRow.motivo_bloqueo : null,
         created_at:
-          typeof userRow.created_at === "string" ? userRow.created_at : new Date().toISOString(),
+          typeof userRow.updated_at === "string" ? userRow.updated_at : new Date().toISOString(),
       }));
 
       setUsuarios(rows as UserProfile[]);

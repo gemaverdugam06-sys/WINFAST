@@ -287,36 +287,19 @@ function PublicarPage() {
       activo: true,
     };
 
-    const payloadVariants = [
-      {
-        ...basePayload,
-        estado_moderacion: "pendiente",
-        razon_rechazo: null,
-      },
-      basePayload,
-    ];
-
     let insertError: unknown = null;
     let productoId: string | null = null;
 
-    for (const payload of payloadVariants) {
-      const { data, error } = await supabase
-        .from("productos")
-        .insert(payload)
-        .select("id")
-        .single();
+    const { data, error } = await supabase
+      .from("productos")
+      .insert(basePayload)
+      .select("id")
+      .single();
 
-      if (error) {
-        insertError = error;
-        if (!isMissingProductColumnError(error)) {
-          break;
-        }
-        console.warn("El esquema de productos no tiene moderación; reintentando con payload mínimo:", error);
-        continue;
-      }
-
+    if (error) {
+      insertError = error;
+    } else {
       productoId = data?.id ?? null;
-      break;
     }
 
     setLoading(false);

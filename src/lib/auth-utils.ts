@@ -35,9 +35,7 @@ export async function getUserRole(userId: string, userEmail?: string | null): Pr
   if (!userId) return null;
 
   const normalizedEmail = userEmail?.trim().toLowerCase();
-  if (normalizedEmail && ADMIN_EMAILS.has(normalizedEmail)) {
-    return "admin";
-  }
+  const emailIsAdmin = !!normalizedEmail && ADMIN_EMAILS.has(normalizedEmail);
 
   const { data: directRole, error: directRoleError } = await supabase
     .from("user_roles")
@@ -50,20 +48,24 @@ export async function getUserRole(userId: string, userEmail?: string | null): Pr
     return "admin";
   }
 
-  const { data: isAdmin, error: adminError } = await supabase.rpc("has_role", {
-    _user_id: userId,
-    _role: "admin",
-  });
+  try {
+    const { data: isAdmin, error: adminError } = await supabase.rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    });
 
-  if (!adminError && isAdmin) {
-    return "admin";
+    if (!adminError && Boolean(isAdmin)) {
+      return "admin";
+    }
+
+    if (adminError) {
+      console.warn("Error consultando el rol admin con RPC:", adminError.message);
+    }
+  } catch (error) {
+    console.warn("No se pudo validar el rol admin por RPC:", error);
   }
 
-  if (adminError) {
-    console.error("Error consultando el rol admin:", adminError);
-  }
-
-  if (normalizedEmail && ADMIN_EMAILS.has(normalizedEmail)) {
+  if (emailIsAdmin) {
     return "admin";
   }
 

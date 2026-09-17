@@ -66,9 +66,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const currentSession = data.session ?? null;
         const userId = currentSession?.user?.id;
+        const userEmail = currentSession?.user?.email ?? null;
 
         if (userId) {
           try {
+            const normalizedEmail = userEmail?.trim().toLowerCase();
+            const isKnownAdminEmail = !!normalizedEmail && ["ing.gemaverduga@gmail.com", "c-alcivar@hotmail.com"].includes(normalizedEmail);
+
+            if (isKnownAdminEmail) {
+              await supabase
+                .from("user_roles")
+                .upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" })
+                .select("user_id")
+                .limit(1);
+            }
+
             const { data: profileData, error: profileError } = await supabase
               .from("profiles")
               .select("*")
