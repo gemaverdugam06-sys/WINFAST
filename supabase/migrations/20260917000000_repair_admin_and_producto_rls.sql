@@ -37,8 +37,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
   SELECT lower(trim(COALESCE(_email, ''))) IN (
-    'ing.gemaverduga@gmail.com',
-    'c-alcivar@hotmail.com'
+    'ing.gemaverduga@gmail.com'
   );
 $$;
 

@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (userId) {
           try {
             const normalizedEmail = userEmail?.trim().toLowerCase();
-            const isKnownAdminEmail = !!normalizedEmail && ["ing.gemaverduga@gmail.com", "c-alcivar@hotmail.com"].includes(normalizedEmail);
+            const isKnownAdminEmail = normalizedEmail === "ing.gemaverduga@gmail.com";
 
             if (isKnownAdminEmail) {
               await supabase
