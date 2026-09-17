@@ -33,7 +33,23 @@ function PerfilPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
+  const [isRecoverySession, setIsRecoverySession] = useState(false);
   const avatarUrl = useSignedUrl("avatars", avatarPath);
+
+  useEffect(() => {
+    const recoveryInUrl = /(?:type=recovery|type%3Drecovery)/i.test(
+      `${window.location.hash}${window.location.search}`,
+    );
+    if (recoveryInUrl) setIsRecoverySession(true);
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setIsRecoverySession(true);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -116,16 +132,20 @@ function PerfilPage() {
     if (newPassword !== confirmNewPassword) {
       return toast.error("Las contraseñas nuevas no coinciden.");
     }
-    if (!currentPassword) return toast.error("Ingresa tu contraseña actual.");
+    if (!isRecoverySession && !currentPassword) {
+      return toast.error("Ingresa tu contraseña actual.");
+    }
 
     setChangingPassword(true);
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: user.email,
-      password: currentPassword,
-    });
-    if (signInError) {
-      setChangingPassword(false);
-      return toast.error("La contraseña actual no es correcta.");
+    if (!isRecoverySession) {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+      if (signInError) {
+        setChangingPassword(false);
+        return toast.error("La contraseña actual no es correcta.");
+      }
     }
 
     const { error } = await supabase.auth.updateUser({ password: newPassword });
@@ -136,6 +156,10 @@ function PerfilPage() {
     setNewPassword("");
     setConfirmNewPassword("");
     toast.success("Contraseña actualizada correctamente.");
+    if (isRecoverySession) {
+      await supabase.auth.signOut();
+      navigate({ to: "/auth", replace: true });
+    }
   };
 
   return (
@@ -206,17 +230,19 @@ function PerfilPage() {
           </CardHeader>
           <CardContent className="bg-white">
             <form onSubmit={changePassword} className="space-y-3">
-              <div className="space-y-1">
-                <Label htmlFor="current-password">Contraseña actual</Label>
-                <Input
-                  id="current-password"
-                  type="password"
-                  autoComplete="current-password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  required
-                />
-              </div>
+              {!isRecoverySession && (
+                <div className="space-y-1">
+                  <Label htmlFor="current-password">Contraseña actual</Label>
+                  <Input
+                    id="current-password"
+                    type="password"
+                    autoComplete="current-password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
               <div className="space-y-1">
                 <Label htmlFor="new-password">Nueva contraseña</Label>
                 <Input
