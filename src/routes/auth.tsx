@@ -33,7 +33,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const { t } = useI18n();
-  const { user } = useAuth();
+  const { user, isPasswordRecovery } = useAuth();
   const nav = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
@@ -86,12 +86,17 @@ function AuthPage() {
   }, []);
 
   useEffect(() => {
-    if (isRecoveryCallback) return;
+    if (isPasswordRecovery || isRecoveryCallback) {
+      if (pathname === "/auth" || pathname === "/auth/") {
+        nav({ to: "/auth/nueva-contrasena", replace: true });
+      }
+      return;
+    }
     if (user) {
       if (isUserVerified(user)) nav({ to: "/", replace: true });
       else nav({ to: "/auth/verificar-telefono", replace: true });
     }
-  }, [isRecoveryCallback, user, nav]);
+  }, [isPasswordRecovery, isRecoveryCallback, pathname, user, nav]);
 
   useEffect(() => {
     if (cooldown <= 0) return;

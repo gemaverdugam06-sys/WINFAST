@@ -23,12 +23,14 @@ export const Route = createFileRoute("/auth/nueva-contrasena")({
 
 function NuevaContrasenaPage() {
   const { t } = useI18n();
-  const { session, loading: authLoading } = useAuth();
+  const { session, isPasswordRecovery, loading: authLoading } = useAuth();
   const nav = useNavigate();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
-  const [ready, setReady] = useState(() => hasPasswordRecoveryCallback(window.location.href));
+  const [ready, setReady] = useState(
+    () => isPasswordRecovery || hasPasswordRecoveryCallback(window.location.href),
+  );
 
   useEffect(() => {
     let active = true;
@@ -37,14 +39,20 @@ function NuevaContrasenaPage() {
     });
 
     void supabase.auth.getSession().then(() => {
-      if (active && hasPasswordRecoveryCallback(window.location.href)) setReady(true);
+      if (active && (isPasswordRecovery || hasPasswordRecoveryCallback(window.location.href))) {
+        setReady(true);
+      }
     });
 
     return () => {
       active = false;
       data.subscription.unsubscribe();
     };
-  }, []);
+  }, [isPasswordRecovery]);
+
+  useEffect(() => {
+    if (isPasswordRecovery) setReady(true);
+  }, [isPasswordRecovery]);
 
   useEffect(() => {
     if (!authLoading && !session && !ready) {

@@ -6,6 +6,7 @@ import { checkIsAdmin } from "@/lib/auth-utils";
 interface AuthCtx {
   user: User | null;
   session: Session | null;
+  isPasswordRecovery: boolean;
   loading: boolean;
   roleLoading: boolean;
   isAdmin: boolean;
@@ -15,6 +16,7 @@ interface AuthCtx {
 const Ctx = createContext<AuthCtx>({
   user: null,
   session: null,
+  isPasswordRecovery: false,
   loading: true,
   roleLoading: false,
   isAdmin: false,
@@ -23,6 +25,7 @@ const Ctx = createContext<AuthCtx>({
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
   const [loading, setLoading] = useState(true);
   const [roleLoading, setRoleLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -46,8 +49,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, s) => {
+    } = supabase.auth.onAuthStateChange((event, s) => {
       if (!active) return;
+      if (event === "PASSWORD_RECOVERY") setIsPasswordRecovery(true);
+      if (event === "SIGNED_OUT") setIsPasswordRecovery(false);
       setSession(s);
       finish();
     });
@@ -158,6 +163,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user: session?.user ?? null,
         session,
+        isPasswordRecovery,
         loading,
         roleLoading,
         isAdmin,
