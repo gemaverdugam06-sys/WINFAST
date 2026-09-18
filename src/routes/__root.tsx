@@ -15,6 +15,7 @@ import { I18nProvider } from "@/lib/i18n";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import { hasPasswordRecoveryCallback } from "@/lib/password-recovery";
 
 const OG_IMAGE = import.meta.env.VITE_OG_IMAGE_URL ?? "https://your-domain.com/og-image.png";
 
@@ -159,7 +160,8 @@ function RootComponent() {
       }
     });
 
-    const recoveryUrl = decodeURIComponent(`${window.location.hash}${window.location.search}`);
+    const recoveryUrl = window.location.href;
+    const recoveryParams = new URL(window.location.href).searchParams;
     const recoveryError = new URLSearchParams(
       `${window.location.hash.replace(/^#/, "")}&${window.location.search.replace(/^\?/, "")}`,
     ).get("error_code");
@@ -168,11 +170,15 @@ function RootComponent() {
       void router.navigate({ to: "/auth/recuperar", replace: true });
     }
 
-    if (
-      recoveryUrl.includes("type=recovery") ||
-      (recoveryUrl.includes("access_token=") && recoveryUrl.includes("refresh_token="))
-    ) {
-      void router.navigate({ to: "/auth/nueva-contrasena" });
+    if (hasPasswordRecoveryCallback(recoveryUrl)) {
+      const code = recoveryParams.get("code");
+      void (async () => {
+        if (code && window.location.pathname === "/auth/nueva-contrasena") {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) return;
+        }
+        await router.navigate({ to: "/auth/nueva-contrasena", replace: true });
+      })();
     }
 
     return () => subscription.unsubscribe();

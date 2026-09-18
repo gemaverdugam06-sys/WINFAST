@@ -22,6 +22,7 @@ import { OtpInput } from "@/components/auth/OtpInput";
 import { ShoppingBag, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { toUserMessage } from "@/lib/error-messages";
+import { hasPasswordRecoveryCallback } from "@/lib/password-recovery";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -57,6 +58,9 @@ function AuthPage() {
   const [cooldown, setCooldown] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isRecoveryCallback, setIsRecoveryCallback] = useState(() =>
+    hasPasswordRecoveryCallback(window.location.href),
+  );
 
   const runWithLoadingGuard = async <T,>(work: () => Promise<T>): Promise<T | undefined> => {
     setLoading(true);
@@ -72,11 +76,22 @@ function AuthPage() {
   };
 
   useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setIsRecoveryCallback(true);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (isRecoveryCallback) return;
     if (user) {
       if (isUserVerified(user)) nav({ to: "/", replace: true });
       else nav({ to: "/auth/verificar-telefono", replace: true });
     }
-  }, [user, nav]);
+  }, [isRecoveryCallback, user, nav]);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -100,9 +115,16 @@ function AuthPage() {
     setResendLoading(true);
 
     try {
-      const resendFn = (supabase.auth as typeof supabase.auth & { resend?: (options: { type: "signup"; email: string }) => Promise<{ error?: { message?: string } | null }> }).resend;
+      const resendFn = (
+        supabase.auth as typeof supabase.auth & {
+          resend?: (options: { type: "signup"; email: string }) => Promise<{
+            error?: { message?: string } | null;
+          }>;
+        }
+      ).resend;
       if (!resendFn) {
-        const message = "El proveedor de autenticación no soporta el reenvío del correo de verificación.";
+        const message =
+          "El proveedor de autenticación no soporta el reenvío del correo de verificación.";
         setSignupMessage(message);
         throw new Error(message);
       }

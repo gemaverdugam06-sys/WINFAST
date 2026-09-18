@@ -11,6 +11,7 @@ import { ShoppingBag, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { toUserMessage } from "@/lib/error-messages";
 import { validateStrongPassword } from "@/lib/auth-utils";
+import { hasPasswordRecoveryCallback } from "@/lib/password-recovery";
 
 export const Route = createFileRoute("/auth/nueva-contrasena")({
   head: () => ({
@@ -26,23 +27,23 @@ function NuevaContrasenaPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(() => hasPasswordRecoveryCallback(window.location.href));
 
   useEffect(() => {
     let active = true;
     const { data } = supabase.auth.onAuthStateChange((event, s) => {
-      if (event === "PASSWORD_RECOVERY" || s) setReady(true);
+      if (event === "PASSWORD_RECOVERY") setReady(true);
     });
 
-    void supabase.auth.getSession().then(({ data: sessionData }) => {
-      if (active && (sessionData.session || session)) setReady(true);
+    void supabase.auth.getSession().then(() => {
+      if (active && hasPasswordRecoveryCallback(window.location.href)) setReady(true);
     });
 
     return () => {
       active = false;
       data.subscription.unsubscribe();
     };
-  }, [session]);
+  }, []);
 
   useEffect(() => {
     if (!authLoading && !session && !ready) {
