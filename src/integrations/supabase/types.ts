@@ -411,6 +411,8 @@ export type Database = {
           tipo_promocion: string | null
           titulo: string
           user_id: string | null
+          vistas: number
+          clics_contacto: number
           whatsapp: string | null
         }
         Insert: {
@@ -431,6 +433,8 @@ export type Database = {
           tipo_promocion?: string | null
           titulo: string
           user_id?: string | null
+          vistas?: number
+          clics_contacto?: number
           whatsapp?: string | null
         }
         Update: {
@@ -451,6 +455,8 @@ export type Database = {
           tipo_promocion?: string | null
           titulo?: string
           user_id?: string | null
+          vistas?: number
+          clics_contacto?: number
           whatsapp?: string | null
         }
         Relationships: [
@@ -779,6 +785,27 @@ export type Database = {
           },
         ]
       }
+      monetization_settings: {
+        Row: {
+          id: string
+          settings: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          settings?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          settings?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           category: string
@@ -940,6 +967,26 @@ export type Database = {
       }
       mark_messages_read: { Args: { _chat_id: string }; Returns: undefined }
       sync_my_profile_name: { Args: never; Returns: undefined }
+      crear_transaccion_promocion: {
+        Args: {
+          p_comprobante_url?: string | null
+          p_plan: string
+          p_producto_id: string
+          p_referencia?: string | null
+        }
+        Returns: {
+          estado_pago: string
+          id: string
+          monto: number
+          plan: string
+        }[]
+      }
+      aprobar_transaccion_promocion: {
+        Args: { p_transaccion_id: string }
+        Returns: undefined
+      }
+      registrar_vista_producto: { Args: { p_producto_id: string }; Returns: undefined }
+      registrar_clic_contacto_producto: { Args: { p_producto_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

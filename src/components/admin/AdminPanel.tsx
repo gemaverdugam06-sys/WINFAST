@@ -34,7 +34,6 @@ import {
   ADVERTISING_OPTIONS,
   BUSINESS_PLANS,
   FEATURED_PLAN_CONFIG,
-  promoEndDate,
 } from "@/lib/promo-plans";
 import { reportReasons } from "@/lib/reporting";
 import { useSignedUrls } from "@/lib/storage";
@@ -1004,24 +1003,10 @@ export function AdminPanel() {
     );
 
     try {
-      const { error: txErr } = await supabase
-        .from("transacciones")
-        .update({
-          estado_pago: nuevoEstado,
-          notas_admin: mensajeAprobado,
-        })
-        .eq("id", tx.id);
-      if (txErr) throw txErr;
-
-      const { error: prodErr } = await supabase
-        .from("productos")
-        .update({
-          es_destacado: true,
-          promocionado_hasta: promoEndDate(tx.plan),
-          tipo_promocion: tx.plan,
-        })
-        .eq("id", tx.producto_id);
-      if (prodErr) throw prodErr;
+      const { error: approvalError } = await supabase.rpc("aprobar_transaccion_promocion", {
+        p_transaccion_id: tx.id,
+      });
+      if (approvalError) throw approvalError;
 
       toast.success("¡Publicidad aprobada y activada! 🎉");
       await loadTransactions();
