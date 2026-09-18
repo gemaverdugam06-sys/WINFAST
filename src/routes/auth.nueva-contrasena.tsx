@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Logo } from "@/components/Logo";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { toUserMessage } from "@/lib/error-messages";
 import { validateStrongPassword } from "@/lib/auth-utils";
@@ -27,6 +27,8 @@ function NuevaContrasenaPage() {
   const nav = useNavigate();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(
     () => isPasswordRecovery || hasPasswordRecoveryCallback(window.location.href),
@@ -72,7 +74,7 @@ function NuevaContrasenaPage() {
     if (error) return toast.error(toUserMessage(error, "No se pudo actualizar la contraseña."));
     toast.success(t("password_updated"));
     await supabase.auth.signOut();
-    nav({ to: "/auth", replace: true });
+    nav({ to: "/", replace: true });
   };
 
   if (authLoading) {
@@ -113,29 +115,49 @@ function NuevaContrasenaPage() {
             <form onSubmit={handleSubmit} className="space-y-3 pt-3">
               <div className="space-y-2">
                 <Label htmlFor="pwd-new">{t("new_password")}</Label>
-                <Input
-                  id="pwd-new"
-                  type="password"
-                  required
-                  minLength={8}
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 border border-slate-700 bg-slate-950 text-base text-white placeholder:text-slate-500 focus:border-primary/70 sm:h-10"
-                />
+                <div className="relative">
+                  <Input
+                    id="pwd-new"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-12 border border-slate-700 bg-slate-950 pr-12 text-base text-white placeholder:text-slate-500 focus:border-primary/70 sm:h-10"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    onClick={() => setShowPassword((value) => !value)}
+                    className="absolute inset-y-0 right-1 flex w-11 items-center justify-center text-slate-400 hover:text-white"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pwd-confirm">{t("confirm_password")}</Label>
-                <Input
-                  id="pwd-confirm"
-                  type="password"
-                  required
-                  minLength={8}
-                  autoComplete="new-password"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  className="h-12 border border-slate-700 bg-slate-950 text-base text-white placeholder:text-slate-500 focus:border-primary/70 sm:h-10"
-                />
+                <div className="relative">
+                  <Input
+                    id="pwd-confirm"
+                    type={showConfirm ? "text" : "password"}
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    className="h-12 border border-slate-700 bg-slate-950 pr-12 text-base text-white placeholder:text-slate-500 focus:border-primary/70 sm:h-10"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showConfirm ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    onClick={() => setShowConfirm((value) => !value)}
+                    className="absolute inset-y-0 right-1 flex w-11 items-center justify-center text-slate-400 hover:text-white"
+                  >
+                    {showConfirm ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
               </div>
               <Button
                 type="submit"
