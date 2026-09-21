@@ -130,17 +130,14 @@ function PromocionarPage() {
       const { error: upErr } = await supabase.storage.from("comprobantes").upload(path, file);
       if (upErr) throw upErr;
 
-      const { error: insErr } = await supabase.from("transacciones").insert({
-        user_id: user.id,
-        producto_id: productoId,
-        monto: cfg.price,
-        plan: selected,
-        estado_pago: "PENDIENTE",
-        comprobante_url: path,
-        referencia: referencia.trim() !== "" ? referencia : null,
+      const { error: transactionError } = await supabase.rpc("crear_transaccion_promocion", {
+        p_producto_id: productoId,
+        p_plan: selected,
+        p_comprobante_url: path,
+        p_referencia: referencia.trim() !== "" ? referencia : null,
       });
 
-      if (insErr) throw insErr;
+      if (transactionError) throw transactionError;
 
       toast.success("¡Comprobante enviado! Aprobaremos tu promoción muy pronto.");
       setTimeout(() => nav({ to: "/mis-publicaciones" }), 800);
