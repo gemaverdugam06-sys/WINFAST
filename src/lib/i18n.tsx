@@ -107,7 +107,8 @@ const dict = {
     passwords_mismatch: "Las contraseñas no coinciden.",
     name_required: "Ingresa tu nombre completo.",
     signup_check_email_then_phone: "Cuenta creada. Confirma tu correo y luego verifica tu celular.",
-    signup_check_email: "Cuenta creada. Revisa tu correo para confirmar tu dirección y activar la cuenta.",
+    signup_check_email:
+      "Cuenta creada. Revisa tu correo para confirmar tu dirección y activar la cuenta.",
     signup_email_resent: "Se reenvió el correo de verificación.",
     resend_verification_email: "Reenviar correo de verificación",
     email_verification_pending: "Verificación pendiente",
@@ -219,7 +220,8 @@ const dict = {
     passwords_mismatch: "Passwords do not match.",
     name_required: "Enter your full name.",
     signup_check_email_then_phone: "Account created. Confirm your email, then verify your phone.",
-    signup_check_email: "Account created. Check your email to confirm your address and activate your account.",
+    signup_check_email:
+      "Account created. Check your email to confirm your address and activate your account.",
     signup_email_resent: "Verification email resent.",
     resend_verification_email: "Resend verification email",
     email_verification_pending: "Verification pending",

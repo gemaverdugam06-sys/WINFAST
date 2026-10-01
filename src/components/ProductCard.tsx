@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { type ElementType } from "react";
 import { Badge } from "@/components/ui/badge";
 import { useSignedUrl } from "@/lib/storage";
 import { useI18n } from "@/lib/i18n";
@@ -19,7 +20,7 @@ export interface ProductCardData {
 export function ProductCard({ p }: { p: ProductCardData }) {
   const { t } = useI18n();
   const img = useSignedUrl("productos", p.imagenes?.[0]);
-  const MotionLink = motion(Link as any);
+  const MotionLink = motion(Link as unknown as ElementType);
   const destacadoActivo =
     !!p.es_destacado && (!p.promocionado_hasta || new Date(p.promocionado_hasta) > new Date());
 

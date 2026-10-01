@@ -37,7 +37,7 @@ Seleccionar: Production ✓  Preview ✓
 Click: Save
 ```
 
-*(NOTA: Es el MISMO valor que VARIABLE 2)*
+_(NOTA: Es el MISMO valor que VARIABLE 2)_
 
 ---
 
@@ -50,7 +50,7 @@ Seleccionar: Production ✓  SOLO Production (NO Preview)
 Click: Save
 ```
 
-*(NOTA: Es el MISMO URL que VARIABLE 1)*
+_(NOTA: Es el MISMO URL que VARIABLE 1)_
 
 ---
 
@@ -90,13 +90,13 @@ Ahí verás:
 
 ## RESUMEN RÁPIDO:
 
-| Variable | Copiar De | Pegar En |
-|----------|-----------|----------|
-| VITE_SUPABASE_URL | Project URL | Vercel |
-| VITE_SUPABASE_PUBLISHABLE_KEY | Anon public key | Vercel |
-| VITE_SUPABASE_ANON_KEY | Anon public key (IGUAL) | Vercel |
-| SUPABASE_URL | Project URL (IGUAL) | Vercel |
-| SUPABASE_SERVICE_ROLE_KEY | Service role secret | Vercel |
+| Variable                      | Copiar De               | Pegar En |
+| ----------------------------- | ----------------------- | -------- |
+| VITE_SUPABASE_URL             | Project URL             | Vercel   |
+| VITE_SUPABASE_PUBLISHABLE_KEY | Anon public key         | Vercel   |
+| VITE_SUPABASE_ANON_KEY        | Anon public key (IGUAL) | Vercel   |
+| SUPABASE_URL                  | Project URL (IGUAL)     | Vercel   |
+| SUPABASE_SERVICE_ROLE_KEY     | Service role secret     | Vercel   |
 
 ---
 

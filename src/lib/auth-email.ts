@@ -24,7 +24,10 @@ export function getSignupStatusMessage({ hasSession, emailConfirmed }: SignupEma
 export async function resendSignupVerificationEmail(
   client: {
     auth: {
-      resend?: (options: { type: "signup"; email: string }) => Promise<{ error?: { message?: string } | null }>;
+      resend?: (options: {
+        type: "signup";
+        email: string;
+      }) => Promise<{ error?: { message?: string } | null }>;
     };
   },
   email: string,

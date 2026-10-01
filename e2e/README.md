@@ -54,6 +54,7 @@ npm run test:e2e:ui
 ## Tests Currently Marked as `.skip()`:
 
 All authentication-dependent tests are skipped because:
+
 - No Supabase staging instance configured
 - No test users exist
 - No real authentication credentials available

@@ -115,7 +115,10 @@ function ReseñasVendedor() {
         }
 
         const compradorIds = [...new Set((reseñasData ?? []).map((review) => review.comprador_id))];
-        const profilesById = new Map<string, { nombre_completo: string | null; avatar_url: string | null }>();
+        const profilesById = new Map<
+          string,
+          { nombre_completo: string | null; avatar_url: string | null }
+        >();
 
         if (compradorIds.length > 0) {
           const { data: profilesData } = await supabase

@@ -24,8 +24,21 @@ export interface ReportInput {
   descripcion?: string;
 }
 
+type ReportSupabaseClient = {
+  from: (table: string) => {
+    insert: (values: Record<string, unknown>) => {
+      select: (field: string) => {
+        single: () => Promise<{
+          data?: { id: string } | null;
+          error?: { message?: string } | null;
+        }>;
+      };
+    };
+  };
+};
+
 export async function submitReport(
-  supabase: any,
+  supabase: ReportSupabaseClient,
   report: ReportInput,
 ): Promise<{ success: boolean; error?: string; reportId?: string }> {
   try {

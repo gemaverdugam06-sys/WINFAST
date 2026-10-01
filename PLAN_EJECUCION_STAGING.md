@@ -3,7 +3,7 @@
 > **Objetivo**: Desplegar WinFast a staging, validar, y preparar para producción  
 > **Timeline Total**: 3-4 horas  
 > **Fecha**: 2026-09-01  
-> **Responsable**: Gema Verduga  
+> **Responsable**: Gema Verduga
 
 ---
 
@@ -17,11 +17,11 @@ Mientras ejecutas los pasos, completa esta sección con los valores reales:
 PROYECTO SUPABASE
   Nombre:                winfast-staging
   Dashboard:             https://supabase.com/dashboard
-  
+
   URL:                   https://xxxxx.supabase.co
   Anon Key:              eyJ...
   Service Role Key:      eyJ...
-  
+
 USUARIOS DE TEST CREADOS
   ✅ admin-test@staging.local / Admin@Staging2026!
   ✅ user-test@staging.local / User@Staging2026!
@@ -36,7 +36,7 @@ PROYECTO VERCEL
   Nombre:                winfast-staging
   Dashboard:             https://vercel.com/dashboard
   URL:                   https://winfast-staging-xxxxx.vercel.app
-  
+
 ENVIRONMENT VARIABLES AGREGADAS
   ✅ VITE_SUPABASE_URL
   ✅ VITE_SUPABASE_PUBLISHABLE_KEY
@@ -62,6 +62,7 @@ ARCHIVO: .env.local (NO committearlo)
 **Referencia**: `STAGING_SETUP.md` - Secciones 1-3
 
 **Checklist**:
+
 ```
 [ ] 1.1 Crear proyecto Supabase: winfast-staging
 [ ] 1.2 Obtener credenciales (Project URL, anon key, service role key)
@@ -73,11 +74,13 @@ ARCHIVO: .env.local (NO committearlo)
 ```
 
 **Si falla algo**:
+
 - Error "Column not found" → No ejecutaste migraciones
 - Error "RLS violation" → RLS no está enabled (ir a Database > Tables)
 - Login falla → Usuarios no creados en Supabase Auth
 
 **Documenta**:
+
 ```
 SUPABASE_URL = ____________________________________
 VITE_SUPABASE_ANON_KEY = __________________________
@@ -98,6 +101,7 @@ notepad .env.local
 ```
 
 **Contenido** (reemplazar con valores del Paso 1):
+
 ```env
 VITE_SUPABASE_URL=https://xxxxx.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=eyJ...
@@ -109,6 +113,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...
 **Guardar**: Ctrl+S, cerrar
 
 **Verificar que no se commitea**:
+
 ```bash
 git status
 # NO debe mostrar .env.local
@@ -119,12 +124,14 @@ git status
 ### PASO 3: Ejecutar Aplicación en Dev Local (10 mins)
 
 **Terminal 1 - Servidor Dev**:
+
 ```bash
 cd c:\Users\Gema\Documents\WinFast
 npm run dev
 ```
 
 **Esperado**:
+
 ```
 VITE v7.3.5 ready in 123 ms
 
@@ -133,12 +140,14 @@ VITE v7.3.5 ready in 123 ms
 ```
 
 **Verifica**:
+
 - ✅ Abre http://localhost:5173 en navegador
 - ✅ Página carga sin errores
 - ✅ Puedes ir a `/auth`
 - ✅ F12 console sin errores rojos
 
 **Si hay error**:
+
 - "Cannot find module" → `npm install`
 - "Connection refused" → `.env.local` variables incorrectas
 - "RLS violation" → Migraciones no ejecutadas
@@ -159,11 +168,13 @@ VITE v7.3.5 ready in 123 ms
 ```
 
 **Si falla**:
+
 - "Invalid login credentials" → Credenciales incorrectas en Supabase
 - "Connection error" → Variables de entorno no configuradas
 - "RLS violation" → Migraciones no ejecutadas
 
 **Si funciona**:
+
 - ✅ Verifica que ves tu email en esquina superior derecha
 - ✅ Click en perfil, puedes ver información
 - ✅ Puedes crear un producto, editar perfil
@@ -174,12 +185,14 @@ VITE v7.3.5 ready in 123 ms
 ### PASO 5: Ejecutar E2E Tests (20 mins)
 
 **Terminal 2 - E2E Tests**:
+
 ```bash
 cd c:\Users\Gema\Documents\WinFast
 npm run test:e2e
 ```
 
 **Esperado**:
+
 ```
 Running 7 tests...
 ✓ should load homepage
@@ -192,6 +205,7 @@ Running 7 tests...
 ```
 
 **Resultado**:
+
 ```
 7 passed
 13 skipped (requieren auth real)
@@ -199,11 +213,13 @@ Running 7 tests...
 ```
 
 **Si falla algo**:
+
 - Tests timeout → Server no respondió (verificar que `npm run dev` está corriendo)
 - "Connection refused" → VITE_SUPABASE_URL incorrecto
 - Tests crash → Ver error en terminal 1 y terminal 2
 
 **Herramientas de debug**:
+
 ```bash
 # Ver interfaz visual
 npm run test:e2e:ui
@@ -222,12 +238,14 @@ npm run test:e2e:debug
 **Referencia**: `VERCEL_STAGING_DEPLOYMENT.md`
 
 **Verificar Git**:
+
 ```bash
 git status
 # Debe mostrar: working tree clean
 ```
 
 **Si hay cambios**:
+
 ```bash
 git add .
 git commit -m "Ready for staging: credenciales en .env.local, no en repo"
@@ -245,8 +263,8 @@ git push
 
 2. **Agregar Variables de Entorno**:
    - Ir a Settings > Environment Variables
-   - Agregar VITE_SUPABASE_* (Preview + Production)
-   - Agregar SUPABASE_* (Production only)
+   - Agregar VITE*SUPABASE*\* (Preview + Production)
+   - Agregar SUPABASE\_\* (Production only)
 
 3. **Deploy**:
    - Click "Deploy"
@@ -258,6 +276,7 @@ git push
    - Guardar en sección 1.2
 
 **Documenta**:
+
 ```
 VERCEL STAGING URL = https://winfast-staging-________________.vercel.app
 ```
@@ -269,6 +288,7 @@ VERCEL STAGING URL = https://winfast-staging-________________.vercel.app
 **En navegador**:
 
 1. **Acceder a app**:
+
    ```
    https://winfast-staging-xxxxx.vercel.app
    ```
@@ -279,6 +299,7 @@ VERCEL STAGING URL = https://winfast-staging-________________.vercel.app
    - ✅ Botón de login visible
 
 3. **Probar login**:
+
    ```
    Email: user-test@staging.local
    Password: User@Staging2026!
@@ -292,27 +313,30 @@ VERCEL STAGING URL = https://winfast-staging-________________.vercel.app
    - ✅ Logout funciona
 
 5. **Probar admin**:
+
    ```
    Email: admin-test@staging.local
    Password: Admin@Staging2026!
    Click "Iniciar sesión"
    ```
-   
+
    - ✅ Admin puede entrar
    - ✅ Ver /admin funciona
    - ✅ Ves paneles de moderación
 
 6. **Probar user bloqueado**:
+
    ```
    Email: blocked-test@staging.local
    Password: Blocked@Staging2026!
    Click "Iniciar sesión"
    ```
-   
+
    - ⏳ En teoría debería hacer logout automático (requiere validar en código)
    - O dejar pasar y hace logout cuando intenta acceder
 
 **Si algo falla**:
+
 - "Connection error" → Variables en Vercel incorrectas
 - "Invalid credentials" → Usuario no existe en Supabase
 - "RLS violation" → Migraciones no ejecutadas
@@ -334,12 +358,13 @@ VERCEL STAGING URL = https://winfast-staging-________________.vercel.app
 6. Verificar que aparece "Bloqueado" en tabla
 7. Logout
 8. Login como blocked-test@staging.local
-9. RESULTADO ESPERADO: 
+9. RESULTADO ESPERADO:
    - Logout automático (si está implementado)
    - O acceso denegado si intenta actuar
 ```
 
 **Documentar**:
+
 ```
 User Blocking: ✅ Funciona / ⚠️ Parcialmente / ❌ No funciona
 Detalles: _____________________________________________
@@ -362,6 +387,7 @@ Detalles: _____________________________________________
 ```
 
 **Documentar**:
+
 ```
 IDOR Prevention: ✅ Funciona / ⚠️ Parcialmente / ❌ No funciona
 Detalles: _____________________________________________
@@ -384,6 +410,7 @@ Detalles: _____________________________________________
 ```
 
 **Documentar**:
+
 ```
 Admin Access: ✅ Funciona / ⚠️ Parcialmente / ❌ No funciona
 Detalles: _____________________________________________
@@ -402,6 +429,7 @@ Con script Python o curl:
 ```
 
 **Script bash/PowerShell**:
+
 ```powershell
 $url = "https://winfast-staging-xxxxx.vercel.app/api/productos"
 for ($i = 1; $i -le 150; $i++) {
@@ -412,6 +440,7 @@ for ($i = 1; $i -le 150; $i++) {
 ```
 
 **Documentar**:
+
 ```
 Rate Limiting: ✅ Funciona / ⚠️ Parcialmente / ❌ No funciona
 Detalles: _____________________________________________
@@ -597,11 +626,13 @@ DECISIÓN GO/NO-GO
 ## 📞 Soporte
 
 **Si falta algo**:
+
 - Ver `STAGING_SETUP.md` para Supabase
 - Ver `TESTING_QUICK_START.md` para tests
 - Ver `VERCEL_STAGING_DEPLOYMENT.md` para Vercel
 
 **Errores comunes**:
+
 - Migraciones no ejecutadas → Ver "Troubleshooting" en STAGING_SETUP.md
 - Variables incorrectas → Verificar en Vercel Settings > Environment Variables
 - Tests fallan → Verificar que `npm run dev` está corriendo en Terminal 1

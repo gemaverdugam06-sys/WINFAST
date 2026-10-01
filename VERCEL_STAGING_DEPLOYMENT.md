@@ -1,7 +1,7 @@
 # 🚀 Guía Vercel Staging Deployment
 
 > **Objetivo**: Desplegar WinFast a Vercel environment de staging  
-> **Tiempo estimado**: 20 minutos de configuración + 10 minutos de build  
+> **Tiempo estimado**: 20 minutos de configuración + 10 minutos de build
 
 ---
 
@@ -15,6 +15,7 @@ git status
 ```
 
 Debe mostrar:
+
 ```
 On branch main
 Your branch is up to date with 'origin/main'.
@@ -22,6 +23,7 @@ nothing to commit, working tree clean
 ```
 
 Si hay cambios:
+
 ```bash
 git add .
 git commit -m "Ready for staging deployment"
@@ -31,6 +33,7 @@ git push
 ### 1.2 Verificar que vercel.json está correcto
 
 El archivo ya existe con:
+
 - ✅ CSP headers configurados
 - ✅ X-Frame-Options: DENY
 - ✅ Build command correcto
@@ -117,7 +120,8 @@ Environments: Production Only
 ```
 
 **⚠️ IMPORTANTE:**
-- Variables públicas (VITE_*) pueden estar en Preview
+
+- Variables públicas (VITE\_\*) pueden estar en Preview
 - Variables privadas (SUPABASE_SERVICE_ROLE_KEY) SOLO en Production
 - Para staging, usar Preview deployment sin service role
 
@@ -134,6 +138,7 @@ Click **"Save"**
 Click **"Deploy"** o esperar a que auto-deploy por push en main
 
 Vercel ejecutará:
+
 ```
 npm install
 npm run build
@@ -149,6 +154,7 @@ Deploying dist/client
 ### 4.3 Obtener URL
 
 Una vez deployado:
+
 - **Preview URL**: https://winfast-staging-xxx.vercel.app
 - **Commit URL**: https://winfast-staging-xxx.vercel.app?vercel_url=...
 
@@ -168,7 +174,7 @@ Copiar URL principal: `https://winfast-staging-xxx.vercel.app`
 
 ```javascript
 // En browser console (F12):
-console.log(localStorage.getItem('sb-xxxxx-auth-token'))
+console.log(localStorage.getItem("sb-xxxxx-auth-token"));
 // Debe mostrar null (no loggeado todavía)
 ```
 
@@ -190,7 +196,7 @@ Debe estar limpio de errores.
 
 - [ ] Repo limpio (git status clean)
 - [ ] Proyecto Vercel creado: `winfast-staging`
-- [ ] Variables públicas agregadas (VITE_SUPABASE_*)
+- [ ] Variables públicas agregadas (VITE*SUPABASE*\*)
 - [ ] Variables privadas agregadas (SUPABASE_SERVICE_ROLE_KEY)
 - [ ] Deploy completado exitosamente
 - [ ] Homepage carga en staging URL
@@ -219,7 +225,8 @@ Staging Admin: https://winfast-staging-xxx.vercel.app/admin
 ### Build failed: "Cannot find module"
 
 **Causa**: Dependencies no instaladas
-**Fix**: 
+**Fix**:
+
 ```bash
 npm install
 npm run build
@@ -230,6 +237,7 @@ git push
 
 **Causa**: Errores de compilación
 **Fix**:
+
 ```bash
 npm run build
 # Ver error
@@ -243,7 +251,8 @@ git push
 ### Environment variables not working
 
 **Causa**: Variables no guardadas o nombre incorrecto
-**Fix**: 
+**Fix**:
+
 1. Ir a Vercel Settings > Environment Variables
 2. Verificar que están ahí y nombradas correctamente
 3. Re-deploy: En Deployments, click en último deploy > "Redeploy"
@@ -252,6 +261,7 @@ git push
 
 **Causa**: Supabase staging credentials incorrectas
 **Fix**:
+
 1. Verificar que VITE_SUPABASE_URL es correcto
 2. Verificar que anon key es válida
 3. Ir a Supabase dashboard > Copy URLs > Verify
@@ -260,6 +270,7 @@ git push
 
 **Causa**: Output directory incorrecto
 **Fix**:
+
 1. Ir a Vercel Settings > Build & Development Settings
 2. Verificar que "Output Directory" es `dist/client`
 3. Re-deploy

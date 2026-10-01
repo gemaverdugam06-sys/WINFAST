@@ -270,7 +270,7 @@ export function validateProductForPublishing(product: {
   titulo: string;
   descripcion: string;
   categoria_id?: string;
-  imagenes?: any[];
+  imagenes?: unknown[];
 }): ValidationResult {
   const errors: string[] = [];
 

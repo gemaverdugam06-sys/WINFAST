@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { type ElementType } from "react";
 import * as Icons from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -10,7 +11,7 @@ interface Categoria {
 }
 
 export function CategoryNav({ categorias, activa }: { categorias: Categoria[]; activa?: string }) {
-  const MotionLink = motion(Link as any);
+  const MotionLink = motion(Link as unknown as ElementType);
   return (
     <div className="-mx-4 overflow-x-auto px-4 pb-3">
       <div className="flex gap-2 sm:gap-3">

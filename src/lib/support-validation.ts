@@ -19,13 +19,19 @@ export interface SupportTicketInput {
 export function sanitizeSupportText(value: string): string {
   if (!value) return "";
 
-  return value
+  const withoutControls = Array.from(value)
+    .filter((char) => {
+      const code = char.charCodeAt(0);
+      return code >= 32 && code !== 127;
+    })
+    .join("");
+
+  return withoutControls
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/javascript\s*:/gi, " ")
-    .replace(/on\w+\s*=\s*['\"][^'\"]*['\"]/gi, " ")
-    .replace(/[\u0000-\u001F\u007F]+/g, " ")
+    .replace(/on\w+\s*=\s*['"][^'"]*['"]/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
 }

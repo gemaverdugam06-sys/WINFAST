@@ -124,22 +124,24 @@ function MisPubs() {
 
       if (settingsErr && settingsErr.code !== "PGRST116") throw settingsErr;
 
-      const featuredSettings = ((settingsData?.settings as MonetizationSettings | null)?.featured ?? {}) as Record<
-        string,
-        { enabled?: boolean }
-      >;
+      const featuredSettings = ((settingsData?.settings as MonetizationSettings | null)?.featured ??
+        {}) as Record<string, { enabled?: boolean }>;
 
       const anyPlanEnabled = Object.values(featuredSettings).some((plan) => plan.enabled !== false);
       setFeaturedPlansEnabled(Object.keys(featuredSettings).length === 0 ? true : anyPlanEnabled);
 
       const listaProductos = (productsWithTx || []).map((p) => {
         const transacciones = Array.isArray(p.transacciones) ? p.transacciones : [];
-        const latestTx = transacciones.reduce<(typeof transacciones)[number] | null>((latest, current) => {
-          if (!latest) return current;
-          return new Date(current.created_at ?? 0).getTime() > new Date(latest.created_at ?? 0).getTime()
-            ? current
-            : latest;
-        }, null);
+        const latestTx = transacciones.reduce<(typeof transacciones)[number] | null>(
+          (latest, current) => {
+            if (!latest) return current;
+            return new Date(current.created_at ?? 0).getTime() >
+              new Date(latest.created_at ?? 0).getTime()
+              ? current
+              : latest;
+          },
+          null,
+        );
 
         const estadoPago = normalizePaymentState(latestTx?.estado_pago);
 
@@ -273,7 +275,10 @@ function PubRow({
                 {p.activo ? t("active") : t("inactive")}
               </Badge>
               {p.estado_moderacion === "pendiente" && (
-                <Badge variant="outline" className="text-[10px] border-amber-300 text-amber-700 dark:border-amber-600 dark:text-amber-400 gap-1">
+                <Badge
+                  variant="outline"
+                  className="text-[10px] border-amber-300 text-amber-700 dark:border-amber-600 dark:text-amber-400 gap-1"
+                >
                   <Clock className="h-3 w-3" /> En espera
                 </Badge>
               )}
@@ -342,7 +347,8 @@ function PubRow({
             <div className="flex-1">
               <span className="font-semibold">Anuncio Rechazado: </span>
               <span>
-                {p.razon_rechazo || "Infringe las políticas de seguridad. Por favor, publica otro anuncio."}
+                {p.razon_rechazo ||
+                  "Infringe las políticas de seguridad. Por favor, publica otro anuncio."}
               </span>
             </div>
           </div>

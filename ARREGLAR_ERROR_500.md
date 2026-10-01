@@ -1,7 +1,7 @@
 # 🔧 ARREGLAR ERROR 500 - Variables en Vercel
 
 > **Situación**: Tienes variables en Vercel pero error 500 en signup  
-> **Causa**: Las variables NO están correctas O Vercel no se re-deployó después  
+> **Causa**: Las variables NO están correctas O Vercel no se re-deployó después
 
 ---
 
@@ -28,6 +28,7 @@ SUPABASE_SERVICE_ROLE_KEY          eyJ
 ```
 
 **IMPORTANTE**: Verifica que:
+
 - ✅ El nombre de variable es EXACTO (no hay espacios, mayúsculas correctas)
 - ✅ El valor NO está vacío
 - ✅ El valor comienza con lo correcto (https:// o eyJ)
@@ -62,6 +63,7 @@ Service role key:  eyJ... ← Copiar COMPLETO (SECRETO)
 ```
 
 **Pegalo en Vercel:**
+
 - VITE_SUPABASE_URL = `https://xxxxx.supabase.co`
 - VITE_SUPABASE_ANON_KEY = `eyJ...` (el anon key)
 - VITE_SUPABASE_PUBLISHABLE_KEY = `eyJ...` (el anon key, MISMO que anterior)
@@ -83,6 +85,7 @@ Service role key:  eyJ... ← Copiar COMPLETO (SECRETO)
 7. Debe cambiar a ✅ **"Ready"**
 
 **Verifica que terminó:**
+
 - Estado: ✅ Ready
 - Tiempo: ~3-10 minutos
 
@@ -98,6 +101,7 @@ Service role key:  eyJ... ← Copiar COMPLETO (SECRETO)
    - [ ] Si es VERDE = Existe y está activo
 
 **Si está ROJO:**
+
 ```
 Necesitas crear Supabase proyecto
 1. Click "New Project"
@@ -118,6 +122,7 @@ Necesitas crear Supabase proyecto
    - [ ] blocked-test@staging.local
 
 **Si NO ve usuarios:**
+
 ```
 1. Click "Add user" en Supabase
 2. Email: user-test@staging.local
@@ -144,11 +149,13 @@ Necesitas crear Supabase proyecto
 ### 5.2 Qué esperar
 
 **Si FUNCIONA:**
+
 - ✅ Te redirige a home
 - ✅ Ves tu email en esquina superior derecha
 - ✅ Puedes navegar la app
 
 **Si FALLA con error:**
+
 - Ve a F12 (Developer Console)
 - Tab: **Console**
 - Busca mensaje rojo de error
@@ -183,18 +190,21 @@ Si necesitas verificar que las variables llegaron a Vercel, en la URL staging:
 2. F12 (abrir Developer Console)
 3. Tab: **Console**
 4. Pega esto:
+
 ```javascript
-console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL)
+console.log("VITE_SUPABASE_URL:", import.meta.env.VITE_SUPABASE_URL);
 ```
 
 5. Presiona Enter
 
 **Debe mostrar:**
+
 ```
 VITE_SUPABASE_URL: https://xxxxx.supabase.co
 ```
 
 **Si muestra `undefined`:**
+
 - Las variables NO llegaron
 - Volver a agregar en Vercel Settings
 - Re-deploy de nuevo

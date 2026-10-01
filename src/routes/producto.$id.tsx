@@ -72,7 +72,7 @@ function ProductoPage() {
   const [reviewTransactionId, setReviewTransactionId] = useState<string | null>(null);
   const [purchaseStatus, setPurchaseStatus] = useState<string | null>(null);
   const [purchaseLoading, setPurchaseLoading] = useState(false);
-  const [recentReviews, setRecentReviews] = useState<any[]>([]);
+  const [recentReviews, setRecentReviews] = useState<Array<Record<string, unknown>>>([]);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const images = useSignedUrls("productos", p?.imagenes ?? []);
@@ -107,9 +107,7 @@ function ProductoPage() {
 
         // Public users only see approved listings. The owner can still review
         // their own pending/rejected listing after publishing it.
-        if (isAdmin) {
-          productoQuery = productoQuery;
-        } else if (user?.id) {
+        if (!isAdmin && user?.id) {
           productoQuery = productoQuery.or(`estado_moderacion.eq.aprobado,user_id.eq.${user.id}`);
         } else {
           productoQuery = productoQuery.eq("estado_moderacion", "aprobado");

@@ -1,7 +1,7 @@
 # 🔧 CHECKLIST DE DIAGNÓSTICO - Error 500 en Supabase
 
 > **Problema**: Error 500 al crear usuario en Vercel  
-> **Causa probable**: Credenciales de Supabase no configuradas correctamente  
+> **Causa probable**: Credenciales de Supabase no configuradas correctamente
 
 ---
 
@@ -10,10 +10,12 @@
 ### 1.1 ¿Creaste Supabase proyecto?
 
 **En https://supabase.com/dashboard:**
+
 - [ ] ¿Ves proyecto `winfast-staging`?
 - [ ] ¿El proyecto está activo (verde)?
 
 **Si NO está creado:**
+
 ```
 1. Ir a https://supabase.com/dashboard
 2. Click "New Project"
@@ -25,6 +27,7 @@
 ```
 
 **Si SÍ existe:**
+
 - [ ] Copiar Project URL: `https://xxxxx.supabase.co`
 - [ ] Ir a Settings > API
 - [ ] Copiar **anon public key** (comienza con `eyJ...`)
@@ -37,6 +40,7 @@
 ### 2.1 ¿Ejecutaste las 7 migraciones?
 
 **En Supabase > SQL Editor:**
+
 - [ ] ¿Ves las tablas en la izquierda?
   - [ ] profiles
   - [ ] productos
@@ -47,6 +51,7 @@
   - [ ] user_roles
 
 **Si NO ves las tablas:**
+
 ```
 1. Ir a Supabase > SQL Editor
 2. Click "New Query"
@@ -60,6 +65,7 @@
 ```
 
 **Si SÍ ves las tablas:**
+
 - [ ] Verificar que `profiles` tiene columnas: `id`, `email`, `is_blocked`, `motivo_bloqueo`
 
 ---
@@ -69,6 +75,7 @@
 ### 3.1 ¿Agregaste variables en Vercel?
 
 **En Vercel Dashboard:**
+
 1. Ir a: https://vercel.com/gemaverdugam06-sys/winfast-staging
 2. Click en **Settings** → **Environment Variables**
 3. Verificar que TODAS estas variables existen:
@@ -82,6 +89,7 @@
 ```
 
 **Si faltan variables:**
+
 1. Click "Add New"
 2. Variable Name: `VITE_SUPABASE_URL`
 3. Value: `https://xxxxx.supabase.co`
@@ -89,8 +97,9 @@
 5. Click "Save"
 6. Repetir para cada variable
 
-**IMPORTANTE**: 
-- VITE_* deben estar en **Production** y **Preview**
+**IMPORTANTE**:
+
+- VITE\_\* deben estar en **Production** y **Preview**
 - SUPABASE_SERVICE_ROLE_KEY debe estar SOLO en **Production**
 
 ### 3.2 ¿Re-deployaste después de agregar variables?
@@ -109,6 +118,7 @@
 ### 4.1 Verificar variables en Vercel
 
 **En navegador, en tu staging URL:**
+
 ```
 https://winfast-staging-xxxxx.vercel.app
 ```
@@ -116,15 +126,18 @@ https://winfast-staging-xxxxx.vercel.app
 1. Abre **F12** (Developer Console)
 2. Click en **Console** (pestaña)
 3. Escribe:
+
 ```javascript
-console.log(window.__VITE_SUPABASE_URL__)
+console.log(window.__VITE_SUPABASE_URL__);
 ```
 
 **Si muestra `undefined`:**
+
 - Variables NO están en Vercel
 - Volver a Paso 3 y verificar que se agregaron correctamente
 
 **Si muestra una URL:**
+
 - Variables SÍ llegaron a Vercel
 - Proceder a Paso 5
 
@@ -141,12 +154,14 @@ console.log(window.__VITE_SUPABASE_URL__)
    ```
 
 **Si no dice "on":**
+
 1. Click en tabla
 2. Click en el tab **RLS**
 3. Click en el botón **Enable RLS**
 4. Click **Confirm**
 
 **Tablas que DEBEN tener RLS:**
+
 - [ ] profiles
 - [ ] categorias
 - [ ] productos
@@ -164,12 +179,14 @@ console.log(window.__VITE_SUPABASE_URL__)
 ### 6.1 ¿Creaste los 4 usuarios de test?
 
 **En Supabase > Authentication > Users:**
+
 - [ ] admin-test@staging.local
 - [ ] user-test@staging.local
 - [ ] user2-test@staging.local
 - [ ] blocked-test@staging.local
 
 **Si NO existen:**
+
 1. Ir a https://supabase.com/dashboard
 2. Proyecto: `winfast-staging`
 3. Click en **Authentication** (izquierda)
@@ -181,6 +198,7 @@ console.log(window.__VITE_SUPABASE_URL__)
 9. Repetir para los otros 3 usuarios
 
 **Si SÍ existen:**
+
 - [ ] Proceder a siguiente paso
 
 ---
@@ -190,11 +208,13 @@ console.log(window.__VITE_SUPABASE_URL__)
 ### 7.1 Crear .env.local
 
 **En tu carpeta de proyecto:**
+
 ```
 c:\Users\Gema\Documents\WinFast\.env.local
 ```
 
 **Contenido:**
+
 ```env
 VITE_SUPABASE_URL=https://xxxxx.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=eyJ...
@@ -213,6 +233,7 @@ npm run dev
 ```
 
 **En navegador:**
+
 - Abre http://localhost:5173
 - Ir a `/auth`
 - Intenta login con:
@@ -222,10 +243,12 @@ npm run dev
   ```
 
 **Si funciona en local:**
+
 - Variables Supabase están correctas
 - El problema es que Vercel no las tiene
 
 **Si NO funciona en local:**
+
 - Variables .env.local están mal
 - Revisar que copiaste correctamente desde Supabase
 
@@ -235,17 +258,17 @@ npm run dev
 
 **Completa esta tabla:**
 
-| Verificación | Resultado | Acción |
-|-----------|----------|--------|
-| Supabase staging existe | ✅ / ❌ | Si ❌ → Crear proyecto |
-| Migraciones ejecutadas | ✅ / ❌ | Si ❌ → Ejecutar 7 migraciones |
-| Tablas visibles | ✅ / ❌ | Si ❌ → Migraciones fallaron |
-| RLS habilitado (9 tablas) | ✅ / ❌ | Si ❌ → Habilitar en Supabase |
-| Usuarios de test creados | ✅ / ❌ | Si ❌ → Crear usuarios |
-| Variables en Vercel | ✅ / ❌ | Si ❌ → Agregar en Settings |
-| Vercel re-deployado | ✅ / ❌ | Si ❌ → Hacer redeploy |
-| .env.local configurado | ✅ / ❌ | Si ❌ → Crear archivo |
-| Login funciona localmente | ✅ / ❌ | Si ❌ → Verificar credenciales |
+| Verificación              | Resultado | Acción                         |
+| ------------------------- | --------- | ------------------------------ |
+| Supabase staging existe   | ✅ / ❌   | Si ❌ → Crear proyecto         |
+| Migraciones ejecutadas    | ✅ / ❌   | Si ❌ → Ejecutar 7 migraciones |
+| Tablas visibles           | ✅ / ❌   | Si ❌ → Migraciones fallaron   |
+| RLS habilitado (9 tablas) | ✅ / ❌   | Si ❌ → Habilitar en Supabase  |
+| Usuarios de test creados  | ✅ / ❌   | Si ❌ → Crear usuarios         |
+| Variables en Vercel       | ✅ / ❌   | Si ❌ → Agregar en Settings    |
+| Vercel re-deployado       | ✅ / ❌   | Si ❌ → Hacer redeploy         |
+| .env.local configurado    | ✅ / ❌   | Si ❌ → Crear archivo          |
+| Login funciona localmente | ✅ / ❌   | Si ❌ → Verificar credenciales |
 
 ---
 
@@ -254,6 +277,7 @@ npm run dev
 **Reinicio completo (5 minutos):**
 
 1. **Eliminar y recrear Supabase:**
+
    ```
    En Supabase Dashboard > Project Settings > Danger Zone
    Click "Delete project"
@@ -262,6 +286,7 @@ npm run dev
    ```
 
 2. **Recrear Vercel deployment:**
+
    ```
    En Vercel > Settings > Danger Zone
    Click "Delete Project"
@@ -272,6 +297,7 @@ npm run dev
    ```
 
 3. **Verificar Git está limpio:**
+
    ```bash
    cd c:\Users\Gema\Documents\WinFast
    git status

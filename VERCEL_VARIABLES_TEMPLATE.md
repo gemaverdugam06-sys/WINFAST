@@ -8,6 +8,7 @@
 ## 🔑 VALORES A OBTENER DE SUPABASE
 
 ### Abre Supabase Dashboard:
+
 https://supabase.com/dashboard → Tu proyecto → Settings → API
 
 Copia EXACTAMENTE estos valores:
@@ -29,6 +30,7 @@ Service role secret:  eyJhbGc...yyyyyyy
 ---
 
 ### VARIABLE 1
+
 ```
 Name:           VITE_SUPABASE_URL
 Value:          https://XXXXXXXXX.supabase.co
@@ -38,6 +40,7 @@ Environments:   ✓ Production  ✓ Preview
 ---
 
 ### VARIABLE 2
+
 ```
 Name:           VITE_SUPABASE_PUBLISHABLE_KEY
 Value:          eyJhbGc...xxxxxxx
@@ -47,28 +50,31 @@ Environments:   ✓ Production  ✓ Preview
 ---
 
 ### VARIABLE 3
+
 ```
 Name:           VITE_SUPABASE_ANON_KEY
 Value:          eyJhbGc...xxxxxxx
 Environments:   ✓ Production  ✓ Preview
 ```
 
-*(NOTA: VITE_SUPABASE_ANON_KEY es IGUAL a VITE_SUPABASE_PUBLISHABLE_KEY - mismo valor)*
+_(NOTA: VITE_SUPABASE_ANON_KEY es IGUAL a VITE_SUPABASE_PUBLISHABLE_KEY - mismo valor)_
 
 ---
 
 ### VARIABLE 4
+
 ```
 Name:           SUPABASE_URL
 Value:          https://XXXXXXXXX.supabase.co
 Environments:   ✓ Production (SOLO Production, NO Preview)
 ```
 
-*(NOTA: SUPABASE_URL es IGUAL a VITE_SUPABASE_URL)*
+_(NOTA: SUPABASE_URL es IGUAL a VITE_SUPABASE_URL)_
 
 ---
 
 ### VARIABLE 5
+
 ```
 Name:           SUPABASE_SERVICE_ROLE_KEY
 Value:          eyJhbGc...yyyyyyy
@@ -110,13 +116,13 @@ Envs:       Production ONLY (NO Preview)
 
 ## ⚠️ IMPORTANTE - DIFERENCIAS
 
-| Variable | Valor | Dónde | Ambientes |
-|----------|-------|-------|-----------|
-| VITE_SUPABASE_URL | Project URL de Supabase | Public (browser) | Production + Preview |
-| VITE_SUPABASE_ANON_KEY | Anon Key de Supabase | Public (browser) | Production + Preview |
-| VITE_SUPABASE_PUBLISHABLE_KEY | Anon Key de Supabase (IGUAL) | Public (browser) | Production + Preview |
-| SUPABASE_URL | Project URL de Supabase (IGUAL) | Private (server) | Production ONLY |
-| SUPABASE_SERVICE_ROLE_KEY | Service Role Key de Supabase | Private (server) | Production ONLY |
+| Variable                      | Valor                           | Dónde            | Ambientes            |
+| ----------------------------- | ------------------------------- | ---------------- | -------------------- |
+| VITE_SUPABASE_URL             | Project URL de Supabase         | Public (browser) | Production + Preview |
+| VITE_SUPABASE_ANON_KEY        | Anon Key de Supabase            | Public (browser) | Production + Preview |
+| VITE_SUPABASE_PUBLISHABLE_KEY | Anon Key de Supabase (IGUAL)    | Public (browser) | Production + Preview |
+| SUPABASE_URL                  | Project URL de Supabase (IGUAL) | Private (server) | Production ONLY      |
+| SUPABASE_SERVICE_ROLE_KEY     | Service Role Key de Supabase    | Private (server) | Production ONLY      |
 
 ---
 

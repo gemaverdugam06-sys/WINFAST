@@ -30,11 +30,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import {
-  ADVERTISING_OPTIONS,
-  BUSINESS_PLANS,
-  FEATURED_PLAN_CONFIG,
-} from "@/lib/promo-plans";
+import { ADVERTISING_OPTIONS, BUSINESS_PLANS, FEATURED_PLAN_CONFIG } from "@/lib/promo-plans";
 import { reportReasons } from "@/lib/reporting";
 import { useSignedUrls } from "@/lib/storage";
 
@@ -224,14 +220,23 @@ const defaultMonetizationSettings: MonetizationSettings = {
 
 function MonetizationOverview({ transactions }: { transactions: Tx[] }) {
   const stats = useMemo(() => {
-    const completed = transactions.filter((tx) => normalizePaymentState(tx.estado_pago) === "COMPLETADO");
+    const completed = transactions.filter(
+      (tx) => normalizePaymentState(tx.estado_pago) === "COMPLETADO",
+    );
     const totalIngresos = completed.reduce((sum, tx) => sum + Number(tx.monto ?? 0), 0);
     const currentMonth = new Date();
-    const monthIngresos = completed.filter((tx) => {
-      const created = new Date(tx.created_at ?? Date.now());
-      return created.getMonth() === currentMonth.getMonth() && created.getFullYear() === currentMonth.getFullYear();
-    }).reduce((sum, tx) => sum + Number(tx.monto ?? 0), 0);
-    const activos = transactions.filter((tx) => normalizePaymentState(tx.estado_pago) === "COMPLETADO").length;
+    const monthIngresos = completed
+      .filter((tx) => {
+        const created = new Date(tx.created_at ?? Date.now());
+        return (
+          created.getMonth() === currentMonth.getMonth() &&
+          created.getFullYear() === currentMonth.getFullYear()
+        );
+      })
+      .reduce((sum, tx) => sum + Number(tx.monto ?? 0), 0);
+    const activos = transactions.filter(
+      (tx) => normalizePaymentState(tx.estado_pago) === "COMPLETADO",
+    ).length;
     const pendientes = transactions.filter((tx) => isPendingState(tx.estado_pago)).length;
 
     return {
@@ -557,7 +562,12 @@ function ProductoModerationCard({
               </>
             )}
           </Button>
-          <Button className="w-full sm:w-auto" variant="destructive" disabled={working} onClick={onRechazar}>
+          <Button
+            className="w-full sm:w-auto"
+            variant="destructive"
+            disabled={working}
+            onClick={onRechazar}
+          >
             <ShieldX className="mr-1 h-4 w-4" />
             Rechazar
           </Button>
@@ -1226,13 +1236,13 @@ export function AdminPanel() {
     if (error || data?.error) {
       const functionError = error as typeof error & { context?: Response };
       const responseBody = functionError?.context
-        ? await functionError.context.clone().json().catch(() => null)
+        ? await functionError.context
+            .clone()
+            .json()
+            .catch(() => null)
         : null;
       toast.error(
-        data?.error ??
-          responseBody?.error ??
-          error?.message ??
-          "No se pudo enviar la respuesta",
+        data?.error ?? responseBody?.error ?? error?.message ?? "No se pudo enviar la respuesta",
       );
       return;
     }
@@ -1380,13 +1390,19 @@ export function AdminPanel() {
         ) : (
           <Tabs defaultValue="transacciones" className="w-full">
             <TabsList className="flex h-auto w-full justify-start gap-1 overflow-x-auto rounded-xl p-1">
-              <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="transacciones">
+              <TabsTrigger
+                className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9"
+                value="transacciones"
+              >
                 Transacciones ({pendientes.length})
               </TabsTrigger>
               <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="compras">
                 Compras ({compras.filter((c) => c.estado === "PENDIENTE").length})
               </TabsTrigger>
-              <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="monetizacion">
+              <TabsTrigger
+                className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9"
+                value="monetizacion"
+              >
                 💰 Monetización
               </TabsTrigger>
               <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="moderacion">

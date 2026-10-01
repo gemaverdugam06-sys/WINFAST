@@ -215,7 +215,9 @@ function SupportPage() {
                 <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
                   <p>{successMessage}</p>
                   {ticketNumber ? (
-                    <p className="mt-1 font-medium">Tu solicitud #{ticketNumber} fue recibida correctamente.</p>
+                    <p className="mt-1 font-medium">
+                      Tu solicitud #{ticketNumber} fue recibida correctamente.
+                    </p>
                   ) : null}
                 </div>
               )}

@@ -24,10 +24,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { toUserMessage } from "@/lib/error-messages";
-import {
-  FEATURED_PLAN_CONFIG,
-  type FeaturedPlanKey,
-} from "@/lib/promo-plans";
+import { FEATURED_PLAN_CONFIG, type FeaturedPlanKey } from "@/lib/promo-plans";
 
 const PAYPHONE_LINK =
   import.meta.env.VITE_PAYPHONE_LINK ?? "https://ppls.me/yV2qDHkhPNunrElO0Tut1g";
@@ -60,9 +57,12 @@ const buildPlans = (settings?: MonetizationSettings) => {
         `${Number(featuredSettings[plan.key]?.durationDays ?? plan.durationDays)} días de visibilidad`,
         plan.priority === 1 ? "Máxima prioridad" : "Mayor exposición",
       ],
-      Icon: [Zap, Star, Rocket, Flame, Crown][Object.keys(FEATURED_PLAN_CONFIG).indexOf(plan.key)] ?? Zap,
+      Icon:
+        [Zap, Star, Rocket, Flame, Crown][Object.keys(FEATURED_PLAN_CONFIG).indexOf(plan.key)] ??
+        Zap,
       highlight: plan.key === "BASICO",
-      badge: plan.key === "BASICO" ? "Recomendado" : plan.key === "MEGA" ? "Mejor valor" : undefined,
+      badge:
+        plan.key === "BASICO" ? "Recomendado" : plan.key === "MEGA" ? "Mejor valor" : undefined,
       gradient: {
         FLASH: "from-amber-400 to-orange-500",
         BASICO: "from-pink-500 to-rose-500",
@@ -162,7 +162,8 @@ function PromocionarPage() {
           </Badge>
           <h1 className="text-2xl font-bold sm:text-3xl">DESTACAR PUBLICACIÓN</h1>
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-            Elige un plan DESTACADO y paga con PayPhone 🇪🇨. La activación ocurre solo tras confirmar el pago.
+            Elige un plan DESTACADO y paga con PayPhone 🇪🇨. La activación ocurre solo tras confirmar
+            el pago.
           </p>
         </div>
 
@@ -188,11 +189,11 @@ function PromocionarPage() {
                       : ""
                 }`}
               >
-              {badge && (
-                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-primary text-primary-foreground border-0 text-[10px] uppercase tracking-wide">
-                  {badge}
-                </Badge>
-              )}
+                {badge && (
+                  <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-primary text-primary-foreground border-0 text-[10px] uppercase tracking-wide">
+                    {badge}
+                  </Badge>
+                )}
                 <div className={`h-1.5 w-full bg-gradient-to-r ${gradient}`} />
                 <CardContent className="flex flex-1 flex-col gap-3 p-4">
                   <div className="flex items-center gap-2">
@@ -288,7 +289,8 @@ function PromocionarPage() {
                 )}
               </Button>
               <p className="text-xs text-center text-muted-foreground">
-                No activamos el DESTACADO solo por pulsar pagar; la publicación se activa tras la confirmación real del pago.
+                No activamos el DESTACADO solo por pulsar pagar; la publicación se activa tras la
+                confirmación real del pago.
               </p>
             </CardContent>
           </Card>

@@ -16,6 +16,27 @@ export const Route = createFileRoute("/_authenticated/reseña/$transaccionId")({
   component: PublicarReseñaPage,
 });
 
+interface ReviewTransaction {
+  id: string;
+  vendedor_id?: string | null;
+  productos?: {
+    titulo?: string | null;
+    user_id?: string | null;
+  } | null;
+}
+
+interface ReviewSeller {
+  id: string;
+  nombre_completo?: string | null;
+  avatar_url?: string | null;
+}
+
+interface ExistingReview {
+  id: string;
+  calificacion: number;
+  comentario?: string | null;
+}
+
 function PublicarReseñaPage() {
   const { transaccionId } = useParams({ from: "/_authenticated/reseña/$transaccionId" });
   const { user } = useAuth();
@@ -25,9 +46,9 @@ function PublicarReseñaPage() {
   const [comentario, setComentario] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [transaccion, setTransaccion] = useState<any>(null);
-  const [vendedor, setVendedor] = useState<any>(null);
-  const [existingReview, setExistingReview] = useState<any>(null);
+  const [transaccion, setTransaccion] = useState<ReviewTransaction | null>(null);
+  const [vendedor, setVendedor] = useState<ReviewSeller | null>(null);
+  const [existingReview, setExistingReview] = useState<ExistingReview | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -198,7 +219,9 @@ function PublicarReseñaPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="rounded-lg bg-muted p-4">
                 <p className="text-sm text-muted-foreground">Producto</p>
-                <p className="font-semibold">{transaccion.productos?.titulo ?? "Producto comprado"}</p>
+                <p className="font-semibold">
+                  {transaccion.productos?.titulo ?? "Producto comprado"}
+                </p>
                 <p className="mt-2 text-sm text-muted-foreground">Vendedor</p>
                 <p className="font-semibold">{vendedor.nombre_completo}</p>
               </div>

@@ -73,6 +73,7 @@ npm run test:e2e
 ## Estados de los Tests
 
 ### ✅ PASAN SIEMPRE (7 tests)
+
 - Homepage loads
 - Navigation works
 - Auth page visible
@@ -82,6 +83,7 @@ npm run test:e2e
 - Build verification
 
 ### ⏭️ SKIPPED (requiere Supabase staging activo)
+
 - Admin login
 - User login
 - Logout flow
@@ -99,6 +101,7 @@ npm run test:e2e
 ## Monitoreo de Resultados
 
 Los resultados se guardan en:
+
 ```
 e2e/results/results.json       # JSON results
 e2e/results/index.html         # Visual report
@@ -106,6 +109,7 @@ playwright-report/index.html   # Playwright HTML report
 ```
 
 Abrir el reporte:
+
 ```bash
 npx playwright show-report
 ```
@@ -113,6 +117,7 @@ npx playwright show-report
 ## Flujos de Prueba Manual (después de E2E)
 
 1. **Login/Logout**
+
    ```
    1. Ir a /auth
    2. Ingresar credenciales de usuario
@@ -122,6 +127,7 @@ npx playwright show-report
    ```
 
 2. **Admin Access**
+
    ```
    1. Login como admin
    2. Ir a /admin
@@ -132,6 +138,7 @@ npx playwright show-report
    ```
 
 3. **User Blocking**
+
    ```
    1. Admin bloquea un usuario
    2. Usuario bloqueado intenta login
@@ -142,6 +149,7 @@ npx playwright show-report
    ```
 
 4. **IDOR Prevention**
+
    ```
    1. Usuario A crea producto ID=123
    2. Usuario B intenta /producto/123/edit
@@ -159,13 +167,13 @@ npx playwright show-report
 
 ## Troubleshooting
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| "Connection refused" | Supabase no conecta | Verificar VITE_SUPABASE_URL en .env.local |
-| "RLS violation" | Permisos de BD incorrectos | Ejecutar migraciones en Supabase |
-| "User not found" | Usuarios no creados | Crear usuarios en Supabase Auth |
-| "Tests timeout" | Servidor no responde | Verificar que `npm run dev` está corriendo |
-| "Invalid credentials" | Contraseñas incorrectas | Verificar TEST_USERS en e2e/helpers/auth.ts |
+| Error                 | Causa                      | Solución                                    |
+| --------------------- | -------------------------- | ------------------------------------------- |
+| "Connection refused"  | Supabase no conecta        | Verificar VITE_SUPABASE_URL en .env.local   |
+| "RLS violation"       | Permisos de BD incorrectos | Ejecutar migraciones en Supabase            |
+| "User not found"      | Usuarios no creados        | Crear usuarios en Supabase Auth             |
+| "Tests timeout"       | Servidor no responde       | Verificar que `npm run dev` está corriendo  |
+| "Invalid credentials" | Contraseñas incorrectas    | Verificar TEST_USERS en e2e/helpers/auth.ts |
 
 ## Checklist pre-testing
 

@@ -2,7 +2,7 @@
 
 > **Fecha**: 2026-09-01  
 > **Objetivo**: Preparar environment de staging listo para testing  
-> **Tiempo estimado**: 2-3 horas  
+> **Tiempo estimado**: 2-3 horas
 
 ---
 
@@ -21,6 +21,7 @@
 ### 1.2 Obtener credenciales
 
 Una vez creado, ir a **Settings > API**:
+
 - Copiar `Project URL` → Guardar como `SUPABASE_URL`
 - Copiar `anon public key` → Guardar como `SUPABASE_ANON_KEY`
 - Copiar `service_role key` → Guardar como `SUPABASE_SERVICE_ROLE_KEY`
@@ -51,6 +52,7 @@ Copiar cada migración del archivo SQL y ejecutar:
 **Archivos en**: `supabase/migrations/`
 
 Ejecutar en este orden:
+
 ```
 1. 20260606030635_dbd62f11-feaf-4afc-b1e1-d1bea6b4cf7b.sql
 2. 20260606030648_123d4fc6-1a1f-41b1-bc44-55f139800e10.sql
@@ -64,11 +66,13 @@ Ejecutar en este orden:
 ### 2.3 Verificar que RLS está ENABLED
 
 Ir a **Database > Tables** y verificar que cada tabla tiene:
+
 ```
 🔒 Row Level Security (RLS) is on
 ```
 
 Tablas que DEBEN tener RLS:
+
 - [ ] profiles
 - [ ] categorias
 - [ ] productos
@@ -88,24 +92,28 @@ Tablas que DEBEN tener RLS:
 Click en **"Add user"** cuatro veces:
 
 **Usuario 1 - Admin**
+
 ```
 Email: admin-test@staging.local
 Password: Admin@Staging2026!
 ```
 
 **Usuario 2 - Usuario Normal**
+
 ```
 Email: user-test@staging.local
 Password: User@Staging2026!
 ```
 
 **Usuario 3 - Usuario 2**
+
 ```
 Email: user2-test@staging.local
 Password: User2@Staging2026!
 ```
 
 **Usuario 4 - Usuario Bloqueado**
+
 ```
 Email: blocked-test@staging.local
 Password: Blocked@Staging2026!
@@ -118,20 +126,20 @@ Ir a **SQL Editor** y ejecutar:
 ```sql
 -- Asignar admin
 INSERT INTO user_roles (user_id, role)
-SELECT id, 'admin' 
-FROM auth.users 
+SELECT id, 'admin'
+FROM auth.users
 WHERE email = 'admin-test@staging.local'
 ON CONFLICT DO NOTHING;
 
 -- Asignar usuarios normales
 INSERT INTO user_roles (user_id, role)
-SELECT id, 'user' 
-FROM auth.users 
+SELECT id, 'user'
+FROM auth.users
 WHERE email IN ('user-test@staging.local', 'user2-test@staging.local', 'blocked-test@staging.local')
 ON CONFLICT DO NOTHING;
 
 -- Bloquear el usuario 4
-UPDATE profiles 
+UPDATE profiles
 SET is_blocked = true, motivo_bloqueo = 'Test user - bloqueado para testing'
 WHERE id = (SELECT id FROM auth.users WHERE email = 'blocked-test@staging.local');
 ```
@@ -139,6 +147,7 @@ WHERE id = (SELECT id FROM auth.users WHERE email = 'blocked-test@staging.local'
 ### 3.3 Verificar Profiles
 
 Ejecutar en SQL Editor:
+
 ```sql
 SELECT id, email, is_blocked, created_at FROM profiles ORDER BY created_at DESC LIMIT 4;
 ```
@@ -188,15 +197,15 @@ Cambiar `baseURL` de localhost a staging Supabase URL:
 
 ```typescript
 const config: PlaywrightTestConfig = {
-  testDir: './e2e/tests',
+  testDir: "./e2e/tests",
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
+    command: "npm run dev",
+    url: "http://localhost:5173",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
   use: {
-    baseURL: 'http://localhost:5173', // Para dev local
+    baseURL: "http://localhost:5173", // Para dev local
     // baseURL: 'https://staging-url.vercel.app', // Para Vercel staging (después)
   },
 };
@@ -209,20 +218,20 @@ El archivo ya tiene test credentials, pero verificar que coincidan:
 ```typescript
 export const TEST_USERS = {
   admin: {
-    email: 'admin-test@staging.local',
-    password: 'Admin@Staging2026!',
+    email: "admin-test@staging.local",
+    password: "Admin@Staging2026!",
   },
   user: {
-    email: 'user-test@staging.local',
-    password: 'User@Staging2026!',
+    email: "user-test@staging.local",
+    password: "User@Staging2026!",
   },
   user2: {
-    email: 'user2-test@staging.local',
-    password: 'User2@Staging2026!',
+    email: "user2-test@staging.local",
+    password: "User2@Staging2026!",
   },
   blocked: {
-    email: 'blocked-test@staging.local',
-    password: 'Blocked@Staging2026!',
+    email: "blocked-test@staging.local",
+    password: "Blocked@Staging2026!",
   },
 };
 ```
@@ -263,7 +272,8 @@ SUPABASE_URL=https://xxxxx.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=eyJ... (SECRETO - Production only)
 ```
 
-**IMPORTANTE**: 
+**IMPORTANTE**:
+
 - SUPABASE_SERVICE_ROLE_KEY SOLO debe estar en **Production**
 - Para Preview/Staging, dejar vacío o usar solo las keys públicas
 
@@ -276,6 +286,7 @@ Esperar a que termine (5-10 mins).
 ### 6.4 Obtener URL de Staging
 
 Una vez desplegado:
+
 - Copiar URL: `https://winfast-staging-xxx.vercel.app`
 - Guardar como `STAGING_URL`
 
@@ -310,6 +321,7 @@ npm run test:e2e:debug
 ### 7.4 Tests esperados
 
 **Deben PASAR (7 tests):**
+
 - ✅ Homepage loads successfully
 - ✅ Navigation links work
 - ✅ Auth page is visible
@@ -318,6 +330,7 @@ npm run test:e2e:debug
 - ✅ Secrets not exposed
 
 **Actualmente SKIPPED (13 tests):**
+
 - ⏭️ User login
 - ⏭️ User logout
 - ⏭️ Admin login
@@ -407,18 +420,22 @@ Una vez todo conectado, cambiar `.skip` a tests reales.
 ## ⚠️ Troubleshooting
 
 ### Error: "Column 'is_blocked' not found"
+
 **Causa**: Migraciones no ejecutadas
 **Fix**: Ejecutar `20260831_add_user_blocking.sql` en SQL Editor
 
 ### Error: "RLS violation"
+
 **Causa**: RLS no está enabled en tabla
 **Fix**: Ir a Database > Tables > [tabla] > Enable RLS
 
 ### Tests fallan con "Connection refused"
+
 **Causa**: Supabase credentials no configuradas
 **Fix**: Verificar VITE_SUPABASE_URL en .env.local
 
 ### npm run dev falla
+
 **Causa**: Variables de entorno no cargadas
 **Fix**: Crear .env.local con credenciales correctas
 

@@ -42,17 +42,27 @@ function MisPagosPage() {
 
         if (error) throw error;
 
-        const rows = ((data as any[]) ?? []).map((item) => ({
-          id: item.id,
-          concepto: "DESTACAR PUBLICACIÓN",
-          producto_titulo: item.productos?.titulo ?? "Publicación",
-          plan: item.plan ?? "FLASH",
-          monto: Number(item.monto ?? 0),
-          estado: item.estado_pago ?? "PENDIENTE",
-          fecha_inicio: item.created_at,
-          fecha_vencimiento: item.created_at,
-          created_at: item.created_at,
-        })) as PagoItem[];
+        const rows: PagoItem[] = ((data as Array<Record<string, unknown>> | null) ?? []).map(
+          (item) => {
+            const record = item as Record<string, unknown>;
+            const productos = record["productos"] as Record<string, unknown> | undefined;
+            const createdAt =
+              typeof record["created_at"] === "string" ? record["created_at"] : null;
+            return {
+              id: String(record["id"] ?? ""),
+              concepto: "DESTACAR PUBLICACIÓN",
+              producto_titulo:
+                typeof productos?.["titulo"] === "string" ? productos["titulo"] : "Publicación",
+              plan: typeof record["plan"] === "string" ? record["plan"] : "FLASH",
+              monto: Number(record["monto"] ?? 0),
+              estado:
+                typeof record["estado_pago"] === "string" ? record["estado_pago"] : "PENDIENTE",
+              fecha_inicio: createdAt,
+              fecha_vencimiento: createdAt,
+              created_at: createdAt,
+            };
+          },
+        );
 
         setItems(rows);
       } catch (error) {
@@ -102,13 +112,18 @@ function MisPagosPage() {
                       <strong>Publicación:</strong> {item.producto_titulo}
                     </div>
                     <div>
-                      <strong>Fecha:</strong> {item.created_at ? new Date(item.created_at).toLocaleString() : "—"}
+                      <strong>Fecha:</strong>{" "}
+                      {item.created_at ? new Date(item.created_at).toLocaleString() : "—"}
                     </div>
                     <div>
-                      <strong>Inicio:</strong> {item.fecha_inicio ? new Date(item.fecha_inicio).toLocaleDateString() : "—"}
+                      <strong>Inicio:</strong>{" "}
+                      {item.fecha_inicio ? new Date(item.fecha_inicio).toLocaleDateString() : "—"}
                     </div>
                     <div>
-                      <strong>Vencimiento:</strong> {item.fecha_vencimiento ? new Date(item.fecha_vencimiento).toLocaleDateString() : "—"}
+                      <strong>Vencimiento:</strong>{" "}
+                      {item.fecha_vencimiento
+                        ? new Date(item.fecha_vencimiento).toLocaleDateString()
+                        : "—"}
                     </div>
                   </div>
                 </CardContent>

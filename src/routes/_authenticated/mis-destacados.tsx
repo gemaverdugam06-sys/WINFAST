@@ -45,23 +45,38 @@ function MisDestacadosPage() {
 
         if (error) throw error;
 
-        const rows = ((data as any[]) ?? [])
-          .filter((item) => Boolean(item.es_destacado) || Boolean(item.promocionado_hasta))
-          .map((item) => ({
-            id: item.id,
-            titulo: item.titulo,
-            tipo: "PRODUCTO",
-            plan: item.tipo_promocion || "FLASH",
-            precio_pagado: Number(item.precio ?? 0),
-            fecha_inicio: item.promocionado_hasta ? new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString() : null,
-            fecha_vencimiento: item.promocionado_hasta,
-            estado:
-              item.es_destacado && item.promocionado_hasta && new Date(item.promocionado_hasta) > new Date()
-                ? "ACTIVO"
-                : "VENCIDO",
-            es_destacado: Boolean(item.es_destacado),
-            promocionado_hasta: item.promocionado_hasta,
-          })) as DestacadoItem[];
+        const rows: DestacadoItem[] = ((data as Array<Record<string, unknown>> | null) ?? [])
+          .filter((item) => {
+            const record = item as Record<string, unknown>;
+            return Boolean(record["es_destacado"]) || Boolean(record["promocionado_hasta"]);
+          })
+          .map((item) => {
+            const record = item as Record<string, unknown>;
+            const fechaVencimiento =
+              typeof record["promocionado_hasta"] === "string"
+                ? record["promocionado_hasta"]
+                : null;
+            return {
+              id: String(record["id"] ?? ""),
+              titulo: String(record["titulo"] ?? ""),
+              tipo: "PRODUCTO",
+              plan:
+                typeof record["tipo_promocion"] === "string" ? record["tipo_promocion"] : "FLASH",
+              precio_pagado: Number(record["precio"] ?? 0),
+              fecha_inicio: fechaVencimiento
+                ? new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString()
+                : null,
+              fecha_vencimiento: fechaVencimiento,
+              estado:
+                Boolean(record["es_destacado"]) &&
+                fechaVencimiento &&
+                new Date(String(fechaVencimiento)) > new Date()
+                  ? "ACTIVO"
+                  : "VENCIDO",
+              es_destacado: Boolean(record["es_destacado"]),
+              promocionado_hasta: fechaVencimiento ? String(fechaVencimiento) : null,
+            };
+          });
 
         setItems(rows);
       } catch (error) {
@@ -102,7 +117,9 @@ function MisDestacadosPage() {
               const remaining = item.promocionado_hasta
                 ? Math.max(
                     0,
-                    Math.ceil((new Date(item.promocionado_hasta).getTime() - Date.now()) / 86400000),
+                    Math.ceil(
+                      (new Date(item.promocionado_hasta).getTime() - Date.now()) / 86400000,
+                    ),
                   )
                 : 0;
 
@@ -122,11 +139,16 @@ function MisDestacadosPage() {
                       <div>
                         <h2 className="font-semibold">{item.titulo}</h2>
                         <p className="text-sm text-muted-foreground">
-                          Precio pagado: ${Number(item.precio_pagado).toFixed(2)} · Vence: {item.fecha_vencimiento ? new Date(item.fecha_vencimiento).toLocaleDateString() : "—"}
+                          Precio pagado: ${Number(item.precio_pagado).toFixed(2)} · Vence:{" "}
+                          {item.fecha_vencimiento
+                            ? new Date(item.fecha_vencimiento).toLocaleDateString()
+                            : "—"}
                         </p>
                       </div>
                       <div className="text-right text-sm text-muted-foreground">
-                        <div>{remaining > 0 ? `${remaining} días restantes` : "Sin tiempo restante"}</div>
+                        <div>
+                          {remaining > 0 ? `${remaining} días restantes` : "Sin tiempo restante"}
+                        </div>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -139,7 +161,12 @@ function MisDestacadosPage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => navigate({ to: "/promocionar/$productoId", params: { productoId: item.id } })}
+                        onClick={() =>
+                          navigate({
+                            to: "/promocionar/$productoId",
+                            params: { productoId: item.id },
+                          })
+                        }
                       >
                         🔄 Extender destacado
                       </Button>

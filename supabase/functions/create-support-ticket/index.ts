@@ -18,13 +18,20 @@ const corsHeaders = {
 
 const sanitizeText = (value: unknown): string => {
   if (typeof value !== "string") return "";
-  return value
+
+  const withoutControls = Array.from(value)
+    .filter((char) => {
+      const code = char.charCodeAt(0);
+      return code >= 32 && code !== 127;
+    })
+    .join("");
+
+  return withoutControls
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/javascript\s*:/gi, " ")
-    .replace(/on\w+\s*=\s*['\"][^'\"]*['\"]/gi, " ")
-    .replace(/[\u0000-\u001F\u007F]+/g, " ")
+    .replace(/on\w+\s*=\s*['"][^'"]*['"]/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
 };
@@ -112,7 +119,7 @@ const escapeHtml = (value: string) =>
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 
 const formatSupportHtml = (ticket: {
@@ -207,7 +214,11 @@ Deno.serve(async (req) => {
 
     if (!url || !anonKey || !serviceRoleKey) {
       return new Response(
-        JSON.stringify({ ok: false, error: "Missing Supabase config", message: "No pudimos registrar tu solicitud." }),
+        JSON.stringify({
+          ok: false,
+          error: "Missing Supabase config",
+          message: "No pudimos registrar tu solicitud.",
+        }),
         {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -291,7 +302,11 @@ Deno.serve(async (req) => {
 
     if (insertError || !ticket) {
       return new Response(
-        JSON.stringify({ ok: false, error: "INSERT_FAILED", message: "No pudimos registrar tu solicitud." }),
+        JSON.stringify({
+          ok: false,
+          error: "INSERT_FAILED",
+          message: "No pudimos registrar tu solicitud.",
+        }),
         {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -358,7 +373,11 @@ Deno.serve(async (req) => {
     const message = error instanceof Error ? error.message : "Unexpected error";
     console.error("create-support-ticket failed", message);
     return new Response(
-      JSON.stringify({ ok: false, error: "UNKNOWN_ERROR", message: "No pudimos registrar tu solicitud. Inténtalo nuevamente." }),
+      JSON.stringify({
+        ok: false,
+        error: "UNKNOWN_ERROR",
+        message: "No pudimos registrar tu solicitud. Inténtalo nuevamente.",
+      }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

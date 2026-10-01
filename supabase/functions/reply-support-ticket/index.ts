@@ -35,9 +35,12 @@ Deno.serve(async (req) => {
       !fromEmail && "RESEND_FROM_EMAIL (o SUPPORT_EMAIL)",
     ].filter(Boolean);
     if (missingConfig.length > 0) {
-      return jsonResponse({
-        error: `Falta configuración de soporte: ${missingConfig.join(", ")}`,
-      }, 500);
+      return jsonResponse(
+        {
+          error: `Falta configuración de soporte: ${missingConfig.join(", ")}`,
+        },
+        500,
+      );
     }
 
     const userClient = createClient(url, anonKey, {
@@ -73,7 +76,8 @@ Deno.serve(async (req) => {
     if (ticketError || !ticket) return jsonResponse({ error: "Ticket no encontrado" }, 404);
 
     const resendKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendKey) return jsonResponse({ error: "Falta configurar RESEND_API_KEY en Supabase." }, 500);
+    if (!resendKey)
+      return jsonResponse({ error: "Falta configurar RESEND_API_KEY en Supabase." }, 500);
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
@@ -103,7 +107,8 @@ Deno.serve(async (req) => {
       .from("support_tickets")
       .update({ response_text: reply, responded_at: new Date().toISOString(), status: "resolved" })
       .eq("id", ticketId);
-    if (updateError) return jsonResponse({ error: "Correo enviado, pero no se pudo guardar la respuesta." }, 500);
+    if (updateError)
+      return jsonResponse({ error: "Correo enviado, pero no se pudo guardar la respuesta." }, 500);
 
     return jsonResponse({ ok: true, message: "Respuesta enviada correctamente." });
   } catch (error) {

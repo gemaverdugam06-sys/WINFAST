@@ -78,7 +78,7 @@ const isMissingProductColumnError = (error: unknown) => {
     code === "PGRST204" ||
     message.includes("estado_moderacion") ||
     message.includes("razon_rechazo") ||
-    message.includes("column") && message.includes("does not exist")
+    (message.includes("column") && message.includes("does not exist"))
   );
 };
 
@@ -101,7 +101,10 @@ const isStorageBucketMissingError = (error: unknown) => {
 
   const message = String((error as { message?: string }).message ?? "").toLowerCase();
 
-  return message.includes("bucket not found") || message.includes("not found") && message.includes("bucket");
+  return (
+    message.includes("bucket not found") ||
+    (message.includes("not found") && message.includes("bucket"))
+  );
 };
 
 export const Route = createFileRoute("/_authenticated/publicar")({
@@ -263,7 +266,9 @@ function PublicarPage() {
       if (error) {
         console.error("Error subiendo imagen del producto:", error);
         if (isStorageBucketMissingError(error)) {
-          toast.error("El bucket 'productos' no existe en Supabase Storage. Crea el bucket para poder publicar.");
+          toast.error(
+            "El bucket 'productos' no existe en Supabase Storage. Crea el bucket para poder publicar.",
+          );
         } else {
           toast.error(toUserMessage(error, "Error al subir la imagen. Intenta de nuevo."));
         }
@@ -307,11 +312,17 @@ function PublicarPage() {
     if (!productoId || insertError) {
       console.error("Error publicando producto:", insertError ?? "No se recibió id del producto");
       if (isProductPermissionError(insertError)) {
-        toast.error("No tienes permisos para publicar este anuncio. Revisa tu sesión o los permisos de Supabase.");
+        toast.error(
+          "No tienes permisos para publicar este anuncio. Revisa tu sesión o los permisos de Supabase.",
+        );
       } else if (isMissingProductColumnError(insertError)) {
-        toast.error("La estructura real de Supabase no incluye una o más columnas de moderación. Revisa la migración del esquema de productos.");
+        toast.error(
+          "La estructura real de Supabase no incluye una o más columnas de moderación. Revisa la migración del esquema de productos.",
+        );
       } else {
-        toast.error(toUserMessage(insertError, "No se pudo publicar el anuncio. Intenta de nuevo."));
+        toast.error(
+          toUserMessage(insertError, "No se pudo publicar el anuncio. Intenta de nuevo."),
+        );
       }
       return;
     }

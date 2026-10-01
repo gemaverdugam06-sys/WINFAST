@@ -12,7 +12,9 @@ export const attachSupabaseAuth = createMiddleware({ type: "function" }).client(
       if (typeof window !== "undefined") {
         try {
           localStorage.removeItem("supabase_down");
-        } catch {}
+        } catch {
+          // Ignore storage errors in restricted environments.
+        }
       }
       return next({
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -23,7 +25,9 @@ export const attachSupabaseAuth = createMiddleware({ type: "function" }).client(
       if (typeof window !== "undefined") {
         try {
           localStorage.setItem("supabase_down", "1");
-        } catch {}
+        } catch {
+          // Ignore storage errors in restricted environments.
+        }
       }
       return next({ headers: {} });
     }
