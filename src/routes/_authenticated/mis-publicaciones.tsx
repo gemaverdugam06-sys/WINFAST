@@ -40,6 +40,8 @@ interface Pub {
   promocionado_hasta: string | null;
   tipo_promocion: string;
   activo: boolean;
+  vistas: number;
+  clics_contacto: number;
   estado_pago?: string;
   notas_admin?: string | null;
   estado_moderacion?: string;
@@ -99,6 +101,8 @@ function MisPubs() {
           promocionado_hasta,
           estado_moderacion,
           razon_rechazo,
+          vistas,
+          clics_contacto,
           transacciones (
             id,
             estado_pago,
@@ -155,6 +159,8 @@ function MisPubs() {
           notas_admin: latestTx?.notas_admin ?? null,
           estado_moderacion: p.estado_moderacion || "pendiente",
           razon_rechazo: p.razon_rechazo || null,
+          vistas: Number(p.vistas ?? 0),
+          clics_contacto: Number(p.clics_contacto ?? 0),
         };
       }) as Pub[];
 
@@ -258,6 +264,10 @@ function PubRow({
             <p className="text-sm font-bold text-primary">
               {p.moneda} {Number(p.precio).toFixed(2)}
             </p>
+            <div className="flex gap-3 text-xs text-muted-foreground">
+              <span>Vistas: {p.vistas}</span>
+              <span>Contactos: {p.clics_contacto}</span>
+            </div>
             <div className="mt-1 flex flex-wrap gap-1">
               <Badge variant={p.activo ? "default" : "secondary"} className="text-[10px]">
                 {p.activo ? t("active") : t("inactive")}

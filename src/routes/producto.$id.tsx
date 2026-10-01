@@ -128,6 +128,10 @@ function ProductoPage() {
         const producto = (data as Producto | null) ?? null;
         setP(producto);
 
+        if (producto) {
+          void supabase.rpc("registrar_vista_producto", { p_producto_id: producto.id });
+        }
+
         // Load vendor stats and recent reviews
         if (producto?.user_id && user?.id) {
           try {
@@ -240,6 +244,9 @@ function ProductoPage() {
         return;
       }
     }
+    if (p && user.id !== p.user_id) {
+      void supabase.rpc("registrar_clic_contacto_producto", { p_producto_id: p.id });
+    }
     nav({ to: "/chat/$chatId", params: { chatId } });
   };
 
@@ -254,6 +261,9 @@ function ProductoPage() {
       e.preventDefault();
       toast.error("Verifica tu correo electrónico para contactar por WhatsApp");
       return;
+    }
+    if (p && user.id !== p.user_id) {
+      void supabase.rpc("registrar_clic_contacto_producto", { p_producto_id: p.id });
     }
   };
 
@@ -432,6 +442,7 @@ function ProductoPage() {
                         href={waLink}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={handleWhatsapp}
                         className="flex items-center justify-center"
                       >
                         <Phone className="mr-1 h-4 w-4" /> {t("open_whatsapp")}

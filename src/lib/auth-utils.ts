@@ -2,9 +2,7 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeWhatsapp } from "@/lib/whatsapp";
 
-const ADMIN_EMAILS = new Set([
-  "ing.gemaverduga@gmail.com",
-]);
+const ADMIN_EMAILS = new Set(["ing.gemaverduga@gmail.com"]);
 
 /** Convierte entrada local ecuatoriana a formato E.164 (+593...) para Supabase Auth. */
 export function toE164Phone(raw: string): string | null {
@@ -30,7 +28,10 @@ export function validateStrongPassword(password: string): string | null {
   return null;
 }
 
-export async function getUserRole(userId: string, userEmail?: string | null): Promise<string | null> {
+export async function getUserRole(
+  userId: string,
+  userEmail?: string | null,
+): Promise<string | null> {
   if (!userId) return null;
 
   const normalizedEmail = userEmail?.trim().toLowerCase();

@@ -1,11 +1,29 @@
 import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "path";
 import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 let serverModule = null;
+
+export function resolveClientAssetPath(requestUrl, clientRoot = join(__dirname, "../dist/client")) {
+  let decodedPath;
+  try {
+    decodedPath = decodeURIComponent(requestUrl.split("?")[0]);
+  } catch {
+    return null;
+  }
+
+  const root = resolve(clientRoot);
+  const assetPath = resolve(root, decodedPath.replace(/^[/\\]+/, ""));
+  const relativePath = relative(root, assetPath);
+  if (relativePath === ".." || relativePath.startsWith(`..${sep}`) || isAbsolute(relativePath)) {
+    return null;
+  }
+
+  return assetPath;
+}
 
 async function loadServer() {
   if (serverModule) return serverModule;
@@ -77,9 +95,8 @@ export default async function handler(req, res) {
 
     // Try to serve static assets
     if (url.startsWith("/assets/")) {
-      const assetUrl = decodeURIComponent(url.split("?")[0]);
-      const assetPath = join(__dirname, "../dist/client", assetUrl);
-      if (serveStatic(assetPath, res)) {
+      const assetPath = resolveClientAssetPath(url);
+      if (assetPath && serveStatic(assetPath, res)) {
         return;
       }
     }
