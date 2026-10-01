@@ -2,7 +2,10 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeWhatsapp } from "@/lib/whatsapp";
 
-const ADMIN_EMAILS = new Set(["ing.gemaverduga@gmail.com"]);
+const ADMIN_EMAILS = new Set([
+  "ing.gemaverduga@gmail.com",
+  "c-alcivar@hotmail.com",
+]);
 
 /** Convierte entrada local ecuatoriana a formato E.164 (+593...) para Supabase Auth. */
 export function toE164Phone(raw: string): string | null {

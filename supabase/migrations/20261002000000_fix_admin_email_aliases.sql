@@ -1,4 +1,4 @@
--- Keep the administrator identities aligned across the client, RLS, and Edge Functions.
+-- Reconcile the admin identity list used by the UI and the database so purchase deletions work for all authorized admins.
 CREATE OR REPLACE FUNCTION public.is_admin_email(_email text)
 RETURNS boolean
 LANGUAGE sql
@@ -51,20 +51,3 @@ FROM auth.users AS u
 WHERE p.id = u.id
   AND public.is_admin_email(u.email)
   AND p.is_blocked IS DISTINCT FROM false;
-
--- The admin panel moderates reported reviews and removes uploaded receipts.
-GRANT UPDATE ON public.resenas_vendedores TO authenticated;
-DROP POLICY IF EXISTS "resenas_admin_update" ON public.resenas_vendedores;
-CREATE POLICY "resenas_admin_update" ON public.resenas_vendedores
-  FOR UPDATE TO authenticated
-  USING (public.has_role(auth.uid(), 'admin'::public.app_role))
-  WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
-
-GRANT DELETE ON storage.objects TO authenticated;
-DROP POLICY IF EXISTS "comprobantes_admin_delete" ON storage.objects;
-CREATE POLICY "comprobantes_admin_delete" ON storage.objects
-  FOR DELETE TO authenticated
-  USING (
-    bucket_id = 'comprobantes'
-    AND public.has_role(auth.uid(), 'admin'::public.app_role)
-  );
