@@ -9,45 +9,39 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TerminosRouteImport } from './routes/terminos'
-import { Route as PrivacidadRouteImport } from './routes/privacidad'
-import { Route as PoliticasSeguridadRouteImport } from './routes/politicas-seguridad'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProductoIdRouteImport } from './routes/producto.$id'
-import { Route as CategoriaIdRouteImport } from './routes/categoria.$id'
-import { Route as AuthVerificarTelefonoRouteImport } from './routes/auth.verificar-telefono'
-import { Route as AuthRecuperarRouteImport } from './routes/auth.recuperar'
-import { Route as AuthNuevaContrasenaRouteImport } from './routes/auth.nueva-contrasena'
-import { Route as AuthenticatedSoporteRouteImport } from './routes/_authenticated/soporte'
-import { Route as AuthenticatedPublicarRouteImport } from './routes/_authenticated/publicar'
-import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
-import { Route as AuthenticatedNotificacionesRouteImport } from './routes/_authenticated/notificaciones'
-import { Route as AuthenticatedMisPublicacionesRouteImport } from './routes/_authenticated/mis-publicaciones'
-import { Route as AuthenticatedMisPagosRouteImport } from './routes/_authenticated/mis-pagos'
-import { Route as AuthenticatedMisDestacadosRouteImport } from './routes/_authenticated/mis-destacados'
-import { Route as AuthenticatedChatsRouteImport } from './routes/_authenticated/chats'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as PoliticasSeguridadRouteImport } from './routes/politicas-seguridad'
+import { Route as PrivacidadRouteImport } from './routes/privacidad'
+import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as VendedorVendedorIdReseChar241asRouteImport } from './routes/vendedor.$vendedorId.reseñas'
-import { Route as AuthenticatedReseChar241aTransaccionIdRouteImport } from './routes/_authenticated/reseña.$transaccionId'
-import { Route as AuthenticatedPromocionarProductoIdRouteImport } from './routes/_authenticated/promocionar.$productoId'
-import { Route as AuthenticatedEditarIdRouteImport } from './routes/_authenticated/editar.$id'
+import { Route as AuthenticatedChatsRouteImport } from './routes/_authenticated/chats'
+import { Route as AuthenticatedMisDestacadosRouteImport } from './routes/_authenticated/mis-destacados'
+import { Route as AuthenticatedMisPagosRouteImport } from './routes/_authenticated/mis-pagos'
+import { Route as AuthenticatedMisPublicacionesRouteImport } from './routes/_authenticated/mis-publicaciones'
+import { Route as AuthenticatedNotificacionesRouteImport } from './routes/_authenticated/notificaciones'
+import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedPublicarRouteImport } from './routes/_authenticated/publicar'
+import { Route as AuthenticatedSoporteRouteImport } from './routes/_authenticated/soporte'
+import { Route as AuthNuevaContrasenaRouteImport } from './routes/auth.nueva-contrasena'
+import { Route as AuthRecuperarRouteImport } from './routes/auth.recuperar'
+import { Route as AuthVerificarTelefonoRouteImport } from './routes/auth.verificar-telefono'
+import { Route as CategoriaIdRouteImport } from './routes/categoria.$id'
+import { Route as ProductoIdRouteImport } from './routes/producto.$id'
 import { Route as AuthenticatedChatChatIdRouteImport } from './routes/_authenticated/chat.$chatId'
+import { Route as AuthenticatedEditarIdRouteImport } from './routes/_authenticated/editar.$id'
+import { Route as AuthenticatedPromocionarProductoIdRouteImport } from './routes/_authenticated/promocionar.$productoId'
+import { Route as AuthenticatedReseChar241aTransaccionIdRouteImport } from './routes/_authenticated/reseña.$transaccionId'
+import { Route as VendedorVendedorIdReseChar241asRouteImport } from './routes/vendedor.$vendedorId.reseñas'
 
-const TerminosRoute = TerminosRouteImport.update({
-  id: '/terminos',
-  path: '/terminos',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrivacidadRoute = PrivacidadRouteImport.update({
-  id: '/privacidad',
-  path: '/privacidad',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PoliticasSeguridadRoute = PoliticasSeguridadRouteImport.update({
-  id: '/politicas-seguridad',
-  path: '/politicas-seguridad',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -55,70 +49,29 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const PoliticasSeguridadRoute = PoliticasSeguridadRouteImport.update({
+  id: '/politicas-seguridad',
+  path: '/politicas-seguridad',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const PrivacidadRoute = PrivacidadRouteImport.update({
+  id: '/privacidad',
+  path: '/privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductoIdRoute = ProductoIdRouteImport.update({
-  id: '/producto/$id',
-  path: '/producto/$id',
+const TerminosRoute = TerminosRouteImport.update({
+  id: '/terminos',
+  path: '/terminos',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategoriaIdRoute = CategoriaIdRouteImport.update({
-  id: '/categoria/$id',
-  path: '/categoria/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthVerificarTelefonoRoute = AuthVerificarTelefonoRouteImport.update({
-  id: '/verificar-telefono',
-  path: '/verificar-telefono',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthRecuperarRoute = AuthRecuperarRouteImport.update({
-  id: '/recuperar',
-  path: '/recuperar',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthNuevaContrasenaRoute = AuthNuevaContrasenaRouteImport.update({
-  id: '/nueva-contrasena',
-  path: '/nueva-contrasena',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthenticatedSoporteRoute = AuthenticatedSoporteRouteImport.update({
-  id: '/soporte',
-  path: '/soporte',
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedPublicarRoute = AuthenticatedPublicarRouteImport.update({
-  id: '/publicar',
-  path: '/publicar',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
-  id: '/perfil',
-  path: '/perfil',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedNotificacionesRoute =
-  AuthenticatedNotificacionesRouteImport.update({
-    id: '/notificaciones',
-    path: '/notificaciones',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedMisPublicacionesRoute =
-  AuthenticatedMisPublicacionesRouteImport.update({
-    id: '/mis-publicaciones',
-    path: '/mis-publicaciones',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedMisPagosRoute = AuthenticatedMisPagosRouteImport.update({
-  id: '/mis-pagos',
-  path: '/mis-pagos',
+const AuthenticatedChatsRoute = AuthenticatedChatsRouteImport.update({
+  id: '/chats',
+  path: '/chats',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMisDestacadosRoute =
@@ -127,21 +80,78 @@ const AuthenticatedMisDestacadosRoute =
     path: '/mis-destacados',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedChatsRoute = AuthenticatedChatsRouteImport.update({
-  id: '/chats',
-  path: '/chats',
+const AuthenticatedMisPagosRoute = AuthenticatedMisPagosRouteImport.update({
+  id: '/mis-pagos',
+  path: '/mis-pagos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const AuthenticatedMisPublicacionesRoute =
+  AuthenticatedMisPublicacionesRouteImport.update({
+    id: '/mis-publicaciones',
+    path: '/mis-publicaciones',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedNotificacionesRoute =
+  AuthenticatedNotificacionesRouteImport.update({
+    id: '/notificaciones',
+    path: '/notificaciones',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const VendedorVendedorIdReseChar241asRoute =
-  VendedorVendedorIdReseChar241asRouteImport.update({
-    id: '/vendedor/$vendedorId/reseñas',
-    path: '/vendedor/$vendedorId/reseñas',
-    getParentRoute: () => rootRouteImport,
+const AuthenticatedPublicarRoute = AuthenticatedPublicarRouteImport.update({
+  id: '/publicar',
+  path: '/publicar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSoporteRoute = AuthenticatedSoporteRouteImport.update({
+  id: '/soporte',
+  path: '/soporte',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthNuevaContrasenaRoute = AuthNuevaContrasenaRouteImport.update({
+  id: '/nueva-contrasena',
+  path: '/nueva-contrasena',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthRecuperarRoute = AuthRecuperarRouteImport.update({
+  id: '/recuperar',
+  path: '/recuperar',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthVerificarTelefonoRoute = AuthVerificarTelefonoRouteImport.update({
+  id: '/verificar-telefono',
+  path: '/verificar-telefono',
+  getParentRoute: () => AuthRoute,
+} as any)
+const CategoriaIdRoute = CategoriaIdRouteImport.update({
+  id: '/categoria/$id',
+  path: '/categoria/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductoIdRoute = ProductoIdRouteImport.update({
+  id: '/producto/$id',
+  path: '/producto/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedChatChatIdRoute = AuthenticatedChatChatIdRouteImport.update({
+  id: '/chat/$chatId',
+  path: '/chat/$chatId',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEditarIdRoute = AuthenticatedEditarIdRouteImport.update({
+  id: '/editar/$id',
+  path: '/editar/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPromocionarProductoIdRoute =
+  AuthenticatedPromocionarProductoIdRouteImport.update({
+    id: '/promocionar/$productoId',
+    path: '/promocionar/$productoId',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedReseChar241aTransaccionIdRoute =
   AuthenticatedReseChar241aTransaccionIdRouteImport.update({
@@ -149,22 +159,12 @@ const AuthenticatedReseChar241aTransaccionIdRoute =
     path: '/reseña/$transaccionId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPromocionarProductoIdRoute =
-  AuthenticatedPromocionarProductoIdRouteImport.update({
-    id: '/promocionar/$productoId',
-    path: '/promocionar/$productoId',
-    getParentRoute: () => AuthenticatedRouteRoute,
+const VendedorVendedorIdReseChar241asRoute =
+  VendedorVendedorIdReseChar241asRouteImport.update({
+    id: '/vendedor/$vendedorId/reseñas',
+    path: '/vendedor/$vendedorId/reseñas',
+    getParentRoute: () => rootRouteImport,
   } as any)
-const AuthenticatedEditarIdRoute = AuthenticatedEditarIdRouteImport.update({
-  id: '/editar/$id',
-  path: '/editar/$id',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedChatChatIdRoute = AuthenticatedChatChatIdRouteImport.update({
-  id: '/chat/$chatId',
-  path: '/chat/$chatId',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -342,32 +342,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terminos': {
-      id: '/terminos'
-      path: '/terminos'
-      fullPath: '/terminos'
-      preLoaderRoute: typeof TerminosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacidad': {
-      id: '/privacidad'
-      path: '/privacidad'
-      fullPath: '/privacidad'
-      preLoaderRoute: typeof PrivacidadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/politicas-seguridad': {
-      id: '/politicas-seguridad'
-      path: '/politicas-seguridad'
-      fullPath: '/politicas-seguridad'
-      preLoaderRoute: typeof PoliticasSeguridadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -377,95 +356,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/producto/$id': {
-      id: '/producto/$id'
-      path: '/producto/$id'
-      fullPath: '/producto/$id'
-      preLoaderRoute: typeof ProductoIdRouteImport
+    '/politicas-seguridad': {
+      id: '/politicas-seguridad'
+      path: '/politicas-seguridad'
+      fullPath: '/politicas-seguridad'
+      preLoaderRoute: typeof PoliticasSeguridadRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/categoria/$id': {
-      id: '/categoria/$id'
-      path: '/categoria/$id'
-      fullPath: '/categoria/$id'
-      preLoaderRoute: typeof CategoriaIdRouteImport
+    '/privacidad': {
+      id: '/privacidad'
+      path: '/privacidad'
+      fullPath: '/privacidad'
+      preLoaderRoute: typeof PrivacidadRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/verificar-telefono': {
-      id: '/auth/verificar-telefono'
-      path: '/verificar-telefono'
-      fullPath: '/auth/verificar-telefono'
-      preLoaderRoute: typeof AuthVerificarTelefonoRouteImport
-      parentRoute: typeof AuthRoute
+    '/terminos': {
+      id: '/terminos'
+      path: '/terminos'
+      fullPath: '/terminos'
+      preLoaderRoute: typeof TerminosRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/auth/recuperar': {
-      id: '/auth/recuperar'
-      path: '/recuperar'
-      fullPath: '/auth/recuperar'
-      preLoaderRoute: typeof AuthRecuperarRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/auth/nueva-contrasena': {
-      id: '/auth/nueva-contrasena'
-      path: '/nueva-contrasena'
-      fullPath: '/auth/nueva-contrasena'
-      preLoaderRoute: typeof AuthNuevaContrasenaRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_authenticated/soporte': {
-      id: '/_authenticated/soporte'
-      path: '/soporte'
-      fullPath: '/soporte'
-      preLoaderRoute: typeof AuthenticatedSoporteRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/publicar': {
-      id: '/_authenticated/publicar'
-      path: '/publicar'
-      fullPath: '/publicar'
-      preLoaderRoute: typeof AuthenticatedPublicarRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/perfil': {
-      id: '/_authenticated/perfil'
-      path: '/perfil'
-      fullPath: '/perfil'
-      preLoaderRoute: typeof AuthenticatedPerfilRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/notificaciones': {
-      id: '/_authenticated/notificaciones'
-      path: '/notificaciones'
-      fullPath: '/notificaciones'
-      preLoaderRoute: typeof AuthenticatedNotificacionesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/mis-publicaciones': {
-      id: '/_authenticated/mis-publicaciones'
-      path: '/mis-publicaciones'
-      fullPath: '/mis-publicaciones'
-      preLoaderRoute: typeof AuthenticatedMisPublicacionesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/mis-pagos': {
-      id: '/_authenticated/mis-pagos'
-      path: '/mis-pagos'
-      fullPath: '/mis-pagos'
-      preLoaderRoute: typeof AuthenticatedMisPagosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/mis-destacados': {
-      id: '/_authenticated/mis-destacados'
-      path: '/mis-destacados'
-      fullPath: '/mis-destacados'
-      preLoaderRoute: typeof AuthenticatedMisDestacadosRouteImport
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/chats': {
@@ -475,32 +398,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+    '/_authenticated/mis-destacados': {
+      id: '/_authenticated/mis-destacados'
+      path: '/mis-destacados'
+      fullPath: '/mis-destacados'
+      preLoaderRoute: typeof AuthenticatedMisDestacadosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/vendedor/$vendedorId/reseñas': {
-      id: '/vendedor/$vendedorId/reseñas'
-      path: '/vendedor/$vendedorId/reseñas'
-      fullPath: '/vendedor/$vendedorId/reseñas'
-      preLoaderRoute: typeof VendedorVendedorIdReseChar241asRouteImport
+    '/_authenticated/mis-pagos': {
+      id: '/_authenticated/mis-pagos'
+      path: '/mis-pagos'
+      fullPath: '/mis-pagos'
+      preLoaderRoute: typeof AuthenticatedMisPagosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mis-publicaciones': {
+      id: '/_authenticated/mis-publicaciones'
+      path: '/mis-publicaciones'
+      fullPath: '/mis-publicaciones'
+      preLoaderRoute: typeof AuthenticatedMisPublicacionesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notificaciones': {
+      id: '/_authenticated/notificaciones'
+      path: '/notificaciones'
+      fullPath: '/notificaciones'
+      preLoaderRoute: typeof AuthenticatedNotificacionesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/perfil': {
+      id: '/_authenticated/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof AuthenticatedPerfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/publicar': {
+      id: '/_authenticated/publicar'
+      path: '/publicar'
+      fullPath: '/publicar'
+      preLoaderRoute: typeof AuthenticatedPublicarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/soporte': {
+      id: '/_authenticated/soporte'
+      path: '/soporte'
+      fullPath: '/soporte'
+      preLoaderRoute: typeof AuthenticatedSoporteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/auth/nueva-contrasena': {
+      id: '/auth/nueva-contrasena'
+      path: '/nueva-contrasena'
+      fullPath: '/auth/nueva-contrasena'
+      preLoaderRoute: typeof AuthNuevaContrasenaRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/recuperar': {
+      id: '/auth/recuperar'
+      path: '/recuperar'
+      fullPath: '/auth/recuperar'
+      preLoaderRoute: typeof AuthRecuperarRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/verificar-telefono': {
+      id: '/auth/verificar-telefono'
+      path: '/verificar-telefono'
+      fullPath: '/auth/verificar-telefono'
+      preLoaderRoute: typeof AuthVerificarTelefonoRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/categoria/$id': {
+      id: '/categoria/$id'
+      path: '/categoria/$id'
+      fullPath: '/categoria/$id'
+      preLoaderRoute: typeof CategoriaIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/reseña/$transaccionId': {
-      id: '/_authenticated/reseña/$transaccionId'
-      path: '/reseña/$transaccionId'
-      fullPath: '/reseña/$transaccionId'
-      preLoaderRoute: typeof AuthenticatedReseChar241aTransaccionIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/producto/$id': {
+      id: '/producto/$id'
+      path: '/producto/$id'
+      fullPath: '/producto/$id'
+      preLoaderRoute: typeof ProductoIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/promocionar/$productoId': {
-      id: '/_authenticated/promocionar/$productoId'
-      path: '/promocionar/$productoId'
-      fullPath: '/promocionar/$productoId'
-      preLoaderRoute: typeof AuthenticatedPromocionarProductoIdRouteImport
+    '/_authenticated/chat/$chatId': {
+      id: '/_authenticated/chat/$chatId'
+      path: '/chat/$chatId'
+      fullPath: '/chat/$chatId'
+      preLoaderRoute: typeof AuthenticatedChatChatIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/editar/$id': {
@@ -510,12 +496,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEditarIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/chat/$chatId': {
-      id: '/_authenticated/chat/$chatId'
-      path: '/chat/$chatId'
-      fullPath: '/chat/$chatId'
-      preLoaderRoute: typeof AuthenticatedChatChatIdRouteImport
+    '/_authenticated/promocionar/$productoId': {
+      id: '/_authenticated/promocionar/$productoId'
+      path: '/promocionar/$productoId'
+      fullPath: '/promocionar/$productoId'
+      preLoaderRoute: typeof AuthenticatedPromocionarProductoIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reseña/$transaccionId': {
+      id: '/_authenticated/reseña/$transaccionId'
+      path: '/reseña/$transaccionId'
+      fullPath: '/reseña/$transaccionId'
+      preLoaderRoute: typeof AuthenticatedReseChar241aTransaccionIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/vendedor/$vendedorId/reseñas': {
+      id: '/vendedor/$vendedorId/reseñas'
+      path: '/vendedor/$vendedorId/reseñas'
+      fullPath: '/vendedor/$vendedorId/reseñas'
+      preLoaderRoute: typeof VendedorVendedorIdReseChar241asRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
