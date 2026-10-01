@@ -1189,7 +1189,10 @@ export function AdminPanel() {
     const { error } = await supabase.rpc("admin_delete_purchase", { _purchase_id: compraId });
     setWorking(null);
     if (error) {
-      toast.error("No se pudo eliminar la compra");
+      console.error("Error al eliminar compra:", { compraId, error });
+      toast.error(
+        `No se pudo eliminar la compra: ${error.message}${error.code ? ` (${error.code})` : ""}`,
+      );
       return;
     }
     toast.success("Compra eliminada");
