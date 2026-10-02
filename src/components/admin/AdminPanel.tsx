@@ -1003,7 +1003,7 @@ export function AdminPanel() {
 
   const onAprobar = async (tx: Tx) => {
     setWorking(tx.id);
-    const mensajeAprobado = "Tu pago ha sido aprobado correctamente.";
+    const mensajeAprobado = "Tu pago ha sido aprobado y tu publicación ahora está destacada.";
     const nuevoEstado = "COMPLETADO";
 
     setTxs((prev) =>
@@ -1044,8 +1044,9 @@ export function AdminPanel() {
       return;
     }
     setWorking(id);
-    const mensajeRechazo = `Tu pago ha sido rechazado. Revisa los detalles de tu pago. Motivo: ${motivo}`;
+    const mensajeRechazo = motivo.trim();
     const nuevoEstado = "RECHAZADO";
+    const transaccionAnterior = txs.find((item) => item.id === id);
 
     setTxs((prev) =>
       prev.map((item) =>
@@ -1054,10 +1055,10 @@ export function AdminPanel() {
     );
 
     try {
-      const { error } = await supabase
-        .from("transacciones")
-        .update({ estado_pago: nuevoEstado, notas_admin: mensajeRechazo })
-        .eq("id", id);
+      const { error } = await supabase.rpc("rechazar_transaccion_promocion", {
+        p_transaccion_id: id,
+        p_motivo: motivo.trim(),
+      });
       if (error) throw error;
       toast.success("Transacción rechazada.");
       await loadTransactions();
@@ -1066,7 +1067,11 @@ export function AdminPanel() {
       setTxs((prev) =>
         prev.map((item) =>
           item.id === id
-            ? { ...item, estado_pago: "PENDIENTE", notas_admin: mensajeRechazo }
+            ? {
+                ...item,
+                estado_pago: transaccionAnterior?.estado_pago ?? "PENDIENTE",
+                notas_admin: transaccionAnterior?.notas_admin ?? null,
+              }
             : item,
         ),
       );

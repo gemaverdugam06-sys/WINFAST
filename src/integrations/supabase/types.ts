@@ -993,6 +993,10 @@ export type Database = {
         Args: { p_transaccion_id: string };
         Returns: undefined;
       };
+      rechazar_transaccion_promocion: {
+        Args: { p_motivo: string; p_transaccion_id: string };
+        Returns: undefined;
+      };
       registrar_vista_producto: { Args: { p_producto_id: string }; Returns: undefined };
       registrar_clic_contacto_producto: { Args: { p_producto_id: string }; Returns: undefined };
     };

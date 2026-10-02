@@ -28,7 +28,12 @@ export function usePurchaseNotifications() {
       .from("notificaciones")
       .select("id, compra_id, mensaje, tipo, leido, created_at")
       .eq("user_id", user.id)
-      .in("tipo", ["compra_solicitada", "compra_actualizada"])
+      .in("tipo", [
+        "compra_solicitada",
+        "compra_actualizada",
+        "promocion_aprobada",
+        "promocion_rechazada",
+      ])
       .order("created_at", { ascending: false })
       .limit(50);
 
@@ -53,6 +58,11 @@ export function usePurchaseNotifications() {
     const history: PurchaseNotification[] = [];
 
     for (const item of notificationsRows) {
+      if (item.tipo === "promocion_aprobada" || item.tipo === "promocion_rechazada") {
+        (item.leido ? history : active).push(item);
+        continue;
+      }
+
       if (!item.compra_id) {
         active.push(item);
         continue;
@@ -141,5 +151,22 @@ export function usePurchaseNotifications() {
     toast.success("Notificación eliminada");
   };
 
-  return { notifications, historyNotifications, decidePurchase, deleteNotification };
+  const markAsRead = async (notificationId: string) => {
+    if (!user) return;
+
+    const { error } = await supabase
+      .from("notificaciones")
+      .update({ leido: true })
+      .eq("id", notificationId)
+      .eq("user_id", user.id);
+
+    if (error) {
+      toast.error("No se pudo marcar la notificación como leída");
+      return;
+    }
+
+    await refresh();
+  };
+
+  return { notifications, historyNotifications, decidePurchase, deleteNotification, markAsRead };
 }

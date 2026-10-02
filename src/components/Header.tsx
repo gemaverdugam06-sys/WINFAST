@@ -37,6 +37,7 @@ export function Header() {
     historyNotifications,
     decidePurchase,
     deleteNotification,
+    markAsRead,
   } = usePurchaseNotifications();
 
   return (
@@ -113,6 +114,14 @@ export function Header() {
                         {purchaseNotifications.map((notification) => (
                           <DropdownMenuItem
                             key={notification.id}
+                            onClick={() => {
+                              if (
+                                notification.tipo === "promocion_aprobada" ||
+                                notification.tipo === "promocion_rechazada"
+                              ) {
+                                void markAsRead(notification.id);
+                              }
+                            }}
                             className="flex-col items-stretch gap-2"
                           >
                             <span className="text-sm">{notification.mensaje}</span>
