@@ -594,11 +594,15 @@ export function AdminPanel() {
   const [settingsRowId, setSettingsRowId] = useState<string | null>(null);
   const [txs, setTxs] = useState<Tx[]>([]);
   const [compras, setCompras] = useState<Compra[]>([]);
+  const [compraSearch, setCompraSearch] = useState("");
+  const [compraEstadoFiltro, setCompraEstadoFiltro] = useState("TODOS");
   const [productosPendientes, setProductosPendientes] = useState<ProductoPendiente[]>([]);
   const [reportes, setReportes] = useState<Reporte[]>([]);
   const [reseniasReportadas, setReseniasReportadas] = useState<ReportedReview[]>([]);
   const [ticketsSoporte, setTicketsSoporte] = useState<SupportTicket[]>([]);
   const [usuarios, setUsuarios] = useState<UserProfile[]>([]);
+  const [usuarioSearch, setUsuarioSearch] = useState("");
+  const [usuarioEstadoFiltro, setUsuarioEstadoFiltro] = useState("TODOS");
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState<string | null>(null);
   const [razonesPolitica, setRazonesPolitica] = useState<
@@ -808,6 +812,13 @@ export function AdminPanel() {
         toast.error("No se pudieron cargar las compras");
       }
     }
+  };
+
+  const getCompraUserLabel = (userId: string) => {
+    const profile = usuarios.find((usuario) => usuario.id === userId);
+    const name = profile?.nombre_completo || (profile?.username ? `@${profile.username}` : null);
+    const identity = profile?.email || `ID ${userId.slice(0, 8)}`;
+    return `${name || "Usuario"} · ${identity}`;
   };
 
   const updateCompra = async (compra: Compra, estado: "CONFIRMADA" | "CANCELADA") => {
@@ -1368,6 +1379,47 @@ export function AdminPanel() {
   const reportesPendientes = reportes.filter((r) => r.estado === "pendiente");
   const reportesResueltos = reportes.filter((r) => r.estado !== "pendiente");
 
+  const compraSearchNormalizada = compraSearch.trim().toLowerCase();
+  const comprasFiltradas = compras.filter((compra) => {
+    const coincideEstado = compraEstadoFiltro === "TODOS" || compra.estado === compraEstadoFiltro;
+    const datosCompra = [
+      compra.productos?.titulo,
+      compra.comprador_id,
+      compra.vendedor_id,
+      getCompraUserLabel(compra.comprador_id),
+      getCompraUserLabel(compra.vendedor_id),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return (
+      coincideEstado && (!compraSearchNormalizada || datosCompra.includes(compraSearchNormalizada))
+    );
+  });
+
+  const usuarioSearchNormalizada = usuarioSearch.trim().toLowerCase();
+  const usuariosFiltrados = usuarios.filter((usuario) => {
+    const coincideEstado =
+      usuarioEstadoFiltro === "TODOS" ||
+      (usuarioEstadoFiltro === "BLOQUEADOS" ? usuario.is_blocked : !usuario.is_blocked);
+    const datosUsuario = [
+      usuario.nombre_completo,
+      usuario.username,
+      usuario.email,
+      usuario.ciudad,
+      usuario.id,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return (
+      coincideEstado &&
+      (!usuarioSearchNormalizada || datosUsuario.includes(usuarioSearchNormalizada))
+    );
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -1417,12 +1469,37 @@ export function AdminPanel() {
             </TabsList>
 
             <TabsContent value="compras" className="space-y-4">
+              {compras.length > 0 && (
+                <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_190px]">
+                  <Input
+                    aria-label="Buscar compras"
+                    placeholder="Buscar producto, comprador o vendedor"
+                    value={compraSearch}
+                    onChange={(event) => setCompraSearch(event.target.value)}
+                  />
+                  <Select value={compraEstadoFiltro} onValueChange={setCompraEstadoFiltro}>
+                    <SelectTrigger aria-label="Filtrar compras por estado">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="TODOS">Todos los estados</SelectItem>
+                      <SelectItem value="PENDIENTE">Pendientes</SelectItem>
+                      <SelectItem value="CONFIRMADA">Confirmadas</SelectItem>
+                      <SelectItem value="CANCELADA">Canceladas</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               {compras.length === 0 ? (
                 <p className="rounded-lg border border-dashed bg-muted/30 p-6 text-center text-sm text-muted-foreground">
                   Sin solicitudes de compra
                 </p>
+              ) : comprasFiltradas.length === 0 ? (
+                <p className="rounded-lg border border-dashed bg-muted/30 p-6 text-center text-sm text-muted-foreground">
+                  No hay compras que coincidan con los filtros
+                </p>
               ) : (
-                compras.map((compra) => (
+                comprasFiltradas.map((compra) => (
                   <Card key={compra.id}>
                     <CardContent className="space-y-2 p-4">
                       <div className="flex flex-wrap items-center gap-2">
@@ -1441,9 +1518,14 @@ export function AdminPanel() {
                           {compra.productos?.titulo ?? "Producto"}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Comprador: {compra.comprador_id} · Vendedor: {compra.vendedor_id}
-                      </p>
+                      <div className="grid gap-x-6 gap-y-1 text-xs text-muted-foreground sm:grid-cols-2">
+                        <p className="break-all">
+                          Comprador: {getCompraUserLabel(compra.comprador_id)}
+                        </p>
+                        <p className="break-all">
+                          Vendedor: {getCompraUserLabel(compra.vendedor_id)}
+                        </p>
+                      </div>
                       {compra.estado === "PENDIENTE" && (
                         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                           <Button
@@ -1867,13 +1949,37 @@ export function AdminPanel() {
 
             {/* USUARIOS TAB */}
             <TabsContent value="usuarios" className="space-y-4">
+              {usuarios.length > 0 && (
+                <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_190px]">
+                  <Input
+                    aria-label="Buscar usuarios"
+                    placeholder="Buscar nombre, usuario o correo"
+                    value={usuarioSearch}
+                    onChange={(event) => setUsuarioSearch(event.target.value)}
+                  />
+                  <Select value={usuarioEstadoFiltro} onValueChange={setUsuarioEstadoFiltro}>
+                    <SelectTrigger aria-label="Filtrar usuarios por estado">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="TODOS">Todos los usuarios</SelectItem>
+                      <SelectItem value="ACTIVOS">Activos</SelectItem>
+                      <SelectItem value="BLOQUEADOS">Bloqueados</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               {usuarios.length === 0 ? (
                 <p className="rounded-lg border border-dashed bg-muted/30 p-6 text-center text-sm text-muted-foreground">
                   Sin usuarios registrados
                 </p>
+              ) : usuariosFiltrados.length === 0 ? (
+                <p className="rounded-lg border border-dashed bg-muted/30 p-6 text-center text-sm text-muted-foreground">
+                  No hay usuarios que coincidan con los filtros
+                </p>
               ) : (
                 <div className="space-y-3">
-                  {usuarios.map((u) => (
+                  {usuariosFiltrados.map((u) => (
                     <Card key={u.id}>
                       <CardContent className="space-y-2 p-4">
                         <div className="flex flex-wrap items-center gap-2">
@@ -1893,7 +1999,9 @@ export function AdminPanel() {
                             <span className="text-muted-foreground">Correo: </span>
                             {u.email || "No disponible"}
                           </p>
-                          <p className="text-muted-foreground">Ciudad: {u.ciudad || "Sin ciudad"}</p>
+                          <p className="text-muted-foreground">
+                            Ciudad: {u.ciudad || "Sin ciudad"}
+                          </p>
                         </div>
                         {u.motivo_bloqueo && (
                           <p className="text-sm text-muted-foreground">

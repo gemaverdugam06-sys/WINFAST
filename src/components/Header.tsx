@@ -44,7 +44,7 @@ export function Header() {
       initial={{ y: -12, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className="sticky top-0 z-40 border-b bg-background/60 backdrop-blur-lg glass"
+      className="sticky top-0 z-40 border-b border-[#dce5d9] bg-[#fbfcf8]/95 backdrop-blur-lg"
     >
       <div className="container mx-auto flex min-h-16 flex-wrap items-center gap-2 px-3 sm:flex-nowrap sm:gap-3 sm:px-4">
         <Link
@@ -52,7 +52,7 @@ export function Header() {
           className="flex min-w-0 flex-1 basis-full items-center gap-2 py-2 font-bold sm:basis-auto sm:py-0"
         >
           <Logo className="h-9 w-9 shrink-0 drop-shadow-sm" />
-          <span className="truncate text-[1.5rem] font-black leading-none tracking-[-0.06em] text-slate-950 sm:text-[1.9rem]">
+          <span className="truncate text-[1.5rem] font-black leading-none text-[#14291f] sm:text-[1.9rem]">
             WINFAST
           </span>
         </Link>

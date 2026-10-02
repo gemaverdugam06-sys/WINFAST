@@ -19,7 +19,7 @@ import { Logo } from "@/components/Logo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { OtpInput } from "@/components/auth/OtpInput";
-import { ShoppingBag, Loader2, Eye, EyeOff } from "lucide-react";
+import { ShoppingBag, Loader2, Eye, EyeOff, MapPin, Tag } from "lucide-react";
 import { toast } from "sonner";
 import { toUserMessage } from "@/lib/error-messages";
 import { hasPasswordRecoveryCallback } from "@/lib/password-recovery";
@@ -380,16 +380,34 @@ function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.35),_transparent_35%),linear-gradient(180deg,_#7c3aed_0%,_#3b82f6_100%)] p-0 text-white sm:p-4">
-      <Card className="min-h-screen w-full max-w-lg overflow-hidden rounded-none border border-slate-700/80 bg-slate-950/95 shadow-[0_24px_80px_rgba(124,58,237,0.15)] sm:min-h-0 sm:rounded-[2rem]">
-        <CardHeader className="space-y-5 border-b border-slate-700/80 bg-gradient-primary/90 px-5 py-8 text-center sm:px-8 sm:py-10">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white/10 text-white shadow-lg shadow-purple-500/20 sm:h-24 sm:w-24">
+    <div className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-[linear-gradient(145deg,#eaf1df_0%,#f5f7f1_48%,#e7f0e7_100%)] p-0 text-[#20362a] sm:p-4">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 hidden overflow-hidden md:block"
+      >
+        <div className="absolute inset-0 opacity-60 [background-image:repeating-linear-gradient(135deg,transparent_0_54px,rgba(25,94,72,0.035)_55px,transparent_56px_110px)]" />
+        <Tag
+          className="absolute left-[8%] top-[23%] h-14 w-14 -rotate-12 text-[#195e48]/15"
+          strokeWidth={1.2}
+        />
+        <ShoppingBag
+          className="absolute right-[9%] top-[34%] h-16 w-16 rotate-6 text-[#ef7654]/20"
+          strokeWidth={1.2}
+        />
+        <MapPin
+          className="absolute bottom-[17%] left-[17%] h-12 w-12 rotate-6 text-[#789a43]/20"
+          strokeWidth={1.2}
+        />
+      </div>
+      <Card className="relative z-10 min-h-screen w-full max-w-lg overflow-hidden rounded-none border border-[#d8e3d5] bg-white shadow-[0_18px_60px_rgba(25,70,48,0.12)] sm:min-h-0 sm:rounded-xl">
+        <CardHeader className="space-y-5 border-b border-[#d6e2d4] bg-gradient-primary px-5 py-8 text-center sm:px-8 sm:py-10">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10 text-white shadow-lg sm:h-24 sm:w-24">
             <Logo className="h-14 w-14 sm:h-16 sm:w-16" />
           </div>
-          <CardTitle className="flex items-center justify-center gap-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+          <CardTitle className="flex items-center justify-center gap-3 text-4xl font-bold text-white sm:text-5xl">
             <span>WINFAST</span>
           </CardTitle>
-          <CardDescription className="text-sm text-slate-200">{t("tagline")}</CardDescription>
+          <CardDescription className="text-sm text-white/85">{t("tagline")}</CardDescription>
         </CardHeader>
         <CardContent className="px-5 py-7 sm:px-8 sm:py-8">
           <Tabs
@@ -397,16 +415,16 @@ function AuthPage() {
             onValueChange={(v) => setEmailTab(v as "signin" | "signup")}
             className="space-y-4"
           >
-            <TabsList className="grid h-14 w-full grid-cols-2 overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-900/90 p-1 text-base shadow-sm sm:h-12">
+            <TabsList className="grid h-14 w-full grid-cols-2 overflow-hidden rounded-lg border border-[#d7e2d5] bg-[#edf2e8] p-1 text-base shadow-sm sm:h-12">
               <TabsTrigger
                 value="signin"
-                className="rounded-xl border-0 bg-transparent text-base text-slate-300 data-[state=active]:bg-slate-950 data-[state=active]:text-white data-[state=active]:shadow-md"
+                className="rounded-md border-0 bg-transparent text-base text-[#506659] data-[state=active]:bg-[#195e48] data-[state=active]:text-white data-[state=active]:shadow-sm"
               >
                 {t("sign_in")}
               </TabsTrigger>
               <TabsTrigger
                 value="signup"
-                className="rounded-xl border-0 bg-transparent text-base text-slate-300 data-[state=active]:bg-slate-950 data-[state=active]:text-white data-[state=active]:shadow-md"
+                className="rounded-md border-0 bg-transparent text-base text-[#506659] data-[state=active]:bg-[#195e48] data-[state=active]:text-white data-[state=active]:shadow-sm"
               >
                 {t("sign_up")}
               </TabsTrigger>
@@ -423,7 +441,7 @@ function AuthPage() {
                     autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-12 bg-slate-950 border border-slate-700 text-base text-white placeholder:text-slate-500 focus:border-primary/70 sm:h-10"
+                    className="h-12 border border-[#cbd8c9] bg-white text-base text-[#1a2d24] placeholder:text-[#77877a] focus-visible:ring-2 focus-visible:ring-[#588d57] sm:h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -446,13 +464,13 @@ function AuthPage() {
                       autoComplete="current-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 focus:border-primary/70 pr-10"
+                      className="border border-[#cbd8c9] bg-white pr-10 text-[#1a2d24] placeholder:text-[#77877a] focus-visible:ring-2 focus-visible:ring-[#588d57]"
                     />
                     <button
                       type="button"
                       aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                       onClick={() => setShowPassword((v) => !v)}
-                      className="absolute inset-y-0 right-1 flex w-11 items-center justify-center text-slate-400 hover:text-white"
+                      className="absolute inset-y-0 right-1 flex w-11 items-center justify-center rounded-md text-[#617568] transition-colors hover:bg-[#edf3e8] hover:text-[#173b2c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#195e48]"
                     >
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
@@ -461,7 +479,7 @@ function AuthPage() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-2xl border border-primary/80 bg-gradient-primary/95 text-white shadow-lg shadow-primary/10 hover:bg-gradient-primary"
+                  className="w-full rounded-lg border-0 bg-gradient-primary text-white shadow-sm hover:brightness-95"
                 >
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("sign_in")}
                 </Button>
@@ -478,7 +496,7 @@ function AuthPage() {
                     autoComplete="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 focus:border-primary/70"
+                    className="border border-[#cbd8c9] bg-white text-[#1a2d24] placeholder:text-[#77877a] focus-visible:ring-2 focus-visible:ring-[#588d57]"
                   />
                 </div>
                 <div className="space-y-2">
@@ -490,7 +508,7 @@ function AuthPage() {
                     autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 focus:border-primary/70"
+                    className="border border-[#cbd8c9] bg-white text-[#1a2d24] placeholder:text-[#77877a] focus-visible:ring-2 focus-visible:ring-[#588d57]"
                   />
                 </div>
                 <div className="space-y-2">
@@ -501,9 +519,9 @@ function AuthPage() {
                     placeholder="0991234567"
                     value={phoneRaw}
                     onChange={(e) => setPhoneRaw(e.target.value)}
-                    className="bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 focus:border-primary/70"
+                    className="border border-[#cbd8c9] bg-white text-[#1a2d24] placeholder:text-[#77877a] focus-visible:ring-2 focus-visible:ring-[#588d57]"
                   />
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-[#647267]">
                     Opcional: podrás verificar tu número dentro de la app después de crear la
                     cuenta.
                   </p>
@@ -519,13 +537,13 @@ function AuthPage() {
                       autoComplete="new-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 focus:border-primary/70 pr-10"
+                      className="border border-[#cbd8c9] bg-white pr-10 text-[#1a2d24] placeholder:text-[#77877a] focus-visible:ring-2 focus-visible:ring-[#588d57]"
                     />
                     <button
                       type="button"
                       aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                       onClick={() => setShowPassword((v) => !v)}
-                      className="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-white"
+                      className="absolute inset-y-0 right-3 flex items-center rounded-md text-[#617568] transition-colors hover:text-[#173b2c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#195e48]"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -542,13 +560,13 @@ function AuthPage() {
                       autoComplete="new-password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 focus:border-primary/70 pr-10"
+                      className="border border-[#cbd8c9] bg-white pr-10 text-[#1a2d24] placeholder:text-[#77877a] focus-visible:ring-2 focus-visible:ring-[#588d57]"
                     />
                     <button
                       type="button"
                       aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                       onClick={() => setShowConfirmPassword((v) => !v)}
-                      className="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-white"
+                      className="absolute inset-y-0 right-3 flex items-center rounded-md text-[#617568] transition-colors hover:text-[#173b2c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#195e48]"
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -561,7 +579,7 @@ function AuthPage() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-2xl border border-primary/80 bg-gradient-primary/95 text-white shadow-lg shadow-primary/10 hover:bg-gradient-primary"
+                  className="w-full rounded-lg border-0 bg-gradient-primary text-white shadow-sm hover:brightness-95"
                 >
                   {loading ? (
                     <>
@@ -575,7 +593,7 @@ function AuthPage() {
                 <p
                   role="status"
                   aria-live="polite"
-                  className="min-h-5 text-center text-xs text-slate-300"
+                  className="min-h-5 text-center text-xs text-[#586c5e]"
                 >
                   {signupMessage}
                 </p>

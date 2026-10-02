@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
-import { Logo } from "@/components/Logo";
 import { ProductCard, type ProductCardData } from "@/components/ProductCard";
 import { CategoryNav } from "@/components/CategoryNav";
 import { Input } from "@/components/ui/input";
@@ -156,65 +155,58 @@ function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.35),_transparent_40%),linear-gradient(180deg,_#f0ebff_0%,_#e9e0ff_100%)] text-foreground">
+    <div className="min-h-screen bg-[#f5f7f1] text-[#1a2d24]">
       <Header />
 
-      <section className="relative overflow-hidden border-b bg-gradient-hero text-white">
-        <div className="container mx-auto px-3 py-8 sm:px-4 sm:py-12 md:py-24">
-          <div className="relative overflow-hidden rounded-[1.5rem] border border-slate-600 bg-slate-900 p-5 shadow-lg shadow-card ring-1 ring-slate-600 sm:rounded-[2.5rem] sm:p-10 md:p-14">
-            <div className="relative">
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary bg-primary px-3 py-1.5 text-sm text-primary-foreground shadow-lg sm:mb-6 sm:gap-3 sm:px-4 sm:py-2">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 shadow-lg sm:h-10 sm:w-10 sm:rounded-2xl">
-                  <Logo className="h-6 w-6 sm:h-8 sm:w-8" />
-                </span>
-                <span className="font-semibold">WINFAST</span>
-              </div>
-              <h1 className="text-4xl font-extrabold leading-[1.05] tracking-tight text-white drop-shadow-lg sm:text-5xl md:text-7xl md:leading-tight logo-heading">
-                {t("tagline")}
-              </h1>
-              <p className="mt-4 max-w-3xl text-base leading-relaxed text-slate-200 drop-shadow-lg sm:mt-6 sm:text-xl md:text-2xl">
-                Compra y vende en Ecuador de manera simple. Encuentra productos cerca de ti y
-                publica tu anuncio gratis en segundos.
-              </p>
-              <div className="mt-7 flex flex-col gap-3 sm:mt-10 sm:gap-4 sm:flex-row">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground" />
-                  <Input
-                    value={q}
-                    onChange={(e) => setQ(e.target.value)}
-                    placeholder={t("search_placeholder")}
-                    className="h-12 rounded-2xl bg-white px-4 pl-10 text-foreground placeholder-slate-400 shadow-sm shadow-black/10 border-0"
-                  />
-                </div>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="secondary"
-                  className="h-12 rounded-2xl px-8 btn-cta font-semibold"
-                >
-                  <Link to="/publicar">
-                    <Plus className="mr-1 h-5 w-5" />
-                    {t("publish")}
-                  </Link>
-                </Button>
-              </div>
+      <section className="border-b border-[#244f3d] bg-[linear-gradient(112deg,#123f34_0%,#195e48_70%,#638b45_100%)] text-white">
+        <div className="container mx-auto grid gap-5 px-4 py-6 sm:py-8 md:grid-cols-[0.85fr_1.15fr] md:items-center md:gap-10">
+          <div>
+            <p className="mb-2 text-xs font-bold uppercase text-[#c8e779]">
+              WinFast <span className="px-1 text-white/60">/</span> Ecuador
+            </p>
+            <h1 className="font-display text-3xl font-bold leading-tight sm:text-4xl">
+              {t("tagline")}
+            </h1>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/80 sm:text-base">
+              Encuentra productos cerca de ti o publica algo que ya no necesitas.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="relative min-w-0 flex-1">
+              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#55715f]" />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder={t("search_placeholder")}
+                className="h-12 rounded-lg border border-white/70 bg-white pl-12 text-[#1a2d24] shadow-sm placeholder:text-[#7a887d] focus-visible:ring-[#a8ce4d]"
+              />
             </div>
+            <Button
+              asChild
+              size="lg"
+              className="h-12 rounded-lg border border-[#c8e779] bg-[#c8e779] px-5 font-bold text-[#193a2b] shadow-none hover:bg-[#d8f194]"
+            >
+              <Link to="/publicar">
+                <Plus className="mr-1 h-5 w-5" />
+                {t("publish")}
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto max-w-7xl px-4 py-5 sm:py-7">
         <CategoryNav categorias={categorias} />
 
-        <div className="mb-3 mt-6 flex flex-wrap items-center gap-2">
+        <div className="mb-3 mt-3 flex flex-wrap items-center gap-2">
           <Button
             variant={hasFilters ? "default" : "outline"}
             size="sm"
             onClick={() => setShowFilters((v) => !v)}
             className={
               hasFilters
-                ? "bg-gradient-primary"
-                : "border border-violet-200 bg-white text-slate-900 shadow-[0_8px_20px_rgba(124,58,237,0.08)]"
+                ? "bg-[#195e48] text-white hover:bg-[#124b39]"
+                : "border border-[#d7e2d5] bg-white text-[#30443a] hover:bg-[#edf3e8]"
             }
           >
             <SlidersHorizontal className="mr-1 h-4 w-4" /> Filtros{" "}
@@ -227,28 +219,32 @@ function Home() {
               variant="ghost"
               size="sm"
               onClick={clear}
-              className="border border-violet-200 bg-white text-slate-900 shadow-[0_8px_20px_rgba(124,58,237,0.08)]"
+              className="border border-[#d7e2d5] bg-white text-[#30443a] hover:bg-[#edf3e8]"
             >
               <X className="mr-1 h-4 w-4" /> Limpiar
             </Button>
           )}
           {provincia !== "Todas" && (
-            <span className="rounded-full bg-secondary px-3 py-1 text-xs">🗺️ {provincia}</span>
+            <span className="rounded-md bg-[#e7efdc] px-3 py-1 text-xs text-[#31523b]">
+              {provincia}
+            </span>
           )}
           {ciudad !== "Todas" && (
-            <span className="rounded-full bg-secondary px-3 py-1 text-xs">📍 {ciudad}</span>
+            <span className="rounded-md bg-[#e7efdc] px-3 py-1 text-xs text-[#31523b]">
+              {ciudad}
+            </span>
           )}
           {(minP || maxP) && (
-            <span className="rounded-full bg-secondary px-3 py-1 text-xs">
+            <span className="rounded-md bg-[#e7efdc] px-3 py-1 text-xs text-[#31523b]">
               ${minP || "0"} - ${maxP || "∞"}
             </span>
           )}
         </div>
 
         {showFilters && (
-          <div className="mb-4 grid gap-3 rounded-[1.25rem] border border-violet-100 bg-white p-4 shadow-[0_10px_30px_rgba(124,58,237,0.08)] sm:grid-cols-4">
+          <div className="mb-4 grid gap-3 rounded-lg border border-[#dbe4d8] bg-white p-4 shadow-sm sm:grid-cols-4">
             <div>
-              <label className="mb-1 block text-xs font-semibold text-violet-700">Provincia</label>
+              <label className="mb-1 block text-xs font-semibold text-[#315b43]">Provincia</label>
               <Select
                 value={provincia}
                 onValueChange={(v) => {
@@ -256,13 +252,13 @@ function Home() {
                   setCiudad("Todas");
                 }}
               >
-                <SelectTrigger className="border-violet-200 bg-white text-slate-900 shadow-[0_6px_16px_rgba(124,58,237,0.06)]">
+                <SelectTrigger className="border-[#d3dfd0] bg-white text-[#1a2d24]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="border-violet-100 bg-white text-slate-900 shadow-[0_10px_25px_rgba(15,23,42,0.12)]">
+                <SelectContent className="border-[#d3dfd0] bg-white text-[#1a2d24]">
                   <SelectItem
                     value="Todas"
-                    className="text-slate-900 focus:bg-violet-50 focus:text-violet-900"
+                    className="text-[#1a2d24] focus:bg-[#edf3e8] focus:text-[#174c37]"
                   >
                     Todas
                   </SelectItem>
@@ -270,7 +266,7 @@ function Home() {
                     <SelectItem
                       key={p}
                       value={p}
-                      className="text-slate-900 focus:bg-violet-50 focus:text-violet-900"
+                      className="text-[#1a2d24] focus:bg-[#edf3e8] focus:text-[#174c37]"
                     >
                       {p}
                     </SelectItem>
@@ -279,17 +275,17 @@ function Home() {
               </Select>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-semibold text-violet-700">
+              <label className="mb-1 block text-xs font-semibold text-[#315b43]">
                 Ciudad / Cantón
               </label>
               <Select value={ciudad} onValueChange={setCiudad} disabled={provincia === "Todas"}>
-                <SelectTrigger className="border-violet-200 bg-white text-slate-900 shadow-[0_6px_16px_rgba(124,58,237,0.06)]">
+                <SelectTrigger className="border-[#d3dfd0] bg-white text-[#1a2d24]">
                   <SelectValue placeholder={provincia === "Todas" ? "Elige provincia" : "Todas"} />
                 </SelectTrigger>
-                <SelectContent className="border-violet-100 bg-white text-slate-900 shadow-[0_10px_25px_rgba(15,23,42,0.12)]">
+                <SelectContent className="border-[#d3dfd0] bg-white text-[#1a2d24]">
                   <SelectItem
                     value="Todas"
-                    className="text-slate-900 focus:bg-violet-50 focus:text-violet-900"
+                    className="text-[#1a2d24] focus:bg-[#edf3e8] focus:text-[#174c37]"
                   >
                     Todas
                   </SelectItem>
@@ -297,7 +293,7 @@ function Home() {
                     <SelectItem
                       key={c}
                       value={c}
-                      className="text-slate-900 focus:bg-violet-50 focus:text-violet-900"
+                      className="text-[#1a2d24] focus:bg-[#edf3e8] focus:text-[#174c37]"
                     >
                       {c}
                     </SelectItem>
@@ -315,7 +311,7 @@ function Home() {
                 value={minP}
                 onChange={(e) => setMinP(e.target.value)}
                 placeholder="0"
-                className="border-violet-200 bg-white text-slate-900 shadow-[0_6px_16px_rgba(124,58,237,0.06)]"
+                className="border-[#d3dfd0] bg-white text-[#1a2d24]"
               />
             </div>
             <div>
@@ -328,15 +324,15 @@ function Home() {
                 value={maxP}
                 onChange={(e) => setMaxP(e.target.value)}
                 placeholder="Sin límite"
-                className="border-violet-200 bg-white text-slate-900 shadow-[0_6px_16px_rgba(124,58,237,0.06)]"
+                className="border-[#d3dfd0] bg-white text-[#1a2d24]"
               />
             </div>
           </div>
         )}
 
         <div className="mb-4 flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-warning" />
-          <h2 className="text-lg font-semibold">Recomendados para ti</h2>
+          <Sparkles className="h-5 w-5 text-[#e96f50]" />
+          <h2 className="font-display text-lg font-bold text-[#1a2d24]">Descubre en WinFast</h2>
         </div>
 
         {loading ? (
@@ -344,11 +340,11 @@ function Home() {
             <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Cargando...
           </div>
         ) : productos.length === 0 ? (
-          <div className="rounded-xl border border-dashed bg-muted/30 py-16 text-center text-muted-foreground">
+          <div className="rounded-lg border border-dashed border-[#d3dfd0] bg-white py-16 text-center text-[#647267]">
             No hay productos con esos filtros. Prueba con otros.
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {productos.map((p) => (
               <ProductCard key={p.id} p={p} />
             ))}

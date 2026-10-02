@@ -1,25 +1,24 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@300;400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
 
 @import "tailwindcss";
 @import "tw-animate-css";
 
 :root {
-  /* Palette: vibrant gradients with high-energy accents */
-  --color-1: #7c3aed; /* indigo */
-  --color-2: #ff4d6d; /* warm pink */
-  --color-3: #06b6d4; /* cyan */
-  --color-4: #f59e0b; /* amber */
+  --color-1: #195e48;
+  --color-2: #a8ce4d;
+  --color-3: #ef7654;
+  --color-4: #e9af3b;
   --bg-surface: 255 255 255; /* used with rgb() + alpha */
-  --glass-bg: 11 15 23; /* dark glass base */
+  --glass-bg: 251 252 248;
   --muted: 120 124 126;
-  --radius-lg: 16px;
+  --radius-lg: 12px;
 }
 
 /* Fonts */
 html,
 body {
   font-family:
-    Inter,
+    "DM Sans",
     system-ui,
     -apple-system,
     "Segoe UI",
@@ -31,18 +30,18 @@ h1,
 h2,
 h3,
 .logo-heading {
-  font-family: Poppins, Inter, system-ui;
+  font-family: "Space Grotesk", "DM Sans", system-ui;
 }
 
 /* Dynamic gradients */
 .bg-gradient-primary {
-  background-image: linear-gradient(90deg, var(--color-1), var(--color-2));
+  background-image: linear-gradient(105deg, #124b39, #1b6348);
 }
 .bg-gradient-featured {
-  background-image: linear-gradient(90deg, var(--color-3), var(--color-4));
+  background-image: linear-gradient(105deg, #d76343, #d49b24);
 }
 .text-gradient-primary {
-  background-image: linear-gradient(90deg, var(--color-1), var(--color-2));
+  background-image: linear-gradient(105deg, #195e48, #4c7938);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -50,9 +49,9 @@ h3,
 
 /* Glassmorphism */
 .glass {
-  background: rgba(var(--glass-bg), 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(8px) saturate(1.05);
+  background: rgba(var(--glass-bg), 0.9);
+  border: 1px solid rgba(25, 94, 72, 0.08);
+  backdrop-filter: blur(12px) saturate(1.05);
 }
 
 /* Soft UI shadows */
@@ -62,7 +61,7 @@ h3,
     inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 .shadow-hover {
-  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.08);
+  box-shadow: 0 12px 30px rgba(25, 94, 72, 0.09);
 }
 .shadow-card {
   box-shadow: 0 8px 20px rgba(2, 6, 23, 0.06);
@@ -82,13 +81,13 @@ h3,
 
 /* CTA emphasis */
 .btn-cta {
-  background-color: rgba(124, 58, 237, 0.88);
+  background-color: #195e48;
   color: white;
-  border: 1px solid rgba(124, 58, 237, 0.8);
-  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.1);
+  border: 1px solid #195e48;
+  box-shadow: 0 6px 16px rgba(25, 94, 72, 0.15);
 }
 .btn-cta:hover {
-  background-color: rgba(124, 58, 237, 0.98);
+  background-color: #124b39;
 }
 
 /* Utilities for motion-friendly elements */

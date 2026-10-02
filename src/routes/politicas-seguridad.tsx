@@ -10,37 +10,37 @@ export const Route = createFileRoute("/politicas-seguridad")({
 
 function PoliticasSeguridad() {
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main className="min-h-screen bg-[#f5f7f1] text-[#263b2e]">
       <div className="container mx-auto max-w-4xl px-4 py-10 md:py-16">
         <div className="mb-8 flex items-center justify-between gap-3">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:border-violet-500 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-md border border-[#d4e0d2] bg-white px-4 py-2 text-sm font-semibold text-[#315b43] transition-colors hover:border-[#195e48] hover:bg-[#edf3e8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#195e48]"
           >
             <ArrowLeft className="h-4 w-4" />
             Volver al inicio
           </Link>
         </div>
 
-        <article className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-violet-500/5 md:p-10">
-          <header className="mb-8 border-b border-slate-800 pb-6">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-red-300">
+        <article className="rounded-xl border border-[#dbe4d8] bg-white p-6 shadow-sm md:p-10">
+          <header className="mb-8 border-b border-[#dbe4d8] pb-6">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-[#ef7654]/35 bg-[#fff2ed] px-3 py-1 text-xs font-semibold uppercase text-[#a4432e]">
               <AlertTriangle className="h-4 w-4" />
               Seguridad
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">
+            <h1 className="text-3xl font-black text-[#173b2c] md:text-5xl">
               Políticas de Seguridad y Contenido Prohibido
             </h1>
-            <p className="mt-3 text-sm text-slate-300">
+            <p className="mt-3 text-sm text-[#5a6d5e]">
               En WINFAST nos comprometemos a mantener una plataforma segura y legal para todos
               nuestros usuarios.
             </p>
           </header>
 
-          <div className="space-y-8 text-base leading-8 text-slate-200">
+          <div className="space-y-8 text-base leading-8 text-[#43584a]">
             <section>
-              <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-white">
-                <ShieldCheck className="h-5 w-5 text-green-400" />
+              <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-[#195e48]">
+                <ShieldCheck className="h-5 w-5 text-[#195e48]" />
                 Contenido Prohibido
               </h2>
               <p className="mb-4">
@@ -52,12 +52,12 @@ function PoliticasSeguridad() {
                 {prohibitedCategories.map((category) => (
                   <div
                     key={category.id}
-                    className="rounded-lg border border-red-500/20 bg-red-500/5 p-4"
+                    className="rounded-lg border border-[#ef7654]/25 bg-[#fff7f3] p-4"
                   >
-                    <h3 className="mb-2 font-bold text-red-300">{category.title}</h3>
-                    <p className="text-sm text-slate-300">{category.description}</p>
+                    <h3 className="mb-2 font-bold text-[#a4432e]">{category.title}</h3>
+                    <p className="text-sm text-[#52675a]">{category.description}</p>
                     {category.examples && (
-                      <p className="mt-2 text-xs text-slate-400">
+                      <p className="mt-2 text-xs text-[#68796b]">
                         <span className="font-semibold">Ejemplos:</span> {category.examples}
                       </p>
                     )}
@@ -66,56 +66,56 @@ function PoliticasSeguridad() {
               </div>
             </section>
 
-            <section className="border-t border-slate-800 pt-8">
-              <h2 className="mb-4 text-xl font-bold text-white">Validación de Contenido</h2>
+            <section className="border-t border-[#dbe4d8] pt-8">
+              <h2 className="mb-4 text-xl font-bold text-[#195e48]">Validación de Contenido</h2>
               <p className="mb-4">
                 Implementamos un sistema de validación automática y manual para detectar y prevenir
                 contenido prohibido:
               </p>
               <ul className="space-y-3 pl-4">
                 <li className="flex gap-3">
-                  <span className="mt-1 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-xs font-bold text-violet-400">
+                  <span className="mt-1 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#eaf1df] text-xs font-bold text-[#315b43]">
                     1
                   </span>
                   <div>
                     <p className="font-semibold">Validación Automática en Tiempo Real</p>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-[#68796b]">
                       Nuestro sistema analiza el título y descripción de tu publicación en busca de
                       palabras clave prohibidas.
                     </p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="mt-1 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-xs font-bold text-violet-400">
+                  <span className="mt-1 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#eaf1df] text-xs font-bold text-[#315b43]">
                     2
                   </span>
                   <div>
                     <p className="font-semibold">Revisión Manual por Moderadores</p>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-[#68796b]">
                       Cada publicación se revisa manualmente para asegurar que cumple con nuestras
                       políticas.
                     </p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="mt-1 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-xs font-bold text-violet-400">
+                  <span className="mt-1 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#eaf1df] text-xs font-bold text-[#315b43]">
                     3
                   </span>
                   <div>
                     <p className="font-semibold">Sistema de Reportes de Usuarios</p>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-[#68796b]">
                       Los usuarios pueden reportar contenido sospechoso o inapropiado para revisión
                       inmediata.
                     </p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="mt-1 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-xs font-bold text-violet-400">
+                  <span className="mt-1 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#eaf1df] text-xs font-bold text-[#315b43]">
                     4
                   </span>
                   <div>
                     <p className="font-semibold">Validación de Archivos</p>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-[#68796b]">
                       Las imágenes se analizan para detectar malware, y se bloquean extensiones de
                       archivo peligrosas.
                     </p>
@@ -124,27 +124,27 @@ function PoliticasSeguridad() {
               </ul>
             </section>
 
-            <section className="border-t border-slate-800 pt-8">
-              <h2 className="mb-4 text-xl font-bold text-white">
+            <section className="border-t border-[#dbe4d8] pt-8">
+              <h2 className="mb-4 text-xl font-bold text-[#195e48]">
                 ¿Qué Sucede si Publico Contenido Prohibido?
               </h2>
-              <div className="space-y-4 rounded-lg border border-orange-500/20 bg-orange-500/5 p-5">
+              <div className="space-y-4 rounded-lg border border-[#e9af3b]/40 bg-[#fff9e9] p-5">
                 <div>
-                  <p className="mb-2 font-semibold text-orange-300">Primera Vez:</p>
+                  <p className="mb-2 font-semibold text-[#825a12]">Primera Vez:</p>
                   <p className="text-sm">
                     Tu publicación será rechazada y recibirás una notificación explicando la razón.
                     Podrás intentar nuevamente con contenido que cumpla las políticas.
                   </p>
                 </div>
                 <div>
-                  <p className="mb-2 font-semibold text-orange-300">Múltiples Violaciones:</p>
+                  <p className="mb-2 font-semibold text-[#825a12]">Múltiples Violaciones:</p>
                   <p className="text-sm">
                     Si continúas publicando contenido prohibido, tu cuenta será suspendida
                     temporalmente o permanentemente.
                   </p>
                 </div>
                 <div>
-                  <p className="mb-2 font-semibold text-orange-300">Reporte a Autoridades:</p>
+                  <p className="mb-2 font-semibold text-[#825a12]">Reporte a Autoridades:</p>
                   <p className="text-sm">
                     En casos de actividades claramente ilegales, WINFAST se reserva el derecho de
                     reportar el asunto a las autoridades competentes.
@@ -153,13 +153,13 @@ function PoliticasSeguridad() {
               </div>
             </section>
 
-            <section className="border-t border-slate-800 pt-8">
-              <h2 className="mb-4 text-xl font-bold text-white">Cumplimiento Legal</h2>
+            <section className="border-t border-[#dbe4d8] pt-8">
+              <h2 className="mb-4 text-xl font-bold text-[#195e48]">Cumplimiento Legal</h2>
               <p>
                 WINFAST cumple con todas las leyes y regulaciones de la República del Ecuador,
                 incluyendo:
               </p>
-              <ul className="mt-4 list-inside list-disc space-y-2 text-sm text-slate-300">
+              <ul className="mt-4 list-inside list-disc space-y-2 text-sm text-[#52675a]">
                 <li>Código Orgánico Integral Penal (COIP)</li>
                 <li>Ley de Protección de Derechos del Consumidor</li>
                 <li>Normas de Seguridad y Comercio Electrónico</li>
@@ -167,13 +167,13 @@ function PoliticasSeguridad() {
               </ul>
             </section>
 
-            <section className="border-t border-slate-800 pt-8">
-              <h2 className="mb-4 text-xl font-bold text-white">¿Tienes Dudas?</h2>
+            <section className="border-t border-[#dbe4d8] pt-8">
+              <h2 className="mb-4 text-xl font-bold text-[#195e48]">¿Tienes Dudas?</h2>
               <p>
                 Si tienes preguntas sobre si tu contenido cumple con nuestras políticas, te
                 recomendamos:
               </p>
-              <ul className="mt-4 space-y-2 text-sm text-slate-300">
+              <ul className="mt-4 space-y-2 text-sm text-[#52675a]">
                 <li>✓ Leer esta política completamente antes de publicar</li>
                 <li>✓ Revisar el título y descripción para palabras sospechosas</li>
                 <li>✓ Asegurar que los archivos sean imágenes legítimas de tu producto</li>

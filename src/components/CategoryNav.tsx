@@ -17,10 +17,10 @@ export function CategoryNav({ categorias, activa }: { categorias: Categoria[]; a
       <div className="flex gap-2 sm:gap-3">
         <MotionLink
           to="/"
-          className={`flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition will-change-transform ${
+          className={`flex min-h-11 shrink-0 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition will-change-transform ${
             !activa
-              ? "bg-gradient-primary text-primary-foreground shadow-sm"
-              : "bg-card hover:bg-accent"
+              ? "border-[#195e48] bg-[#195e48] text-white shadow-sm"
+              : "border-[#dbe4d8] bg-white text-[#30443a] hover:bg-[#edf3e8]"
           }`}
           whileHover={{ scale: 1.03 }}
         >
@@ -34,10 +34,10 @@ export function CategoryNav({ categorias, activa }: { categorias: Categoria[]; a
               key={c.id}
               to="/categoria/$id"
               params={{ id: c.id }}
-              className={`flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition will-change-transform ${
+              className={`flex min-h-11 shrink-0 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition will-change-transform ${
                 active
-                  ? "bg-gradient-primary text-primary-foreground shadow-sm"
-                  : "bg-card hover:bg-accent"
+                  ? "border-[#195e48] bg-[#195e48] text-white shadow-sm"
+                  : "border-[#dbe4d8] bg-white text-[#30443a] hover:bg-[#edf3e8]"
               }`}
               whileHover={{ scale: 1.03 }}
             >

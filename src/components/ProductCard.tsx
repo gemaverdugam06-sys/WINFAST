@@ -33,11 +33,11 @@ export function ProductCard({ p }: { p: ProductCardData }) {
       viewport={{ once: true, amount: 0.2 }}
       whileHover={{ translateY: -4, scale: 1.01 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className={`group relative flex flex-col overflow-hidden card-rounded border bg-card shadow-card transition-all will-change-transform ${
-        destacadoActivo ? "shadow-featured ring-1 ring-warning/30" : ""
+      className={`group relative flex flex-col overflow-hidden rounded-lg border border-[#dbe4d8] bg-white shadow-[0_3px_12px_rgba(29,64,42,0.07)] transition-all will-change-transform ${
+        destacadoActivo ? "ring-1 ring-[#ef7654]/45" : ""
       }`}
     >
-      <div className="relative aspect-square overflow-hidden bg-muted glass-border">
+      <div className="relative aspect-square overflow-hidden rounded-t-lg bg-[#e9eee5]">
         {img ? (
           <img
             src={img}
@@ -54,13 +54,13 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           </div>
         )}
         {destacadoActivo && (
-          <Badge className="absolute left-2 top-2 bg-gradient-featured text-warning-foreground border-0 gap-1 shadow-md uppercase tracking-wide">
+          <Badge className="absolute left-2 top-2 gap-1 border-0 bg-[#a9432d] text-white shadow-md uppercase tracking-wide">
             <Sparkles className="h-3 w-3" /> {t("featured")}
           </Badge>
         )}
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3">
-        <p className="text-base font-bold text-primary">
+        <p className="text-base font-bold text-[#195e48]">
           {p.moneda} {Number(p.precio).toLocaleString(undefined, { minimumFractionDigits: 2 })}
         </p>
         <h3 className="line-clamp-2 text-sm font-medium leading-tight">{p.titulo}</h3>

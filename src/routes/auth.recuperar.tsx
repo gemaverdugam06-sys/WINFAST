@@ -49,27 +49,25 @@ function RecuperarPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.35),_transparent_35%),linear-gradient(180deg,_#7c3aed_0%,_#3b82f6_100%)] p-4 text-white">
-      <Card className="w-full max-w-md overflow-hidden rounded-[2rem] border border-slate-700/80 bg-slate-950/95 shadow-[0_24px_80px_rgba(124,58,237,0.15)]">
-        <CardHeader className="space-y-4 border-b border-slate-700/80 bg-gradient-primary/90 px-8 py-8 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10 text-white shadow-lg shadow-purple-500/20">
+    <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(145deg,#eaf1df_0%,#f5f7f1_48%,#e7f0e7_100%)] p-4 text-[#20362a]">
+      <Card className="w-full max-w-md overflow-hidden rounded-xl border border-[#d8e3d5] bg-white shadow-[0_18px_60px_rgba(25,70,48,0.12)]">
+        <CardHeader className="space-y-4 border-b border-[#d6e2d4] bg-gradient-primary px-8 py-8 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-white shadow-lg">
             <Logo className="h-10 w-10" />
           </div>
-          <CardTitle className="text-3xl font-semibold tracking-tight text-white">
-            {t("forgot_password")}
-          </CardTitle>
-          <CardDescription className="text-sm text-slate-200">
+          <CardTitle className="text-3xl font-bold text-white">{t("forgot_password")}</CardTitle>
+          <CardDescription className="text-sm text-white/85">
             {t("forgot_password_desc")}
           </CardDescription>
         </CardHeader>
         <CardContent className="px-8 py-8">
           {sent ? (
-            <div className="space-y-4 text-center text-sm text-slate-300">
+            <div className="space-y-4 text-center text-sm text-[#4b6252]">
               <p>{t("reset_email_sent")}</p>
               <p>{t("check_spam")}</p>
               <Button
                 variant="outline"
-                className="w-full rounded-2xl border-slate-600 bg-slate-900 text-white"
+                className="w-full rounded-lg border-[#cbd8c9] bg-white text-[#244635] hover:bg-[#edf3e8]"
                 onClick={() => nav({ to: "/auth" })}
               >
                 {t("back_to_sign_in")}
@@ -87,22 +85,22 @@ function RecuperarPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@correo.com"
-                  className="border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 focus:border-primary/70"
+                  className="border-[#cbd8c9] bg-white text-[#1a2d24] placeholder:text-[#77877a] focus-visible:ring-2 focus-visible:ring-[#588d57]"
                 />
               </div>
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-2xl border border-primary/80 bg-gradient-primary/95 text-white shadow-lg shadow-primary/10 hover:bg-gradient-primary"
+                className="w-full rounded-lg border-0 bg-gradient-primary text-white shadow-sm hover:brightness-95"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("send_reset_link")}
               </Button>
             </form>
           )}
-          <p className="mt-4 text-center text-xs text-slate-400">
+          <p className="mt-4 text-center text-xs text-[#647267]">
             <Link
               to="/auth"
-              className="inline-flex items-center gap-1 text-slate-300 hover:underline"
+              className="inline-flex items-center gap-1 rounded-sm text-[#315b43] underline-offset-4 hover:text-[#a0442f] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#195e48]"
             >
               <ArrowLeft className="h-3 w-3" /> {t("back_to_sign_in")}
             </Link>

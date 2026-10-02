@@ -10,31 +10,31 @@ export const Route = createFileRoute("/terminos")({
 
 function Terminos() {
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main className="min-h-screen bg-[#f5f7f1] text-[#263b2e]">
       <div className="container mx-auto max-w-4xl px-4 py-10 md:py-16">
         <div className="mb-8 flex items-center justify-between gap-3">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:border-violet-500 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-md border border-[#d4e0d2] bg-white px-4 py-2 text-sm font-semibold text-[#315b43] transition-colors hover:border-[#195e48] hover:bg-[#edf3e8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#195e48]"
           >
             <ArrowLeft className="h-4 w-4" />
             Volver al inicio
           </Link>
         </div>
 
-        <article className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-violet-500/5 md:p-10">
-          <header className="mb-8 border-b border-slate-800 pb-6">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-violet-300">
-              WINFAST
-            </p>
-            <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">
+        <article className="rounded-xl border border-[#dbe4d8] bg-white p-6 shadow-sm md:p-10">
+          <header className="mb-8 border-b border-[#dbe4d8] pb-6">
+            <p className="mb-3 text-sm font-semibold uppercase text-[#55803d]">WINFAST</p>
+            <h1 className="text-3xl font-black text-[#173b2c] md:text-5xl">
               Términos y condiciones
             </h1>
           </header>
 
-          <div className="space-y-7 text-base leading-8 text-slate-200">
+          <div className="space-y-7 text-base leading-8 text-[#43584a]">
             <section>
-              <h2 className="mb-3 text-xl font-bold text-white">1. Declaración de independencia</h2>
+              <h2 className="mb-3 text-xl font-bold text-[#195e48]">
+                1. Declaración de independencia
+              </h2>
               <p>
                 WINFAST es una plataforma digital independiente y no tiene vínculo, afiliación ni
                 relación comercial con redes de recaudación de pagos ni entidades bancarias de
@@ -45,7 +45,7 @@ function Terminos() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl font-bold text-white">2. Alcance del marketplace</h2>
+              <h2 className="mb-3 text-xl font-bold text-[#195e48]">2. Alcance del marketplace</h2>
               <p>
                 Se permite la publicación de TODO tipo de productos físicos y digitales, comercio
                 minorista y servicios profesionales, técnicos, asesorías y actividades relacionadas
@@ -55,7 +55,7 @@ function Terminos() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl font-bold text-white">3. Restricción estricta</h2>
+              <h2 className="mb-3 text-xl font-bold text-[#195e48]">3. Restricción estricta</h2>
               <p>
                 Queda prohibida única y exclusivamente la publicación de bienes, artículos o
                 servicios ILEGALES o que violen las leyes vigentes de la República del Ecuador. Esto
@@ -66,10 +66,10 @@ function Terminos() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl font-bold text-white">
+              <h2 className="mb-3 text-xl font-bold text-[#195e48]">
                 4. Modelo de cobro y pasarela de pago
               </h2>
-              <ul className="list-disc space-y-2 pl-6 text-slate-200">
+              <ul className="list-disc space-y-2 pl-6 text-[#43584a]">
                 <li>
                   La publicación, navegación y uso general de la plataforma es totalmente gratuito
                   para los usuarios.
@@ -91,7 +91,9 @@ function Terminos() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl font-bold text-white">5. Deslinde de responsabilidad</h2>
+              <h2 className="mb-3 text-xl font-bold text-[#195e48]">
+                5. Deslinde de responsabilidad
+              </h2>
               <p>
                 WINFAST actúa únicamente como un catálogo visual y punto de encuentro entre
                 compradores y vendedores. La negociación, pago y entrega de los productos o
