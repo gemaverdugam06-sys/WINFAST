@@ -785,12 +785,19 @@ export function AdminPanel() {
   };
 
   const loadCompras = async () => {
+    if (!user) {
+      setCompras([]);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("compras")
         .select(
           "id, comprador_id, vendedor_id, producto_id, estado, created_at, confirmed_at, productos(titulo)",
         )
+        .neq("comprador_id", user.id)
+        .neq("vendedor_id", user.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
       setCompras((data as unknown as Compra[]) ?? []);
