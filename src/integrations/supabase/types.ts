@@ -954,6 +954,20 @@ export type Database = {
           }
         | { Args: { _role: string; _user_id: string }; Returns: boolean };
       admin_delete_purchase: { Args: { _purchase_id: string }; Returns: undefined };
+      admin_list_users: {
+        Args: never;
+        Returns: {
+          avatar_url: string | null;
+          ciudad: string | null;
+          created_at: string;
+          email: string | null;
+          id: string;
+          is_blocked: boolean;
+          motivo_bloqueo: string | null;
+          nombre_completo: string | null;
+          username: string | null;
+        }[];
+      };
       is_user_blocked: { Args: { _user_id: string }; Returns: boolean };
       mark_messages_delivered: {
         Args: { _message_ids: string[] };

@@ -115,7 +115,9 @@ interface SupportTicket {
 
 interface UserProfile {
   id: string;
+  email: string | null;
   nombre_completo: string | null;
+  username: string | null;
   ciudad: string | null;
   avatar_url: string | null;
   is_blocked: boolean;
@@ -906,27 +908,9 @@ export function AdminPanel() {
 
   const loadUsuarios = async () => {
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .order("updated_at", { ascending: false })
-        .limit(200);
-
+      const { data, error } = await supabase.rpc("admin_list_users");
       if (error) throw error;
-
-      const rows = ((data as Array<Record<string, unknown>>) ?? []).map((userRow) => ({
-        id: String(userRow.id ?? ""),
-        nombre_completo:
-          typeof userRow.nombre_completo === "string" ? userRow.nombre_completo : null,
-        ciudad: typeof userRow.ciudad === "string" ? userRow.ciudad : null,
-        avatar_url: typeof userRow.avatar_url === "string" ? userRow.avatar_url : null,
-        is_blocked: Boolean(userRow.is_blocked),
-        motivo_bloqueo: typeof userRow.motivo_bloqueo === "string" ? userRow.motivo_bloqueo : null,
-        created_at:
-          typeof userRow.updated_at === "string" ? userRow.updated_at : new Date().toISOString(),
-      }));
-
-      setUsuarios(rows as UserProfile[]);
+      setUsuarios((data ?? []) as UserProfile[]);
     } catch (err) {
       console.warn("Error al cargar usuarios:", err);
       setUsuarios([]);
@@ -1892,9 +1876,17 @@ export function AdminPanel() {
                           <span className="font-bold">
                             {u.nombre_completo || "Usuario sin nombre"}
                           </span>
-                          <span className="text-xs text-muted-foreground">
-                            {u.ciudad || "Sin ciudad"}
-                          </span>
+                        </div>
+                        <div className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+                          <p className="break-all">
+                            <span className="text-muted-foreground">Usuario: </span>
+                            {u.username ? `@${u.username}` : u.id.slice(0, 8)}
+                          </p>
+                          <p className="break-all">
+                            <span className="text-muted-foreground">Correo: </span>
+                            {u.email || "No disponible"}
+                          </p>
+                          <p className="text-muted-foreground">Ciudad: {u.ciudad || "Sin ciudad"}</p>
                         </div>
                         {u.motivo_bloqueo && (
                           <p className="text-sm text-muted-foreground">
