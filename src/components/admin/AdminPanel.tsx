@@ -674,33 +674,6 @@ export function AdminPanel() {
   const [notasAdicionales, setNotasAdicionales] = useState("");
   const [supportReplies, setSupportReplies] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    if (!user) return;
-
-    void loadTransactions();
-    void loadCompras();
-    void loadAdvertisingRequests();
-    void loadProductosPendientes();
-    void loadReportes();
-    void loadReseniasReportadas();
-    void loadTicketsSoporte();
-    void loadUsuarios();
-    void loadRazonesPolitica();
-    void loadMonetizationSettings();
-  }, [
-    user,
-    loadAdvertisingRequests,
-    loadCompras,
-    loadMonetizationSettings,
-    loadProductosPendientes,
-    loadRazonesPolitica,
-    loadReportes,
-    loadReseniasReportadas,
-    loadTicketsSoporte,
-    loadTransactions,
-    loadUsuarios,
-  ]);
-
   const saveMonetizationSettings = async (nextSettings: MonetizationSettings) => {
     try {
       const payload = {
@@ -813,7 +786,7 @@ export function AdminPanel() {
         toast.error("No se pudo cargar la configuración de monetización");
       }
     }
-  }, [t]);
+  }, []);
 
   const toggleMonetizationPlan = async (group: keyof MonetizationSettings, key: string) => {
     const currentGroup = settings[group];
@@ -832,7 +805,7 @@ export function AdminPanel() {
     await saveMonetizationSettings(nextSettings);
   };
 
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -857,7 +830,7 @@ export function AdminPanel() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const loadAdvertisingRequests = useCallback(async () => {
     const { data, error } = await supabase
@@ -924,7 +897,7 @@ export function AdminPanel() {
     await loadCompras();
   };
 
-  const loadProductosPendientes = async () => {
+  const loadProductosPendientes = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("productos")
@@ -953,9 +926,9 @@ export function AdminPanel() {
     } catch (err) {
       console.error("Error al cargar productos pendientes:", err);
     }
-  };
+  }, []);
 
-  const loadReportes = async () => {
+  const loadReportes = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("reportes")
@@ -971,9 +944,9 @@ export function AdminPanel() {
         toast.error("No se pudieron cargar los reportes");
       }
     }
-  };
+  }, []);
 
-  const loadReseniasReportadas = async () => {
+  const loadReseniasReportadas = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("resenas_vendedores")
@@ -990,9 +963,9 @@ export function AdminPanel() {
         toast.error("No se pudieron cargar las reseñas reportadas");
       }
     }
-  };
+  }, []);
 
-  const loadTicketsSoporte = async () => {
+  const loadTicketsSoporte = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("support_tickets")
@@ -1010,9 +983,9 @@ export function AdminPanel() {
         toast.error("No se pudieron cargar los tickets de soporte");
       }
     }
-  };
+  }, []);
 
-  const loadUsuarios = async () => {
+  const loadUsuarios = useCallback(async () => {
     try {
       const { data, error } = await supabase.rpc("admin_list_users");
       if (error) throw error;
@@ -1024,9 +997,9 @@ export function AdminPanel() {
         toast.error("No se pudieron cargar los usuarios");
       }
     }
-  };
+  }, []);
 
-  const loadRazonesPolitica = async () => {
+  const loadRazonesPolitica = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("politica_contenido")
@@ -1045,7 +1018,34 @@ export function AdminPanel() {
         toast.error("No se pudieron cargar las razones de política");
       }
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    void loadTransactions();
+    void loadCompras();
+    void loadAdvertisingRequests();
+    void loadProductosPendientes();
+    void loadReportes();
+    void loadReseniasReportadas();
+    void loadTicketsSoporte();
+    void loadUsuarios();
+    void loadRazonesPolitica();
+    void loadMonetizationSettings();
+  }, [
+    user,
+    loadAdvertisingRequests,
+    loadCompras,
+    loadMonetizationSettings,
+    loadProductosPendientes,
+    loadRazonesPolitica,
+    loadReportes,
+    loadReseniasReportadas,
+    loadTicketsSoporte,
+    loadTransactions,
+    loadUsuarios,
+  ]);
 
   const verComprobante = async (path: string) => {
     try {
