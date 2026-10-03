@@ -17,12 +17,14 @@ import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedChatsRouteImport } from './routes/_authenticated/chats'
+import { Route as AuthenticatedMisComprasRouteImport } from './routes/_authenticated/mis-compras'
 import { Route as AuthenticatedMisDestacadosRouteImport } from './routes/_authenticated/mis-destacados'
 import { Route as AuthenticatedMisPagosRouteImport } from './routes/_authenticated/mis-pagos'
 import { Route as AuthenticatedMisPublicacionesRouteImport } from './routes/_authenticated/mis-publicaciones'
 import { Route as AuthenticatedNotificacionesRouteImport } from './routes/_authenticated/notificaciones'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedPublicarRouteImport } from './routes/_authenticated/publicar'
+import { Route as AuthenticatedPublicidadRouteImport } from './routes/_authenticated/publicidad'
 import { Route as AuthenticatedSoporteRouteImport } from './routes/_authenticated/soporte'
 import { Route as AuthNuevaContrasenaRouteImport } from './routes/auth.nueva-contrasena'
 import { Route as AuthRecuperarRouteImport } from './routes/auth.recuperar'
@@ -74,6 +76,11 @@ const AuthenticatedChatsRoute = AuthenticatedChatsRouteImport.update({
   path: '/chats',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMisComprasRoute = AuthenticatedMisComprasRouteImport.update({
+  id: '/mis-compras',
+  path: '/mis-compras',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMisDestacadosRoute =
   AuthenticatedMisDestacadosRouteImport.update({
     id: '/mis-destacados',
@@ -105,6 +112,11 @@ const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
 const AuthenticatedPublicarRoute = AuthenticatedPublicarRouteImport.update({
   id: '/publicar',
   path: '/publicar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPublicidadRoute = AuthenticatedPublicidadRouteImport.update({
+  id: '/publicidad',
+  path: '/publicidad',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSoporteRoute = AuthenticatedSoporteRouteImport.update({
@@ -174,12 +186,14 @@ export interface FileRoutesByFullPath {
   '/terminos': typeof TerminosRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/chats': typeof AuthenticatedChatsRoute
+  '/mis-compras': typeof AuthenticatedMisComprasRoute
   '/mis-destacados': typeof AuthenticatedMisDestacadosRoute
   '/mis-pagos': typeof AuthenticatedMisPagosRoute
   '/mis-publicaciones': typeof AuthenticatedMisPublicacionesRoute
   '/notificaciones': typeof AuthenticatedNotificacionesRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/publicar': typeof AuthenticatedPublicarRoute
+  '/publicidad': typeof AuthenticatedPublicidadRoute
   '/soporte': typeof AuthenticatedSoporteRoute
   '/auth/nueva-contrasena': typeof AuthNuevaContrasenaRoute
   '/auth/recuperar': typeof AuthRecuperarRoute
@@ -200,12 +214,14 @@ export interface FileRoutesByTo {
   '/terminos': typeof TerminosRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/chats': typeof AuthenticatedChatsRoute
+  '/mis-compras': typeof AuthenticatedMisComprasRoute
   '/mis-destacados': typeof AuthenticatedMisDestacadosRoute
   '/mis-pagos': typeof AuthenticatedMisPagosRoute
   '/mis-publicaciones': typeof AuthenticatedMisPublicacionesRoute
   '/notificaciones': typeof AuthenticatedNotificacionesRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/publicar': typeof AuthenticatedPublicarRoute
+  '/publicidad': typeof AuthenticatedPublicidadRoute
   '/soporte': typeof AuthenticatedSoporteRoute
   '/auth/nueva-contrasena': typeof AuthNuevaContrasenaRoute
   '/auth/recuperar': typeof AuthRecuperarRoute
@@ -228,12 +244,14 @@ export interface FileRoutesById {
   '/terminos': typeof TerminosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/chats': typeof AuthenticatedChatsRoute
+  '/_authenticated/mis-compras': typeof AuthenticatedMisComprasRoute
   '/_authenticated/mis-destacados': typeof AuthenticatedMisDestacadosRoute
   '/_authenticated/mis-pagos': typeof AuthenticatedMisPagosRoute
   '/_authenticated/mis-publicaciones': typeof AuthenticatedMisPublicacionesRoute
   '/_authenticated/notificaciones': typeof AuthenticatedNotificacionesRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/publicar': typeof AuthenticatedPublicarRoute
+  '/_authenticated/publicidad': typeof AuthenticatedPublicidadRoute
   '/_authenticated/soporte': typeof AuthenticatedSoporteRoute
   '/auth/nueva-contrasena': typeof AuthNuevaContrasenaRoute
   '/auth/recuperar': typeof AuthRecuperarRoute
@@ -256,12 +274,14 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/admin'
     | '/chats'
+    | '/mis-compras'
     | '/mis-destacados'
     | '/mis-pagos'
     | '/mis-publicaciones'
     | '/notificaciones'
     | '/perfil'
     | '/publicar'
+    | '/publicidad'
     | '/soporte'
     | '/auth/nueva-contrasena'
     | '/auth/recuperar'
@@ -282,12 +302,14 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/admin'
     | '/chats'
+    | '/mis-compras'
     | '/mis-destacados'
     | '/mis-pagos'
     | '/mis-publicaciones'
     | '/notificaciones'
     | '/perfil'
     | '/publicar'
+    | '/publicidad'
     | '/soporte'
     | '/auth/nueva-contrasena'
     | '/auth/recuperar'
@@ -309,12 +331,14 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/_authenticated/admin'
     | '/_authenticated/chats'
+    | '/_authenticated/mis-compras'
     | '/_authenticated/mis-destacados'
     | '/_authenticated/mis-pagos'
     | '/_authenticated/mis-publicaciones'
     | '/_authenticated/notificaciones'
     | '/_authenticated/perfil'
     | '/_authenticated/publicar'
+    | '/_authenticated/publicidad'
     | '/_authenticated/soporte'
     | '/auth/nueva-contrasena'
     | '/auth/recuperar'
@@ -398,6 +422,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mis-compras': {
+      id: '/_authenticated/mis-compras'
+      path: '/mis-compras'
+      fullPath: '/mis-compras'
+      preLoaderRoute: typeof AuthenticatedMisComprasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/mis-destacados': {
       id: '/_authenticated/mis-destacados'
       path: '/mis-destacados'
@@ -438,6 +469,13 @@ declare module '@tanstack/react-router' {
       path: '/publicar'
       fullPath: '/publicar'
       preLoaderRoute: typeof AuthenticatedPublicarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/publicidad': {
+      id: '/_authenticated/publicidad'
+      path: '/publicidad'
+      fullPath: '/publicidad'
+      preLoaderRoute: typeof AuthenticatedPublicidadRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/soporte': {
@@ -523,12 +561,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedChatsRoute: typeof AuthenticatedChatsRoute
+  AuthenticatedMisComprasRoute: typeof AuthenticatedMisComprasRoute
   AuthenticatedMisDestacadosRoute: typeof AuthenticatedMisDestacadosRoute
   AuthenticatedMisPagosRoute: typeof AuthenticatedMisPagosRoute
   AuthenticatedMisPublicacionesRoute: typeof AuthenticatedMisPublicacionesRoute
   AuthenticatedNotificacionesRoute: typeof AuthenticatedNotificacionesRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
   AuthenticatedPublicarRoute: typeof AuthenticatedPublicarRoute
+  AuthenticatedPublicidadRoute: typeof AuthenticatedPublicidadRoute
   AuthenticatedSoporteRoute: typeof AuthenticatedSoporteRoute
   AuthenticatedChatChatIdRoute: typeof AuthenticatedChatChatIdRoute
   AuthenticatedEditarIdRoute: typeof AuthenticatedEditarIdRoute
@@ -539,12 +579,14 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedChatsRoute: AuthenticatedChatsRoute,
+  AuthenticatedMisComprasRoute: AuthenticatedMisComprasRoute,
   AuthenticatedMisDestacadosRoute: AuthenticatedMisDestacadosRoute,
   AuthenticatedMisPagosRoute: AuthenticatedMisPagosRoute,
   AuthenticatedMisPublicacionesRoute: AuthenticatedMisPublicacionesRoute,
   AuthenticatedNotificacionesRoute: AuthenticatedNotificacionesRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
   AuthenticatedPublicarRoute: AuthenticatedPublicarRoute,
+  AuthenticatedPublicidadRoute: AuthenticatedPublicidadRoute,
   AuthenticatedSoporteRoute: AuthenticatedSoporteRoute,
   AuthenticatedChatChatIdRoute: AuthenticatedChatChatIdRoute,
   AuthenticatedEditarIdRoute: AuthenticatedEditarIdRoute,

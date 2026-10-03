@@ -159,7 +159,7 @@ function PublicarPage() {
         }
       });
     };
-  }, []);
+  }, [previews]);
 
   const addFiles = (list: FileList | null) => {
     if (!list) return;

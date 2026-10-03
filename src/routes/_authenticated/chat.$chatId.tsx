@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
@@ -117,7 +117,7 @@ function ChatPage() {
   }, [soundEnabled]);
 
   // Función dedicada a traer los mensajes actualizados de la base de datos
-  const refrescarMensajes = async () => {
+  const refrescarMensajes = useCallback(async () => {
     if (!chatId) return;
     const { data } = await supabase
       .from("mensajes")
@@ -157,7 +157,7 @@ function ChatPage() {
     if (messageIdsRef.current && nuevosMensajesEntrantes) reproducirTono();
     messageIdsRef.current = new Set(mensajesActualizados.map((mensaje) => mensaje.id));
     setMensajes(mensajesActualizados);
-  };
+  }, [chatId, user?.id]);
 
   useEffect(() => {
     if (!chatId) return;
@@ -206,7 +206,7 @@ function ChatPage() {
       supabase.removeChannel(ch);
       clearInterval(intervaloRespaldo);
     };
-  }, [chatId]);
+  }, [chatId, refrescarMensajes]);
 
   // Actualizar indicador de lectura
   useEffect(() => {
@@ -220,7 +220,7 @@ function ChatPage() {
       .update(readUpdate)
       .eq("id", chatId)
       .then(() => {});
-  }, [user?.id, info?.id, mensajes.length, chatId]);
+  }, [chatId, info, user]);
 
   // Mantener scroll abajo
   useEffect(() => {
@@ -232,7 +232,7 @@ function ChatPage() {
   useEffect(() => {
     if (!user || !chatId || loading || mensajes.length === 0) return;
     void confirmReceipts();
-  }, [user?.id, chatId, loading, mensajes.length]);
+  }, [chatId, confirmReceipts, loading, mensajes.length, user]);
 
   const canEditMessage = (createdAt: string) => {
     if (!user) return false;
@@ -246,7 +246,7 @@ function ChatPage() {
       timeStyle: "short",
     });
 
-  const confirmReceipts = async () => {
+  const confirmReceipts = useCallback(async () => {
     if (!user || !chatId) return;
     const pendingDeliveryIds = mensajes
       .filter((mensaje) => mensaje.remitente_id !== user.id && !mensaje.delivered_at)
@@ -271,7 +271,7 @@ function ChatPage() {
     }
 
     await refrescarMensajes();
-  };
+  }, [chatId, mensajes, refrescarMensajes, user]);
 
   const enviar = async (e: React.FormEvent) => {
     e.preventDefault();

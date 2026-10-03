@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import { toast } from "sonner";
 
 type PurchaseNotification = {
@@ -10,14 +11,16 @@ type PurchaseNotification = {
   tipo: string;
   leido: boolean | null;
   created_at: string | null;
+  datos: Record<string, unknown> | null;
 };
 
 export function usePurchaseNotifications() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const [notifications, setNotifications] = useState<PurchaseNotification[]>([]);
   const [historyNotifications, setHistoryNotifications] = useState<PurchaseNotification[]>([]);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (!user) {
       setNotifications([]);
       setHistoryNotifications([]);
@@ -26,13 +29,15 @@ export function usePurchaseNotifications() {
 
     const { data: rows } = await supabase
       .from("notificaciones")
-      .select("id, compra_id, mensaje, tipo, leido, created_at")
+      .select("id, compra_id, mensaje, tipo, leido, created_at, datos")
       .eq("user_id", user.id)
       .in("tipo", [
         "compra_solicitada",
         "compra_actualizada",
         "promocion_aprobada",
         "promocion_rechazada",
+        "publicidad_aprobada",
+        "publicidad_rechazada",
       ])
       .order("created_at", { ascending: false })
       .limit(50);
@@ -58,7 +63,12 @@ export function usePurchaseNotifications() {
     const history: PurchaseNotification[] = [];
 
     for (const item of notificationsRows) {
-      if (item.tipo === "promocion_aprobada" || item.tipo === "promocion_rechazada") {
+      if (
+        item.tipo === "promocion_aprobada" ||
+        item.tipo === "promocion_rechazada" ||
+        item.tipo === "publicidad_aprobada" ||
+        item.tipo === "publicidad_rechazada"
+      ) {
         (item.leido ? history : active).push(item);
         continue;
       }
@@ -78,7 +88,7 @@ export function usePurchaseNotifications() {
 
     setNotifications(active);
     setHistoryNotifications(history);
-  };
+  }, [user]);
 
   useEffect(() => {
     if (!user) {
@@ -113,26 +123,41 @@ export function usePurchaseNotifications() {
       active = false;
       void supabase.removeChannel(channel);
     };
-  }, [user?.id]);
+  }, [refresh, user]);
 
   const decidePurchase = async (
-    notification: PurchaseNotification,
+    notification: PurchaseNotification | string,
     estado: "CONFIRMADA" | "CANCELADA",
-  ) => {
-    if (!notification.compra_id) return;
+  ): Promise<boolean> => {
+    const purchaseId = typeof notification === "string" ? notification : notification.compra_id;
+    if (!purchaseId || !user) return false;
+
     const { error } = await supabase
       .from("compras")
       .update({ estado, confirmed_at: estado === "CONFIRMADA" ? new Date().toISOString() : null })
-      .eq("id", notification.compra_id);
+      .eq("id", purchaseId);
 
     if (error) {
       toast.error("No se pudo actualizar la solicitud");
-      return;
+      return false;
     }
 
-    await supabase.from("notificaciones").update({ leido: true }).eq("id", notification.id);
+    let notificationUpdate = supabase
+      .from("notificaciones")
+      .update({ leido: true })
+      .eq("compra_id", purchaseId)
+      .eq("user_id", user.id);
+
+    if (typeof notification !== "string") {
+      notificationUpdate = notificationUpdate.eq("id", notification.id);
+    } else {
+      notificationUpdate = notificationUpdate.eq("tipo", "compra_solicitada");
+    }
+
+    await notificationUpdate;
     await refresh();
     toast.success(estado === "CONFIRMADA" ? "Compra aceptada" : "Solicitud rechazada");
+    return true;
   };
 
   const deleteNotification = async (notificationId: string) => {
@@ -168,5 +193,42 @@ export function usePurchaseNotifications() {
     await refresh();
   };
 
-  return { notifications, historyNotifications, decidePurchase, deleteNotification, markAsRead };
+  const getNotificationMessage = (notification: PurchaseNotification) => {
+    const details = notification.datos ?? {};
+    const title = typeof details.producto_titulo === "string" ? details.producto_titulo : undefined;
+    const reason = typeof details.motivo === "string" ? details.motivo : undefined;
+    const placement = typeof details.ubicacion === "string" ? details.ubicacion : undefined;
+
+    if (notification.tipo === "promocion_aprobada" && title) {
+      return `${t("notification_promotion_approved_prefix")} «${title}» ${t(
+        "notification_promotion_approved_suffix",
+      )}`;
+    }
+    if (notification.tipo === "promocion_rechazada" && title) {
+      return `${t("notification_promotion_rejected_prefix")} «${title}». ${t(
+        "notification_reason_prefix",
+      )} ${reason || t("notification_unspecified_reason")}`;
+    }
+    if (notification.tipo === "publicidad_aprobada") {
+      const adKey = placement ? (`advertising_slot_${placement}` as const) : null;
+      const adLabel = adKey ? `: ${t(adKey)}` : "";
+      return `${t("notification_advertising_approved")}${adLabel}`;
+    }
+    if (notification.tipo === "publicidad_rechazada") {
+      const adKey = placement ? (`advertising_slot_${placement}` as const) : null;
+      const adLabel = adKey ? `: ${t(adKey)}` : "";
+      const reasonSuffix = reason ? `. ${t("notification_reason_prefix")} ${reason}` : "";
+      return `${t("notification_advertising_rejected")}${adLabel}${reasonSuffix}`;
+    }
+    return notification.mensaje;
+  };
+
+  return {
+    notifications,
+    historyNotifications,
+    decidePurchase,
+    deleteNotification,
+    markAsRead,
+    getNotificationMessage,
+  };
 }

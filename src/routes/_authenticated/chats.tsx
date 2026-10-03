@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
@@ -59,7 +59,7 @@ function ChatsPage() {
     avatarPaths.map((path, index) => [path, avatarUrls[index] ?? ""]),
   );
 
-  const cargarChats = async () => {
+  const cargarChats = useCallback(async () => {
     if (!user) return;
 
     // CORREGIDO: Cambiado 'seller_id' por 'vendedor_id' para que coincida con tu tabla
@@ -109,7 +109,7 @@ function ChatsPage() {
 
     setChats(chatsOrdenados.filter((chat) => !stateByChat.get(chat.id)?.deleted_at));
     setLoading(false);
-  };
+  }, [user]);
 
   const updateChatState = async (chat: ChatRow, action: "archive" | "restore" | "delete") => {
     if (!user) return;
@@ -158,7 +158,7 @@ function ChatsPage() {
     return () => {
       supabase.removeChannel(canalChats);
     };
-  }, [user?.id]);
+  }, [cargarChats, user]);
 
   return (
     <div className="min-h-screen bg-background">

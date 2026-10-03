@@ -49,7 +49,7 @@ function SupportPage() {
     if (!user.email) {
       toast.error("Tu cuenta no tiene un correo asociado para enviar la solicitud.");
     }
-  }, [user]);
+  }, [category, user]);
 
   const descriptionLength = useMemo(() => description.length, [description]);
 

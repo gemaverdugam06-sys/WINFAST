@@ -148,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [session?.user?.id, session?.access_token]);
+  }, [session?.access_token, session?.user?.email, session?.user?.id]);
 
   const signOut = async () => {
     try {

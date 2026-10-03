@@ -38,6 +38,7 @@ export function Header() {
     decidePurchase,
     deleteNotification,
     markAsRead,
+    getNotificationMessage,
   } = usePurchaseNotifications();
 
   return (
@@ -88,105 +89,115 @@ export function Header() {
                 </Link>
               </Button>
 
-              {(purchaseNotifications.length > 0 || historyNotifications.length > 0) && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="relative"
-                      aria-label="Solicitudes de compra"
-                    >
-                      <ShoppingBag className="h-6 w-6 sm:h-5 sm:w-5" />
-                      {purchaseNotifications.length > 0 && (
-                        <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
-                          {purchaseNotifications.length}
-                        </span>
-                      )}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-80">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative"
+                    aria-label="Notificaciones de compras y promociones"
+                    title="Mis compras"
+                  >
+                    <ShoppingBag className="h-6 w-6 sm:h-5 sm:w-5" />
                     {purchaseNotifications.length > 0 && (
-                      <>
-                        <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                          Pendientes
-                        </div>
-                        {purchaseNotifications.map((notification) => (
-                          <DropdownMenuItem
-                            key={notification.id}
-                            onClick={() => {
-                              if (
-                                notification.tipo === "promocion_aprobada" ||
-                                notification.tipo === "promocion_rechazada"
-                              ) {
-                                void markAsRead(notification.id);
-                              }
-                            }}
-                            className="flex-col items-stretch gap-2"
-                          >
-                            <span className="text-sm">{notification.mensaje}</span>
-                            {notification.tipo === "compra_solicitada" && (
-                              <span className="flex gap-2">
-                                <Button
-                                  size="sm"
-                                  onClick={() => void decidePurchase(notification, "CONFIRMADA")}
-                                >
-                                  Aceptar
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="destructive"
-                                  onClick={() => void decidePurchase(notification, "CANCELADA")}
-                                >
-                                  Rechazar
-                                </Button>
-                              </span>
-                            )}
-                          </DropdownMenuItem>
-                        ))}
-                      </>
+                      <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+                        {purchaseNotifications.length}
+                      </span>
                     )}
-
-                    {historyNotifications.length > 0 && (
-                      <>
-                        {purchaseNotifications.length > 0 && <DropdownMenuSeparator />}
-                        <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                          Historial
-                        </div>
-                        {historyNotifications.map((notification) => (
-                          <DropdownMenuItem
-                            key={notification.id}
-                            className="cursor-default items-start gap-2 focus:bg-transparent focus:text-current"
-                          >
-                            <span className="min-w-0 flex-1 text-sm text-muted-foreground">
-                              {notification.mensaje}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80">
+                  <DropdownMenuItem onClick={() => navigate({ to: "/mis-compras" })}>
+                    <ShoppingBag className="mr-2 h-4 w-4" /> Mis compras
+                  </DropdownMenuItem>
+                  {(purchaseNotifications.length > 0 || historyNotifications.length > 0) && (
+                    <DropdownMenuSeparator />
+                  )}
+                  {purchaseNotifications.length > 0 && (
+                    <>
+                      <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        Notificaciones nuevas
+                      </div>
+                      {purchaseNotifications.map((notification) => (
+                        <DropdownMenuItem
+                          key={notification.id}
+                          className="flex-col items-stretch gap-2"
+                          onClick={() => {
+                            if (
+                              notification.tipo === "promocion_aprobada" ||
+                              notification.tipo === "promocion_rechazada" ||
+                              notification.tipo === "publicidad_aprobada" ||
+                              notification.tipo === "publicidad_rechazada"
+                            ) {
+                              void markAsRead(notification.id);
+                            }
+                          }}
+                        >
+                          <span className="text-sm">{getNotificationMessage(notification)}</span>
+                          {notification.tipo === "compra_solicitada" && (
+                            <span className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={() => void decidePurchase(notification, "CONFIRMADA")}
+                              >
+                                Aceptar
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => void decidePurchase(notification, "CANCELADA")}
+                              >
+                                Rechazar
+                              </Button>
                             </span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 shrink-0"
-                              aria-label="Eliminar notificación"
-                              title="Eliminar notificación"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                void deleteNotification(notification.id);
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuItem>
-                        ))}
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => navigate({ to: "/notificaciones" })}>
-                          Ver historial completo
+                          )}
                         </DropdownMenuItem>
-                      </>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+                      ))}
+                    </>
+                  )}
+
+                  {historyNotifications.length > 0 && (
+                    <>
+                      {purchaseNotifications.length > 0 && <DropdownMenuSeparator />}
+                      <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        Historial
+                      </div>
+                      {historyNotifications.map((notification) => (
+                        <DropdownMenuItem
+                          key={notification.id}
+                          className="cursor-default items-start gap-2 focus:bg-transparent focus:text-current"
+                        >
+                          <span className="min-w-0 flex-1 text-sm text-muted-foreground">
+                            {getNotificationMessage(notification)}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 shrink-0"
+                            aria-label="Eliminar notificación"
+                            title="Eliminar notificación"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              void deleteNotification(notification.id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuItem>
+                      ))}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => navigate({ to: "/notificaciones" })}>
+                        Ver historial completo
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  {purchaseNotifications.length === 0 && historyNotifications.length === 0 && (
+                    <DropdownMenuItem disabled>No hay notificaciones nuevas</DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {!roleLoading && isAdmin && (
                 <Button
@@ -222,6 +233,12 @@ export function Header() {
                 <DropdownMenuContent align="end" className="w-52">
                   <DropdownMenuItem onClick={() => navigate({ to: "/mis-publicaciones" })}>
                     {t("my_listings")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate({ to: "/mis-compras" })}>
+                    <ShoppingBag className="mr-2 h-4 w-4" /> Mis compras
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate({ to: "/publicidad" })}>
+                    {t("advertising_nav")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate({ to: "/mis-destacados" })}>
                     ⭐ Mis destacados

@@ -47,6 +47,8 @@ interface Producto {
     nombre_completo: string | null;
     avatar_url: string | null;
     ciudad: string | null;
+    account_type: string;
+    business_name: string | null;
   } | null;
 }
 
@@ -101,7 +103,9 @@ function ProductoPage() {
       try {
         let productoQuery = supabase
           .from("productos")
-          .select("*, profiles!productos_user_profile_fk(nombre_completo, avatar_url, ciudad)")
+          .select(
+            "*, profiles!productos_user_profile_fk(nombre_completo, avatar_url, ciudad, account_type, business_name)",
+          )
           .eq("id", id)
           .eq("activo", true);
 

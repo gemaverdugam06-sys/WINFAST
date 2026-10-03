@@ -9,11 +9,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { toUserMessage } from "@/lib/error-messages";
 import { validateStrongPassword } from "@/lib/auth-utils";
+import { BUSINESS_PLANS } from "@/lib/promo-plans";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
   component: PerfilPage,
@@ -25,6 +34,12 @@ function PerfilPage() {
   const navigate = useNavigate();
   const [nombre, setNombre] = useState("");
   const [ciudad, setCiudad] = useState("");
+  const [accountType, setAccountType] = useState<"personal" | "business">("personal");
+  const [businessName, setBusinessName] = useState("");
+  const [businessDescription, setBusinessDescription] = useState("");
+  const [businessPlanSettings, setBusinessPlanSettings] = useState<
+    Record<string, { enabled?: boolean; price?: number }>
+  >({});
   const [telefono, setTelefono] = useState("");
   const [avatarPath, setAvatarPath] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -55,7 +70,9 @@ function PerfilPage() {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("nombre_completo, ciudad, avatar_url")
+      .select(
+        "nombre_completo, ciudad, avatar_url, account_type, business_name, business_description",
+      )
       .eq("id", user.id)
       .single()
       .then(({ data }) => {
@@ -63,7 +80,21 @@ function PerfilPage() {
           setNombre(data.nombre_completo ?? "");
           setCiudad(data.ciudad ?? "");
           setAvatarPath(data.avatar_url ?? null);
+          setAccountType(data.account_type === "business" ? "business" : "personal");
+          setBusinessName(data.business_name ?? "");
+          setBusinessDescription(data.business_description ?? "");
         }
+      });
+    supabase
+      .from("monetization_settings")
+      .select("settings")
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        const settings = data?.settings as {
+          business?: Record<string, { enabled?: boolean; price?: number }>;
+        } | null;
+        setBusinessPlanSettings(settings?.business ?? {});
       });
     supabase
       .from("profiles_private")
@@ -73,7 +104,7 @@ function PerfilPage() {
       .then(({ data }) => {
         if (data) setTelefono(data.telefono ?? "");
       });
-  }, [user?.id]);
+  }, [user]);
 
   const onUpload = async (file: File) => {
     if (!user) return;
@@ -111,6 +142,9 @@ function PerfilPage() {
       .update({
         nombre_completo: nombre,
         ciudad,
+        account_type: accountType,
+        business_name: businessName.trim() || null,
+        business_description: businessDescription.trim() || null,
       })
       .eq("id", user.id);
     const { error: pErr } = await supabase
@@ -209,6 +243,42 @@ function PerfilPage() {
                 <Input value={ciudad} onChange={(e) => setCiudad(e.target.value)} maxLength={80} />
               </div>
               <div className="space-y-1">
+                <Label>{t("account_type")}</Label>
+                <Select
+                  value={accountType}
+                  onValueChange={(value) => setAccountType(value as "personal" | "business")}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="personal">{t("personal_account")}</SelectItem>
+                    <SelectItem value="business">{t("business_account")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {accountType === "business" && (
+                <>
+                  <div className="space-y-1">
+                    <Label>{t("business_name")}</Label>
+                    <Input
+                      value={businessName}
+                      onChange={(e) => setBusinessName(e.target.value)}
+                      required
+                      maxLength={120}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>{t("business_description")}</Label>
+                    <Textarea
+                      value={businessDescription}
+                      onChange={(e) => setBusinessDescription(e.target.value)}
+                      maxLength={500}
+                    />
+                  </div>
+                </>
+              )}
+              <div className="space-y-1">
                 <Label>{t("phone")}</Label>
                 <Input
                   type="tel"
@@ -221,7 +291,47 @@ function PerfilPage() {
               <Button type="submit" disabled={saving} className="w-full bg-gradient-primary">
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : t("update_profile")}
               </Button>
+              {accountType === "business" && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate({ to: "/publicidad" })}
+                >
+                  {t("advertising_nav")}
+                </Button>
+              )}
             </form>
+          </CardContent>
+        </Card>
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>{t("business_plans_title")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">{t("business_plans_unavailable")}</p>
+            {BUSINESS_PLANS.filter((plan) => businessPlanSettings[plan.key]?.enabled !== false).map(
+              (plan) => {
+                const labelKey = `business_plan_${plan.key.toLowerCase()}` as
+                  "business_plan_negocio" | "business_plan_profesional" | "business_plan_empresa";
+                return (
+                  <div
+                    key={plan.key}
+                    className="flex items-center justify-between gap-3 border-t pt-3"
+                  >
+                    <div>
+                      <p className="font-medium">{t(labelKey)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t("business_checkout_paused")}
+                      </p>
+                    </div>
+                    <span className="shrink-0 font-semibold">
+                      ${Number(businessPlanSettings[plan.key]?.price ?? plan.price).toFixed(2)} USD
+                    </span>
+                  </div>
+                );
+              },
+            )}
           </CardContent>
         </Card>
         <Card className="mt-6 border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)]">

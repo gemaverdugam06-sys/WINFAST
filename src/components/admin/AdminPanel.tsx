@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import { ADVERTISING_OPTIONS, BUSINESS_PLANS, FEATURED_PLAN_CONFIG } from "@/lib/promo-plans";
 import { reportReasons } from "@/lib/reporting";
 import { useSignedUrls } from "@/lib/storage";
@@ -47,6 +48,23 @@ interface Tx {
   notas_admin: string | null;
   productos: { titulo: string } | null;
   profiles: { nombre_completo: string | null } | null;
+}
+
+interface AdvertisingRequest {
+  id: string;
+  user_id: string;
+  profiles: { nombre_completo: string | null; business_name: string | null } | null;
+  ubicacion: keyof typeof ADVERTISING_OPTIONS;
+  precio: number;
+  duracion_meses: number;
+  archivo_path: string;
+  comprobante_path: string;
+  url_destino: string | null;
+  estado: "PENDIENTE" | "APROBADO" | "RECHAZADO";
+  notas_admin: string | null;
+  fecha_inicio: string | null;
+  fecha_fin: string | null;
+  created_at: string;
 }
 
 interface Compra {
@@ -220,7 +238,36 @@ const defaultMonetizationSettings: MonetizationSettings = {
   ) as Record<string, { enabled: boolean; price: number }>,
 };
 
+const featuredPlanLabelKeys = {
+  FLASH: "featured_plan_flash",
+  BASICO: "featured_plan_basico",
+  PLUS: "featured_plan_plus",
+  PRO: "featured_plan_pro",
+  MEGA: "featured_plan_mega",
+} as const;
+
+const businessPlanLabelKeys = {
+  NEGOCIO: "business_plan_negocio",
+  PROFESIONAL: "business_plan_profesional",
+  EMPRESA: "business_plan_empresa",
+} as const;
+
+const advertisingLabelKeys = {
+  banner_principal: "advertising_slot_banner_principal",
+  negocio_destacado: "advertising_slot_negocio_destacado",
+  categoria: "advertising_slot_categoria",
+  productos: "advertising_slot_productos",
+  servicios: "advertising_slot_servicios",
+} as const;
+
+const advertisingStatusLabelKeys = {
+  PENDIENTE: "advertising_status_pending",
+  APROBADO: "advertising_status_approved",
+  RECHAZADO: "advertising_status_rejected",
+} as const;
+
 function MonetizationOverview({ transactions }: { transactions: Tx[] }) {
+  const { t } = useI18n();
   const stats = useMemo(() => {
     const completed = transactions.filter(
       (tx) => normalizePaymentState(tx.estado_pago) === "COMPLETADO",
@@ -255,25 +302,25 @@ function MonetizationOverview({ transactions }: { transactions: Tx[] }) {
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <Card>
         <CardContent className="p-4">
-          <p className="text-sm text-muted-foreground">Ingresos totales</p>
+          <p className="text-sm text-muted-foreground">{t("monetization_total_income")}</p>
           <p className="mt-2 text-2xl font-bold">${stats.totalIngresos.toFixed(2)}</p>
         </CardContent>
       </Card>
       <Card>
         <CardContent className="p-4">
-          <p className="text-sm text-muted-foreground">Ingresos del mes</p>
+          <p className="text-sm text-muted-foreground">{t("monetization_month_income")}</p>
           <p className="mt-2 text-2xl font-bold">${stats.monthIngresos.toFixed(2)}</p>
         </CardContent>
       </Card>
       <Card>
         <CardContent className="p-4">
-          <p className="text-sm text-muted-foreground">DESTACADOS vendidos</p>
+          <p className="text-sm text-muted-foreground">{t("featured_plans_sold")}</p>
           <p className="mt-2 text-2xl font-bold">{stats.destacadosVendidos}</p>
         </CardContent>
       </Card>
       <Card>
         <CardContent className="p-4">
-          <p className="text-sm text-muted-foreground">DESTACADOS activos</p>
+          <p className="text-sm text-muted-foreground">{t("featured_plans_active")}</p>
           <p className="mt-2 text-2xl font-bold">{stats.destacadosActivos}</p>
         </CardContent>
       </Card>
@@ -290,6 +337,7 @@ function MonetizationConfigPanel({
   onSave: (nextSettings: MonetizationSettings) => Promise<void>;
   onToggle: (group: keyof MonetizationSettings, key: string) => Promise<void>;
 }) {
+  const { t } = useI18n();
   const updateField = async (
     group: keyof MonetizationSettings,
     key: string,
@@ -314,7 +362,7 @@ function MonetizationConfigPanel({
     <div className="grid gap-4 lg:grid-cols-3">
       <Card>
         <CardHeader>
-          <CardTitle>Planes destacados</CardTitle>
+          <CardTitle>{t("featured_plans_title")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {Object.entries(FEATURED_PLAN_CONFIG).map(([key, plan]) => {
@@ -323,21 +371,25 @@ function MonetizationConfigPanel({
               <div key={key} className="rounded-lg border p-3">
                 <div className="flex items-center justify-between gap-2">
                   <div>
-                    <p className="font-semibold">{plan.name}</p>
-                    <p className="text-xs text-muted-foreground">{plan.durationDays} días</p>
+                    <p className="font-semibold">
+                      {t(featuredPlanLabelKeys[key as keyof typeof featuredPlanLabelKeys])}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {plan.durationDays} {t("unit_days")}
+                    </p>
                   </div>
                   <Button
                     size="sm"
                     variant={item.enabled ? "default" : "outline"}
                     onClick={() => void onToggle("featured", key)}
                   >
-                    {item.enabled ? "Activo" : "Inactivo"}
+                    {item.enabled ? t("state_active") : t("state_inactive")}
                   </Button>
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <div>
                     <Label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
-                      Precio
+                      {t("field_price")}
                     </Label>
                     <Input
                       type="number"
@@ -351,7 +403,7 @@ function MonetizationConfigPanel({
                   </div>
                   <div>
                     <Label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
-                      Días
+                      {t("field_days")}
                     </Label>
                     <Input
                       type="number"
@@ -377,7 +429,7 @@ function MonetizationConfigPanel({
 
       <Card>
         <CardHeader>
-          <CardTitle>Planes de negocio</CardTitle>
+          <CardTitle>{t("business_plans_admin_title")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {BUSINESS_PLANS.map((plan) => {
@@ -386,20 +438,22 @@ function MonetizationConfigPanel({
               <div key={plan.key} className="rounded-lg border p-3">
                 <div className="flex items-center justify-between gap-2">
                   <div>
-                    <p className="font-semibold">{plan.name}</p>
-                    <p className="text-xs text-muted-foreground">Plan comercial</p>
+                    <p className="font-semibold">
+                      {t(businessPlanLabelKeys[plan.key as keyof typeof businessPlanLabelKeys])}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{t("business_plan_label")}</p>
                   </div>
                   <Button
                     size="sm"
                     variant={item.enabled ? "default" : "outline"}
                     onClick={() => void onToggle("business", plan.key)}
                   >
-                    {item.enabled ? "Activo" : "Inactivo"}
+                    {item.enabled ? t("state_active") : t("state_inactive")}
                   </Button>
                 </div>
                 <div className="mt-3">
                   <Label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
-                    Precio
+                    {t("field_price")}
                   </Label>
                   <Input
                     type="number"
@@ -419,7 +473,7 @@ function MonetizationConfigPanel({
 
       <Card>
         <CardHeader>
-          <CardTitle>Publicidad</CardTitle>
+          <CardTitle>{t("advertising_admin_group")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {Object.entries(ADVERTISING_OPTIONS).map(([key, option]) => {
@@ -428,20 +482,22 @@ function MonetizationConfigPanel({
               <div key={key} className="rounded-lg border p-3">
                 <div className="flex items-center justify-between gap-2">
                   <div>
-                    <p className="font-semibold">{option.name}</p>
-                    <p className="text-xs text-muted-foreground">Espacio premium</p>
+                    <p className="font-semibold">
+                      {t(advertisingLabelKeys[key as keyof typeof advertisingLabelKeys])}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{t("premium_space")}</p>
                   </div>
                   <Button
                     size="sm"
                     variant={item.enabled ? "default" : "outline"}
                     onClick={() => void onToggle("advertising", key)}
                   >
-                    {item.enabled ? "Activo" : "Inactivo"}
+                    {item.enabled ? t("state_active") : t("state_inactive")}
                   </Button>
                 </div>
                 <div className="mt-3">
                   <Label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
-                    Precio
+                    {t("field_price")}
                   </Label>
                   <Input
                     type="number"
@@ -590,9 +646,11 @@ function ProductoModerationCard({
 
 export function AdminPanel() {
   const { user } = useAuth();
+  const { lang, t } = useI18n();
   const [settings, setSettings] = useState<MonetizationSettings>(defaultMonetizationSettings);
   const [settingsRowId, setSettingsRowId] = useState<string | null>(null);
   const [txs, setTxs] = useState<Tx[]>([]);
+  const [advertisingRequests, setAdvertisingRequests] = useState<AdvertisingRequest[]>([]);
   const [compras, setCompras] = useState<Compra[]>([]);
   const [compraSearch, setCompraSearch] = useState("");
   const [compraEstadoFiltro, setCompraEstadoFiltro] = useState("TODOS");
@@ -617,18 +675,31 @@ export function AdminPanel() {
   const [supportReplies, setSupportReplies] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (user) {
-      loadTransactions();
-      loadCompras();
-      loadProductosPendientes();
-      loadReportes();
-      loadReseniasReportadas();
-      loadTicketsSoporte();
-      loadUsuarios();
-      loadRazonesPolitica();
-      void loadMonetizationSettings();
-    }
-  }, [user]);
+    if (!user) return;
+
+    void loadTransactions();
+    void loadCompras();
+    void loadAdvertisingRequests();
+    void loadProductosPendientes();
+    void loadReportes();
+    void loadReseniasReportadas();
+    void loadTicketsSoporte();
+    void loadUsuarios();
+    void loadRazonesPolitica();
+    void loadMonetizationSettings();
+  }, [
+    user,
+    loadAdvertisingRequests,
+    loadCompras,
+    loadMonetizationSettings,
+    loadProductosPendientes,
+    loadRazonesPolitica,
+    loadReportes,
+    loadReseniasReportadas,
+    loadTicketsSoporte,
+    loadTransactions,
+    loadUsuarios,
+  ]);
 
   const saveMonetizationSettings = async (nextSettings: MonetizationSettings) => {
     try {
@@ -678,7 +749,7 @@ export function AdminPanel() {
     }
   };
 
-  const loadMonetizationSettings = async () => {
+  const loadMonetizationSettings = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("monetization_settings")
@@ -742,7 +813,7 @@ export function AdminPanel() {
         toast.error("No se pudo cargar la configuración de monetización");
       }
     }
-  };
+  }, [t]);
 
   const toggleMonetizationPlan = async (group: keyof MonetizationSettings, key: string) => {
     const currentGroup = settings[group];
@@ -788,7 +859,24 @@ export function AdminPanel() {
     }
   };
 
-  const loadCompras = async () => {
+  const loadAdvertisingRequests = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("publicidad_solicitudes")
+      .select(
+        "id, user_id, ubicacion, precio, duracion_meses, archivo_path, comprobante_path, url_destino, estado, notas_admin, fecha_inicio, fecha_fin, created_at, profiles!publicidad_solicitudes_user_id_fkey(nombre_completo, business_name)",
+      )
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.warn("Error al cargar solicitudes publicitarias:", error);
+      setAdvertisingRequests([]);
+      if (!isSupabaseAccessError(error)) toast.error(t("advertising_request_error"));
+      return;
+    }
+    setAdvertisingRequests((data as AdvertisingRequest[]) ?? []);
+  }, [t]);
+
+  const loadCompras = useCallback(async () => {
     if (!user) {
       setCompras([]);
       return;
@@ -812,7 +900,7 @@ export function AdminPanel() {
         toast.error("No se pudieron cargar las compras");
       }
     }
-  };
+  }, [user]);
 
   const getCompraUserLabel = (userId: string) => {
     const profile = usuarios.find((usuario) => usuario.id === userId);
@@ -998,6 +1086,41 @@ export function AdminPanel() {
     } catch (error) {
       console.error("Error al eliminar comprobante:", error);
       toast.error("No se pudo eliminar el comprobante");
+    }
+  };
+
+  const verArchivoPublicidad = async (bucket: "publicidad" | "comprobantes", path: string) => {
+    const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
+    if (error || !data?.signedUrl) {
+      toast.error(t("advertising_request_error"));
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+  };
+
+  const onDecidirPublicidad = async (request: AdvertisingRequest, aprobar: boolean) => {
+    const motivo = aprobar ? null : window.prompt(t("advertising_rejection_reason"))?.trim();
+    if (!aprobar && !motivo) return;
+    if (!aprobar && (motivo!.length < 1 || motivo!.length > 500)) {
+      toast.error(t("advertising_rejection_reason_error"));
+      return;
+    }
+
+    setWorking(request.id);
+    try {
+      const { error } = await supabase.rpc("decidir_solicitud_publicidad", {
+        p_solicitud_id: request.id,
+        p_aprobar: aprobar,
+        p_motivo: motivo ?? null,
+      });
+      if (error) throw error;
+      toast.success(aprobar ? t("advertising_approved_toast") : t("advertising_rejected_toast"));
+      await loadAdvertisingRequests();
+    } catch (error) {
+      console.error("Error al decidir solicitud publicitaria:", error);
+      toast.error(t("advertising_request_error"));
+    } finally {
+      setWorking(null);
     }
   };
 
@@ -1425,13 +1548,17 @@ export function AdminPanel() {
     );
   });
 
+  const advertisingRequestsPending = advertisingRequests.filter(
+    (request) => request.estado === "PENDIENTE",
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto max-w-6xl px-4 py-6">
         <div className="mb-6 flex items-center gap-2">
           <ShieldCheck className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Panel de administración</h1>
+          <h1 className="text-2xl font-bold">{t("admin_panel_title")}</h1>
         </div>
 
         {loading ? (
@@ -1445,33 +1572,126 @@ export function AdminPanel() {
                 className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9"
                 value="transacciones"
               >
-                Transacciones ({pendientes.length})
+                {t("admin_transactions")} ({pendientes.length})
               </TabsTrigger>
               <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="compras">
-                Compras ({compras.filter((c) => c.estado === "PENDIENTE").length})
+                {t("admin_purchases")} ({compras.filter((c) => c.estado === "PENDIENTE").length})
               </TabsTrigger>
               <TabsTrigger
                 className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9"
                 value="monetizacion"
               >
-                💰 Monetización
+                💰 {t("monetization_tab")}
+              </TabsTrigger>
+              <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="publicidad">
+                {t("admin_advertising")} ({advertisingRequestsPending.length})
               </TabsTrigger>
               <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="moderacion">
-                Productos ({productosPendientes.length})
+                {t("admin_products")} ({productosPendientes.length})
               </TabsTrigger>
               <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="reportes">
-                Reportes ({reportesPendientes.length})
+                {t("admin_reports")} ({reportesPendientes.length})
               </TabsTrigger>
               <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="resenias">
-                Reseñas ({reseniasReportadas.length})
+                {t("admin_reviews")} ({reseniasReportadas.length})
               </TabsTrigger>
               <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="usuarios">
-                Usuarios ({usuarios.filter((u) => u.is_blocked).length})
+                {t("admin_users")} ({usuarios.filter((u) => u.is_blocked).length})
               </TabsTrigger>
               <TabsTrigger className="min-h-11 shrink-0 px-4 text-sm sm:min-h-9" value="soporte">
-                Soporte ({ticketsSoporte.length})
+                {t("admin_support")} ({ticketsSoporte.length})
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="publicidad" className="space-y-4">
+              {advertisingRequests.length === 0 ? (
+                <p className="rounded-lg border border-dashed bg-muted/30 p-6 text-center text-sm text-muted-foreground">
+                  {t("advertising_admin_empty")}
+                </p>
+              ) : (
+                advertisingRequests.map((request) => (
+                  <Card key={request.id}>
+                    <CardContent className="space-y-3 p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <h2 className="font-semibold">
+                            {t(advertisingLabelKeys[request.ubicacion])}
+                          </h2>
+                          <p className="text-xs text-muted-foreground">
+                            {request.profiles?.business_name ||
+                              request.profiles?.nombre_completo ||
+                              request.user_id}
+                          </p>
+                        </div>
+                        <Badge
+                          variant={request.estado === "RECHAZADO" ? "destructive" : "secondary"}
+                        >
+                          {t(advertisingStatusLabelKeys[request.estado])}
+                        </Badge>
+                      </div>
+                      <p className="text-sm">
+                        ${Number(request.precio).toFixed(2)} USD · {request.duracion_meses}{" "}
+                        {lang === "en" ? "month" : "mes"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(request.created_at).toLocaleString(
+                          lang === "en" ? "en-US" : "es-EC",
+                        )}
+                      </p>
+                      {request.url_destino && (
+                        <a
+                          className="break-all text-sm text-primary underline"
+                          href={request.url_destino}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {request.url_destino}
+                        </a>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            void verArchivoPublicidad("publicidad", request.archivo_path)
+                          }
+                        >
+                          <Eye className="mr-1 h-4 w-4" /> {t("advertising_creative")}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            void verArchivoPublicidad("comprobantes", request.comprobante_path)
+                          }
+                        >
+                          <Eye className="mr-1 h-4 w-4" /> {t("advertising_receipt")}
+                        </Button>
+                        {request.estado === "PENDIENTE" && (
+                          <>
+                            <Button
+                              size="sm"
+                              disabled={working === request.id}
+                              onClick={() => void onDecidirPublicidad(request, true)}
+                            >
+                              <ShieldCheck className="mr-1 h-4 w-4" /> {t("advertising_approve")}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              disabled={working === request.id}
+                              onClick={() => void onDecidirPublicidad(request, false)}
+                            >
+                              <ShieldX className="mr-1 h-4 w-4" /> {t("advertising_reject")}
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </TabsContent>
 
             <TabsContent value="compras" className="space-y-4">
               {compras.length > 0 && (

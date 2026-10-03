@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { ProductCard, type ProductCardData } from "@/components/ProductCard";
 import { CategoryNav } from "@/components/CategoryNav";
+import { AdvertisingSlot } from "@/components/AdvertisingSlot";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,7 +67,9 @@ function CategoriaPage() {
     const run = async () => {
       let query = supabase
         .from("productos")
-        .select("id, titulo, precio, moneda, ciudad, imagenes, es_destacado, promocionado_hasta")
+        .select(
+          "id, titulo, precio, moneda, ciudad, imagenes, es_destacado, promocionado_hasta, profiles!productos_user_profile_fk(account_type, business_name)",
+        )
         .eq("activo", true)
         .eq("estado_moderacion", "aprobado")
         .eq("categoria_id", id)
@@ -119,6 +122,13 @@ function CategoriaPage() {
         >
           {cat?.nombre ?? "Categoría"}
         </motion.h1>
+
+        <div className="mb-4 space-y-3">
+          <AdvertisingSlot placement="categoria" />
+          {cat?.nombre.toLowerCase().includes("servicio") && (
+            <AdvertisingSlot placement="servicios" />
+          )}
+        </div>
 
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

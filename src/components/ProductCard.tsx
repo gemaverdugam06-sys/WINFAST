@@ -15,6 +15,10 @@ export interface ProductCardData {
   imagenes: string[];
   es_destacado: boolean;
   promocionado_hasta?: string | null;
+  profiles?: {
+    account_type: string;
+    business_name: string | null;
+  } | null;
 }
 
 export function ProductCard({ p }: { p: ProductCardData }) {
@@ -63,6 +67,13 @@ export function ProductCard({ p }: { p: ProductCardData }) {
         <p className="text-base font-bold text-[#195e48]">
           {p.moneda} {Number(p.precio).toLocaleString(undefined, { minimumFractionDigits: 2 })}
         </p>
+        {p.profiles?.account_type === "business" && (
+          <p className="text-xs font-medium text-[#536b5c]">
+            {p.profiles.business_name
+              ? `${p.profiles.business_name} · ${t("business_badge")}`
+              : t("business_badge")}
+          </p>
+        )}
         <h3 className="line-clamp-2 text-sm font-medium leading-tight">{p.titulo}</h3>
         <p className="mt-auto flex items-center gap-1 pt-2 text-xs text-muted-foreground">
           <MapPin className="h-4 w-4 shrink-0 sm:h-3 sm:w-3" />

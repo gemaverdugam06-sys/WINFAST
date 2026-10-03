@@ -55,6 +55,7 @@ async function resolveStorageUrl(bucket: string, path: string): Promise<string |
  */
 export function useSignedUrls(bucket: string, paths: string[] | null | undefined) {
   const [urls, setUrls] = useState<string[]>([]);
+  const pathKey = paths?.join(",") ?? "";
 
   useEffect(() => {
     const safePaths = (paths ?? [])
@@ -151,7 +152,7 @@ export function useSignedUrls(bucket: string, paths: string[] | null | undefined
     } catch {
       setUrls([]);
     }
-  }, [bucket, paths?.join(",")]);
+  }, [bucket, pathKey, paths]);
 
   return urls;
 }

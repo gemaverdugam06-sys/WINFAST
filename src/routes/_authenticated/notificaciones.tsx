@@ -9,7 +9,8 @@ export const Route = createFileRoute("/_authenticated/notificaciones")({
 });
 
 function NotificationsPage() {
-  const { historyNotifications, deleteNotification } = usePurchaseNotifications();
+  const { historyNotifications, deleteNotification, getNotificationMessage } =
+    usePurchaseNotifications();
 
   return (
     <div className="min-h-screen bg-background">
@@ -20,7 +21,7 @@ function NotificationsPage() {
           <div>
             <h1 className="text-2xl font-bold">Historial de notificaciones</h1>
             <p className="text-sm text-muted-foreground">
-              Aquí puedes revisar y eliminar las notificaciones de tus compras.
+              Aquí puedes revisar y eliminar las notificaciones de tu cuenta.
             </p>
           </div>
         </div>
@@ -34,7 +35,7 @@ function NotificationsPage() {
             {historyNotifications.map((notification) => (
               <div key={notification.id} className="flex items-start gap-3 p-4">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm">{notification.mensaje}</p>
+                  <p className="text-sm">{getNotificationMessage(notification)}</p>
                   {notification.created_at && (
                     <p className="mt-1 text-xs text-muted-foreground">
                       {new Date(notification.created_at).toLocaleString("es-EC")}

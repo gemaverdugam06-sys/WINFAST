@@ -318,6 +318,7 @@ export type Database = {
         Row: {
           compra_id: string | null;
           created_at: string | null;
+          datos: Json;
           id: string;
           leido: boolean | null;
           mensaje: string;
@@ -327,6 +328,7 @@ export type Database = {
         Insert: {
           compra_id?: string | null;
           created_at?: string | null;
+          datos?: Json;
           id?: string;
           leido?: boolean | null;
           mensaje: string;
@@ -336,6 +338,7 @@ export type Database = {
         Update: {
           compra_id?: string | null;
           created_at?: string | null;
+          datos?: Json;
           id?: string;
           leido?: boolean | null;
           mensaje?: string;
@@ -567,7 +570,10 @@ export type Database = {
       };
       profiles: {
         Row: {
+          account_type: string;
           avatar_url: string | null;
+          business_description: string | null;
+          business_name: string | null;
           ciudad: string | null;
           full_name: string | null;
           id: string;
@@ -582,7 +588,10 @@ export type Database = {
           username: string | null;
         };
         Insert: {
+          account_type?: string;
           avatar_url?: string | null;
+          business_description?: string | null;
+          business_name?: string | null;
           ciudad?: string | null;
           full_name?: string | null;
           id: string;
@@ -597,7 +606,10 @@ export type Database = {
           username?: string | null;
         };
         Update: {
+          account_type?: string;
           avatar_url?: string | null;
+          business_description?: string | null;
+          business_name?: string | null;
           ciudad?: string | null;
           full_name?: string | null;
           id?: string;
@@ -612,6 +624,65 @@ export type Database = {
           username?: string | null;
         };
         Relationships: [];
+      };
+      publicidad_solicitudes: {
+        Row: {
+          archivo_path: string;
+          comprobante_path: string;
+          created_at: string;
+          duracion_meses: number;
+          estado: string;
+          fecha_fin: string | null;
+          fecha_inicio: string | null;
+          id: string;
+          notas_admin: string | null;
+          precio: number;
+          ubicacion: string;
+          updated_at: string;
+          url_destino: string | null;
+          user_id: string;
+        };
+        Insert: {
+          archivo_path: string;
+          comprobante_path: string;
+          created_at?: string;
+          duracion_meses?: number;
+          estado?: string;
+          fecha_fin?: string | null;
+          fecha_inicio?: string | null;
+          id?: string;
+          notas_admin?: string | null;
+          precio: number;
+          ubicacion: string;
+          updated_at?: string;
+          url_destino?: string | null;
+          user_id: string;
+        };
+        Update: {
+          archivo_path?: string;
+          comprobante_path?: string;
+          created_at?: string;
+          duracion_meses?: number;
+          estado?: string;
+          fecha_fin?: string | null;
+          fecha_inicio?: string | null;
+          id?: string;
+          notas_admin?: string | null;
+          precio?: number;
+          ubicacion?: string;
+          updated_at?: string;
+          url_destino?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "publicidad_solicitudes_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       profiles_private: {
         Row: {
@@ -997,6 +1068,23 @@ export type Database = {
         Args: { p_motivo: string; p_transaccion_id: string };
         Returns: undefined;
       };
+      solicitar_publicidad: {
+        Args: {
+          p_archivo_path: string;
+          p_comprobante_path: string;
+          p_ubicacion: string;
+          p_url_destino?: string | null;
+        };
+        Returns: string;
+      };
+      decidir_solicitud_publicidad: {
+        Args: { p_aprobar: boolean; p_motivo?: string | null; p_solicitud_id: string };
+        Returns: undefined;
+      };
+      publicidad_activa: {
+        Args: { p_ubicacion: string };
+        Returns: { archivo_path: string; url_destino: string | null }[];
+      };
       registrar_vista_producto: { Args: { p_producto_id: string }; Returns: undefined };
       registrar_clic_contacto_producto: { Args: { p_producto_id: string }; Returns: undefined };
     };
@@ -1017,12 +1105,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -1042,13 +1130,12 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -1067,13 +1154,12 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -1092,13 +1178,12 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -1109,13 +1194,12 @@ export type Enums<
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    keyof DefaultSchema["CompositeTypes"] | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }

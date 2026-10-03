@@ -15,11 +15,12 @@ type ChatUnreadRow = Pick<
  */
 export function useUnreadChats() {
   const { user } = useAuth();
+  const userId = user?.id;
   const [unread, setUnread] = useState<Record<string, number>>({});
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       setUnread({});
       setTotal(0);
       return;
@@ -30,13 +31,13 @@ export function useUnreadChats() {
       const { data: chats } = await supabase
         .from("chats")
         .select("id, comprador_id, vendedor_id, ultimo_leido_comprador, ultimo_leido_vendedor")
-        .or(`comprador_id.eq.${user.id},vendedor_id.eq.${user.id}`);
+        .or(`comprador_id.eq.${userId},vendedor_id.eq.${userId}`);
       if (!chats || !alive) return;
 
       const { data: states, error: statesError } = await supabase
         .from("chat_user_states")
         .select("chat_id, deleted_at")
-        .eq("user_id", user.id);
+        .eq("user_id", userId);
       if (statesError || !alive) return;
       const deletedChatIds = new Set(
         (states ?? []).filter((state) => state.deleted_at).map((state) => state.chat_id),
@@ -48,12 +49,12 @@ export function useUnreadChats() {
           .filter((chat) => !deletedChatIds.has(chat.id))
           .map(async (c) => {
             const after =
-              c.comprador_id === user.id ? c.ultimo_leido_comprador : c.ultimo_leido_vendedor;
+              c.comprador_id === userId ? c.ultimo_leido_comprador : c.ultimo_leido_vendedor;
             const { count } = await supabase
               .from("mensajes")
               .select("id", { count: "exact", head: true })
               .eq("chat_id", c.id)
-              .neq("remitente_id", user.id)
+              .neq("remitente_id", userId)
               .is("deleted_at", null)
               .gt("created_at", after ?? new Date(0).toISOString());
             counts[c.id] = count ?? 0;
@@ -66,7 +67,7 @@ export function useUnreadChats() {
 
     compute();
 
-    const topic = `unread:${user.id}:${Math.random().toString(36).slice(2)}`;
+    const topic = `unread:${userId}:${Math.random().toString(36).slice(2)}`;
     const ch = supabase.channel(topic);
     ch.on("postgres_changes", { event: "INSERT", schema: "public", table: "mensajes" }, () =>
       compute(),
@@ -76,7 +77,7 @@ export function useUnreadChats() {
     );
     ch.on(
       "postgres_changes",
-      { event: "*", schema: "public", table: "chat_user_states", filter: `user_id=eq.${user.id}` },
+      { event: "*", schema: "public", table: "chat_user_states", filter: `user_id=eq.${userId}` },
       () => compute(),
     );
     ch.subscribe();
@@ -85,7 +86,7 @@ export function useUnreadChats() {
       alive = false;
       supabase.removeChannel(ch);
     };
-  }, [user?.id]);
+  }, [userId]);
 
   return { unread, total };
 }

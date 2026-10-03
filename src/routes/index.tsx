@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import { ProductCard, type ProductCardData } from "@/components/ProductCard";
 import { CategoryNav } from "@/components/CategoryNav";
+import { AdvertisingSlot } from "@/components/AdvertisingSlot";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -116,7 +117,9 @@ function Home() {
     const run = async () => {
       let query = supabase
         .from("productos")
-        .select("id, titulo, precio, moneda, ciudad, imagenes, es_destacado, promocionado_hasta")
+        .select(
+          "id, titulo, precio, moneda, ciudad, imagenes, es_destacado, promocionado_hasta, profiles!productos_user_profile_fk(account_type, business_name)",
+        )
         .eq("activo", true)
         .eq("estado_moderacion", "aprobado")
         .order("es_destacado", { ascending: false })
@@ -196,7 +199,11 @@ function Home() {
       </section>
 
       <main className="container mx-auto max-w-7xl px-4 py-5 sm:py-7">
+        <AdvertisingSlot placement="banner_principal" />
         <CategoryNav categorias={categorias} />
+        <div className="mt-4">
+          <AdvertisingSlot placement="negocio_destacado" />
+        </div>
 
         <div className="mb-3 mt-3 flex flex-wrap items-center gap-2">
           <Button
@@ -333,6 +340,10 @@ function Home() {
         <div className="mb-4 flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-[#e96f50]" />
           <h2 className="font-display text-lg font-bold text-[#1a2d24]">Descubre en WinFast</h2>
+        </div>
+
+        <div className="mb-4">
+          <AdvertisingSlot placement="productos" />
         </div>
 
         {loading ? (

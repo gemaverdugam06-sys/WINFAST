@@ -88,7 +88,7 @@ function MisDestacadosPage() {
     };
 
     void load();
-  }, [user?.id]);
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-background">
