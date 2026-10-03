@@ -106,7 +106,7 @@ export function usePurchaseNotifications() {
 
     void load();
     const channel = supabase
-      .channel(`purchase-notifications:${user.id}`)
+      .channel(`purchase-notifications:${user.id}:${crypto.randomUUID()}`)
       .on(
         "postgres_changes",
         {
